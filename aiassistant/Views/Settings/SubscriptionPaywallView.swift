@@ -5,7 +5,6 @@ import StoreKit
 struct SubscriptionPaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var store = StoreKitService<AppSubscriptionTier>()
-    @State private var waitingForLifetimePurchase = false
 
     var body: some View {
         NavigationStack {
@@ -54,9 +53,8 @@ struct SubscriptionPaywallView: View {
             groupID: Monetization.subscriptionGroupID,
             ids: Monetization.productIDs
         )
-        .onChange(of: store.purchasedNonConsumables) { _, newValue in
-            if waitingForLifetimePurchase, newValue.contains(Monetization.lifetimeID) {
-                waitingForLifetimePurchase = false
+        .onInAppPurchaseCompletion { _, result in
+            if case .success = result {
                 dismiss()
             }
         }
@@ -77,11 +75,6 @@ struct SubscriptionPaywallView: View {
                 purchasedTitle: "Lifetime Unlocked"
             )
             .buttonStyle(.borderedProminent)
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    waitingForLifetimePurchase = true
-                }
-            )
 
             HStack {
                 RestorePurchasesButton<AppSubscriptionTier>()

@@ -345,18 +345,20 @@ final class AssistantEngine {
 
         switch mode {
         case .write:
-            prompt += "Help the user write, draft, and compose text. Produce polished output."
+            prompt += "Help the user write, draft, and compose text. Produce polished output. Use short paragraphs and clear section breaks."
         case .summarize:
-            prompt += "Summarize the provided content clearly and concisely."
+            prompt += "Summarize the provided content clearly and concisely. Use headings and bullet points when useful."
         case .explain:
-            prompt += "Explain the topic clearly, using analogies when helpful."
+            prompt += "Explain the topic clearly, using analogies when helpful. Use short paragraphs and readable structure."
         case .plan:
-            prompt += "Create structured plans with clear phases and actionable tasks."
+            prompt += "Create structured plans with clear phases and actionable tasks. Always use numbered lists with one item per line."
         case .brainstorm:
-            prompt += "Generate creative ideas and alternatives. Be exploratory."
+            prompt += "Generate creative ideas and alternatives. Be exploratory. Present ideas as bullet points with concise phrasing."
         case .general:
             prompt += "Help with whatever the user needs. Be clear and supportive."
         }
+
+        prompt += " Format output for readability: include line breaks between sections, and never collapse lists into one paragraph."
 
         return prompt
     }

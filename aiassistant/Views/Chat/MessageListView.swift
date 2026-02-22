@@ -7,6 +7,26 @@
 import SwiftUI
 import Foundation
 
+private func normalizedDisplayText(_ rawText: String) -> String {
+    var text = rawText.replacingOccurrences(of: "\r\n", with: "\n")
+
+    // Ensure punctuation is followed by a space when missing (e.g. "Title:Body").
+    text = text.replacingOccurrences(
+        of: #"([,:;.!?])(\S)"#,
+        with: "$1 $2",
+        options: .regularExpression
+    )
+
+    // Break numbered lists into separate lines when the model returns a single block.
+    text = text.replacingOccurrences(
+        of: #"(?<!^)(?<!\n)\s*(\d+\.)\s+"#,
+        with: "\n\n$1 ",
+        options: .regularExpression
+    )
+
+    return text
+}
+
 struct MessageListView: View {
     let thread: Thread
     let preferences: UserPreferences
@@ -252,8 +272,9 @@ struct MessageBubble: View {
 
     @ViewBuilder
     private func messageText(_ rawText: String) -> some View {
+        let displayText = normalizedDisplayText(rawText)
         if let attributed = try? AttributedString(
-            markdown: rawText,
+            markdown: displayText,
             options: .init(
                 interpretedSyntax: .full,
                 failurePolicy: .returnPartiallyParsedIfPossible
@@ -261,7 +282,7 @@ struct MessageBubble: View {
         ) {
             Text(attributed)
         } else {
-            Text(rawText)
+            Text(.init(displayText))
         }
     }
 }
@@ -392,8 +413,9 @@ struct StreamingBubble: View {
 
     @ViewBuilder
     private func messageText(_ rawText: String) -> some View {
+        let displayText = normalizedDisplayText(rawText)
         if let attributed = try? AttributedString(
-            markdown: rawText,
+            markdown: displayText,
             options: .init(
                 interpretedSyntax: .full,
                 failurePolicy: .returnPartiallyParsedIfPossible
@@ -401,7 +423,7 @@ struct StreamingBubble: View {
         ) {
             Text(attributed)
         } else {
-            Text(rawText)
+            Text(.init(displayText))
         }
     }
 }

@@ -41,6 +41,23 @@ struct ChatView: View {
     private var activeThread: Thread? { dataModel.activeThread }
     private var assistantName: String { preferences.ariEnabled ? "Ari" : "Assistant" }
     private var hasPremiumAccess: Bool { storeKitService.hasPremiumAccess }
+    private var navigationTitleText: String {
+        #if os(macOS)
+        "Chat"
+        #else
+        activeThread?.title ?? "Chat"
+        #endif
+    }
+    private var macNavigationSubtitle: String {
+        guard let title = activeThread?.title.trimmingCharacters(in: .whitespacesAndNewlines),
+              !title.isEmpty else {
+            return "Start a conversation"
+        }
+        if title.count > 64 {
+            return String(title.prefix(64)) + "…"
+        }
+        return title
+    }
     private var contentMaxWidth: CGFloat {
         #if os(macOS)
         760
@@ -228,11 +245,43 @@ struct ChatView: View {
                 .frame(maxWidth: .infinity)
             }
             .padding(.horizontal, outerHorizontalPadding)
-            .navigationTitle(activeThread?.title ?? "Chat")
+            .navigationTitle(navigationTitleText)
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
+            #if os(macOS)
+            .navigationSubtitle(macNavigationSubtitle)
+            .toolbarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
+                #if os(macOS)
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        showThreadList = true
+                    } label: {
+                        Image(systemName: "line.3.horizontal")
+                            .font(.system(size: 16, weight: .semibold))
+                            .padding(8)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Show threads")
+                    .accessibilityLabel("Thread list")
+                }
+                ToolbarSpacer(.fixed)
+                ToolbarItem(placement: .automatic) {
+                    Button {
+                        let thread = dataModel.createThread(in: modelContext)
+                        dataModel.activeThread = thread
+                    } label: {
+                        Image(systemName: "square.and.pencil")
+                            .font(.system(size: 16, weight: .semibold))
+                            .padding(8)
+                    }
+                    .buttonStyle(.plain)
+                    .help("New chat")
+                    .accessibilityLabel("New chat")
+                }
+                #else
                 ToolbarItem(placement: .automatic) {
                     Button {
                         showThreadList = true
@@ -244,19 +293,6 @@ struct ChatView: View {
                     .accessibilityLabel("Thread list")
                 }
                 ToolbarSpacer(.fixed)
-                #if os(macOS)
-                ToolbarItem(placement: .automatic) {
-                    Button {
-                        let thread = dataModel.createThread(in: modelContext)
-                        dataModel.activeThread = thread
-                    } label: {
-                        Image(systemName: "square.and.pencil")
-                            .fontWeight(.medium)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel("New chat")
-                }
-                #else
                 ToolbarItem(placement: .automatic) {
                     Button {
                         let thread = dataModel.createThread(in: modelContext)
@@ -269,8 +305,6 @@ struct ChatView: View {
                     .accessibilityLabel("New chat")
                 }
                 ToolbarSpacer(.fixed)
-                #endif
-                #if !os(macOS)
                 ToolbarItem(placement: .automatic) {
                     Button {
                         showSettings = true
@@ -282,7 +316,6 @@ struct ChatView: View {
                     .accessibilityLabel("Settings")
                 }
                 #endif
-                
             }
             #if os(iOS)
             .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
