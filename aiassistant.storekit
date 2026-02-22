@@ -118,7 +118,7 @@
           "productID" : "com.transfinite.aiassistant.premium.weekly",
           "recurringSubscriptionPeriod" : "P1W",
           "referenceName" : "Ari+ Weekly",
-          "subscriptionGroupID" : "7E4D282D-E821-4B8B-875B-C01CF95B8EA8",
+          "subscriptionGroupID" : "21944633",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
 
@@ -146,7 +146,7 @@
           "productID" : "com.transfinite.aiassistant.premium.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Ari+ Monthly",
-          "subscriptionGroupID" : "7E4D282D-E821-4B8B-875B-C01CF95B8EA8",
+          "subscriptionGroupID" : "21944633",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
 
@@ -174,7 +174,7 @@
           "productID" : "com.transfinite.aiassistant.premium.yearly",
           "recurringSubscriptionPeriod" : "P1Y",
           "referenceName" : "Ari+ Yearly",
-          "subscriptionGroupID" : "7E4D282D-E821-4B8B-875B-C01CF95B8EA8",
+          "subscriptionGroupID" : "21944633",
           "type" : "RecurringSubscription",
           "winbackOffers" : [
 
