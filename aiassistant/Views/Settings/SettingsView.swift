@@ -10,6 +10,7 @@ import CloudKit
 struct SettingsView: View {
     @Bindable var preferences: UserPreferences
     @Environment(\.dismiss) private var dismiss
+    @State private var showPaywall = false
 
     #if DEBUG
     @State private var showDebugSeed = false
@@ -132,6 +133,18 @@ struct SettingsView: View {
                 Text("About")
             }
 
+            Section {
+                Button {
+                    showPaywall = true
+                } label: {
+                    Label("Upgrade to Ari+", systemImage: "sparkles")
+                }
+            } header: {
+                Text("Subscription")
+            } footer: {
+                Text("Includes weekly, monthly, yearly, and lifetime options.")
+            }
+
             #if DEBUG
             Section {
                 Button("Seed Sample Data") {
@@ -164,6 +177,9 @@ struct SettingsView: View {
                 Text("Checks account availability for iCloud container iCloud.com.transfinite.aiassistant.")
             }
             #endif
+        }
+        .sheet(isPresented: $showPaywall) {
+            SubscriptionPaywallView()
         }
     }
 

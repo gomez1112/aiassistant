@@ -6,6 +6,7 @@
 
 import SwiftUI
 import SwiftData
+import FlexStore
 
 struct LibraryView: View {
     let preferences: UserPreferences
@@ -236,8 +237,12 @@ struct LibraryItemDetailView: View {
 
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var storeKitService
 
     @State private var isSummarizing = false
+    @State private var showPaywall = false
+    @State private var showUpgradeAlert = false
+    @State private var upgradePromptMessage = ""
 
     var body: some View {
         ScrollView {
@@ -333,9 +338,24 @@ struct LibraryItemDetailView: View {
                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
             }
         }
+        .sheet(isPresented: $showPaywall) {
+            SubscriptionPaywallView()
+        }
+        .alert("Upgrade to Ari+", isPresented: $showUpgradeAlert) {
+            Button("Not Now", role: .cancel) {}
+            Button("Upgrade") { showPaywall = true }
+        } message: {
+            Text(upgradePromptMessage)
+        }
     }
 
     private func summarize() {
+        guard storeKitService.hasPremiumAccess else {
+            upgradePromptMessage = "AI summaries for Library items are available on Ari+ plans."
+            showUpgradeAlert = true
+            return
+        }
+
         isSummarizing = true
         Task {
             await dataModel.summarizeItem(item, in: modelContext)

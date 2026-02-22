@@ -1,0 +1,190 @@
+{
+  "appPolicies" : {
+    "eula" : "",
+    "policies" : [
+      {
+        "locale" : "en_US",
+        "policyText" : "",
+        "policyURL" : ""
+      }
+    ]
+  },
+  "identifier" : "AIAssistant_StoreKit_Config",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "199.99",
+      "familyShareable" : false,
+      "internalID" : "AIA_LIFETIME_001",
+      "localizations" : [
+        {
+          "description" : "One-time purchase for lifetime premium access.",
+          "displayName" : "Ari+ Lifetime",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.transfinite.aiassistant.lifetime",
+      "referenceName" : "Ari+ Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingGracePeriodEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_disableDialogs" : false,
+    "_failTransactionsEnabled" : false,
+    "_locale" : "en_US",
+    "_renewalBillingIssuesEnabled" : false,
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ],
+    "_timeRate" : 0
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "7E4D282D-E821-4B8B-875B-C01CF95B8EA8",
+      "localizations" : [
+        {
+          "description" : "Unlock Ari+ weekly, monthly, or yearly plans.",
+          "displayName" : "Ari+ Premium",
+          "locale" : "en_US"
+        }
+      ],
+      "name" : "Ari+ Premium",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 3,
+          "internalID" : "AIA_WEEKLY_001",
+          "introductoryOffer" : {
+            "displayPrice" : "0.00",
+            "internalID" : "AIA_WEEKLY_TRIAL_001",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
+          "localizations" : [
+            {
+              "description" : "Weekly premium access with a 3-day free trial.",
+              "displayName" : "Ari+ Weekly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.transfinite.aiassistant.premium.weekly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Ari+ Weekly",
+          "subscriptionGroupID" : "7E4D282D-E821-4B8B-875B-C01CF95B8EA8",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "9.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "AIA_MONTHLY_001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Monthly premium access.",
+              "displayName" : "Ari+ Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.transfinite.aiassistant.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Ari+ Monthly",
+          "subscriptionGroupID" : "7E4D282D-E821-4B8B-875B-C01CF95B8EA8",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "59.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "AIA_YEARLY_001",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Best value yearly premium access.",
+              "displayName" : "Ari+ Yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.transfinite.aiassistant.premium.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Ari+ Yearly",
+          "subscriptionGroupID" : "7E4D282D-E821-4B8B-875B-C01CF95B8EA8",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

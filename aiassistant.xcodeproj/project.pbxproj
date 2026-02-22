@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CC7F11262F4ABC1600504B6D /* OnboardingKit in Frameworks */ = {isa = PBXBuildFile; productRef = CC7F11252F4ABC1600504B6D /* OnboardingKit */; };
+		CC7F11292F4ABC2700504B6D /* FlexStore in Frameworks */ = {isa = PBXBuildFile; productRef = CC7F11282F4ABC2700504B6D /* FlexStore */; };
+		CC7F112F2F4ABDD300504B6D /* aiassistant.storekit in Resources */ = {isa = PBXBuildFile; fileRef = CC7F112E2F4ABDD300504B6D /* aiassistant.storekit */; };
+		CC7F11312F4ABFDD00504B6D /* StoreKitSchemaNotes.md in Resources */ = {isa = PBXBuildFile; fileRef = CC7F11302F4ABFDD00504B6D /* StoreKitSchemaNotes.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		CC28DB702F48DA980082E4C6 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +34,8 @@
 		CC28DB622F48DA970082E4C6 /* aiassistant.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = aiassistant.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC28DB6F2F48DA980082E4C6 /* aiassistantTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = aiassistantTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC28DB792F48DA980082E4C6 /* aiassistantUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = aiassistantUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC7F112E2F4ABDD300504B6D /* aiassistant.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = aiassistant.storekit; sourceTree = "<group>"; };
+		CC7F11302F4ABFDD00504B6D /* StoreKitSchemaNotes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = StoreKitSchemaNotes.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -65,6 +74,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC7F11262F4ABC1600504B6D /* OnboardingKit in Frameworks */,
+				CC7F11292F4ABC2700504B6D /* FlexStore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -92,6 +103,8 @@
 				CC28DB722F48DA980082E4C6 /* aiassistantTests */,
 				CC28DB7C2F48DA980082E4C6 /* aiassistantUITests */,
 				CC28DB632F48DA970082E4C6 /* Products */,
+				CC7F112E2F4ABDD300504B6D /* aiassistant.storekit */,
+				CC7F11302F4ABFDD00504B6D /* StoreKitSchemaNotes.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -125,6 +138,8 @@
 			);
 			name = aiassistant;
 			packageProductDependencies = (
+				CC7F11252F4ABC1600504B6D /* OnboardingKit */,
+				CC7F11282F4ABC2700504B6D /* FlexStore */,
 			);
 			productName = aiassistant;
 			productReference = CC28DB622F48DA970082E4C6 /* aiassistant.app */;
@@ -208,6 +223,10 @@
 			);
 			mainGroup = CC28DB592F48DA970082E4C6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CC7F11242F4ABC1600504B6D /* XCRemoteSwiftPackageReference "OnboardingKit" */,
+				CC7F11272F4ABC2700504B6D /* XCRemoteSwiftPackageReference "FlexStore" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CC28DB632F48DA970082E4C6 /* Products */;
 			projectDirPath = "";
@@ -225,6 +244,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC7F11312F4ABFDD00504B6D /* StoreKitSchemaNotes.md in Resources */,
+				CC7F112F2F4ABDD300504B6D /* aiassistant.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -406,7 +427,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = aiassistant/aiassistant.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2tw;
 				DEVELOPMENT_TEAM = 88QL9VPLMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -456,7 +477,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = aiassistant/aiassistant.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2tw;
 				DEVELOPMENT_TEAM = 88QL9VPLMY;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -640,6 +661,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CC7F11242F4ABC1600504B6D /* XCRemoteSwiftPackageReference "OnboardingKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gomez1112/OnboardingKit";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		CC7F11272F4ABC2700504B6D /* XCRemoteSwiftPackageReference "FlexStore" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gomez1112/FlexStore";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CC7F11252F4ABC1600504B6D /* OnboardingKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CC7F11242F4ABC1600504B6D /* XCRemoteSwiftPackageReference "OnboardingKit" */;
+			productName = OnboardingKit;
+		};
+		CC7F11282F4ABC2700504B6D /* FlexStore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CC7F11272F4ABC2700504B6D /* XCRemoteSwiftPackageReference "FlexStore" */;
+			productName = FlexStore;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CC28DB5A2F48DA970082E4C6 /* Project object */;
 }

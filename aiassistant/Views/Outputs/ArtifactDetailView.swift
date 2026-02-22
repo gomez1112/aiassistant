@@ -6,6 +6,7 @@
 
 import SwiftUI
 import SwiftData
+import FlexStore
 
 struct ArtifactDetailView: View {
     @Bindable var artifact: Artifact
@@ -14,11 +15,15 @@ struct ArtifactDetailView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var storeKitService
 
     @State private var isTransforming = false
     @State private var showTagEditor = false
     @State private var showDeleteConfirmation = false
     @State private var copiedFeedback = false
+    @State private var showPaywall = false
+    @State private var showUpgradeAlert = false
+    @State private var upgradePromptMessage = ""
 
     var body: some View {
         ScrollView {
@@ -164,9 +169,24 @@ struct ArtifactDetailView: View {
                 set: { artifact.tags = $0; artifact.updatedAt = .now }
             ))
         }
+        .sheet(isPresented: $showPaywall) {
+            SubscriptionPaywallView()
+        }
+        .alert("Upgrade to Ari+", isPresented: $showUpgradeAlert) {
+            Button("Not Now", role: .cancel) {}
+            Button("Upgrade") { showPaywall = true }
+        } message: {
+            Text(upgradePromptMessage)
+        }
     }
 
     private func transformArtifact(type: TransformType) {
+        guard storeKitService.hasPremiumAccess else {
+            upgradePromptMessage = "Artifact transforms are available on Ari+ plans."
+            showUpgradeAlert = true
+            return
+        }
+
         isTransforming = true
         Task {
             let _ = await dataModel.transformArtifact(

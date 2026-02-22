@@ -25,7 +25,6 @@ struct ModeChipBar: View {
             .padding(.vertical, 8)
         }
         .scrollIndicators(.hidden)
-        .background(.ultraThinMaterial)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Mode selector")
     }

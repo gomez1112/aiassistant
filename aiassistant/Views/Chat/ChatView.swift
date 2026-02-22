@@ -10,12 +10,14 @@ import UniformTypeIdentifiers
 import PDFKit
 import Vision
 import ImageIO
+import FlexStore
 
 struct ChatView: View {
     let preferences: UserPreferences
 
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var storeKitService
 
     @Query(sort: \Thread.updatedAt, order: .reverse)
     private var threads: [Thread]
@@ -32,9 +34,36 @@ struct ChatView: View {
     @State private var pendingAttachmentText: String?
     @State private var pendingAttachmentName: String?
     @State private var importErrorMessage: String?
+    @State private var showPaywall = false
+    @State private var showUpgradeAlert = false
+    @State private var upgradePromptMessage = ""
 
     private var activeThread: Thread? { dataModel.activeThread }
     private var assistantName: String { preferences.ariEnabled ? "Ari" : "Assistant" }
+    private var hasPremiumAccess: Bool { storeKitService.hasPremiumAccess }
+    private var contentMaxWidth: CGFloat {
+        #if os(macOS)
+        760
+        #else
+        .infinity
+        #endif
+    }
+    private var outerHorizontalPadding: CGFloat {
+        #if os(macOS)
+        18
+        #else
+        0
+        #endif
+    }
+    private var todayUserMessageCount: Int {
+        threads
+            .flatMap { $0.sortedMessages }
+            .filter { $0.role == .user && Calendar.current.isDateInToday($0.createdAt) }
+            .count
+    }
+    private var remainingFreeMessages: Int {
+        max(0, Monetization.freeDailyMessageLimit - todayUserMessageCount)
+    }
     private var modeGuidanceText: String {
         switch dataModel.selectedMode {
         case .general:
@@ -60,6 +89,8 @@ struct ChatView: View {
                     get: { dataModel.selectedMode },
                     set: { dataModel.selectedMode = $0 }
                 ))
+                .frame(maxWidth: contentMaxWidth)
+                .frame(maxWidth: .infinity)
 
                 Text(modeGuidanceText)
                     .font(.caption)
@@ -75,6 +106,34 @@ struct ChatView: View {
                     .padding(.bottom, 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .accessibilityLabel(modeGuidanceText)
+                    .frame(maxWidth: contentMaxWidth)
+                    .frame(maxWidth: .infinity)
+
+                if !hasPremiumAccess {
+                    HStack(spacing: 8) {
+                        Image(systemName: "sparkles")
+                            .foregroundStyle(AppTheme.accent)
+                        Text("Free plan: \(remainingFreeMessages) of \(Monetization.freeDailyMessageLimit) messages left today.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Upgrade") {
+                            showPaywall = true
+                        }
+                        .font(.caption.weight(.semibold))
+                        .buttonStyle(.plain)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(.ultraThinMaterial)
+                    )
+                    .padding(.horizontal, AppTheme.spacingLG)
+                    .padding(.bottom, 8)
+                    .frame(maxWidth: contentMaxWidth)
+                    .frame(maxWidth: .infinity)
+                }
 
                 if let pendingAttachmentName {
                     HStack(spacing: 8) {
@@ -103,6 +162,8 @@ struct ChatView: View {
                     )
                     .padding(.horizontal, AppTheme.spacingLG)
                     .padding(.bottom, 8)
+                    .frame(maxWidth: contentMaxWidth)
+                    .frame(maxWidth: .infinity)
                 }
 
                 // Messages
@@ -125,11 +186,19 @@ struct ChatView: View {
                             )
                         },
                         onOpenOutputStudio: {
-                            showOutputStudio = true
+                            if hasPremiumAccess {
+                                showOutputStudio = true
+                            } else {
+                                promptUpgrade("Output transformations are a premium feature.")
+                            }
                         }
                     )
+                    .frame(maxWidth: contentMaxWidth)
+                    .frame(maxWidth: .infinity)
                 } else {
                     emptyState
+                        .frame(maxWidth: contentMaxWidth)
+                        .frame(maxWidth: .infinity)
                 }
 
                 // Ari guidance
@@ -140,6 +209,8 @@ struct ChatView: View {
                         ari: dataModel.ari,
                         onAction: handleAriAction
                     )
+                    .frame(maxWidth: contentMaxWidth)
+                    .frame(maxWidth: .infinity)
                 }
 
                 // Composer
@@ -151,9 +222,12 @@ struct ChatView: View {
                     assistantName: assistantName,
                     onSend: sendMessage,
                     onCancel: { dataModel.assistant.cancel() },
-                    onAttach: { showFileImporter = true }
+                    onAttach: handleAttachAction
                 )
+                .frame(maxWidth: contentMaxWidth)
+                .frame(maxWidth: .infinity)
             }
+            .padding(.horizontal, outerHorizontalPadding)
             .navigationTitle(activeThread?.title ?? "Chat")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
@@ -166,7 +240,7 @@ struct ChatView: View {
                         Image(systemName: "line.3.horizontal")
                             .fontWeight(.medium)
                     }
-                  
+                    .buttonStyle(.plain)
                     .accessibilityLabel("Thread list")
                 }
                 ToolbarSpacer(.fixed)
@@ -179,6 +253,7 @@ struct ChatView: View {
                         Image(systemName: "square.and.pencil")
                             .fontWeight(.medium)
                     }
+                    .buttonStyle(.plain)
                     .accessibilityLabel("New chat")
                 }
                 #else
@@ -190,6 +265,7 @@ struct ChatView: View {
                         Image(systemName: "square.and.pencil")
                             .fontWeight(.medium)
                     }
+                    .buttonStyle(.plain)
                     .accessibilityLabel("New chat")
                 }
                 ToolbarSpacer(.fixed)
@@ -202,6 +278,7 @@ struct ChatView: View {
                         Image(systemName: "gearshape")
                             .fontWeight(.medium)
                     }
+                    .buttonStyle(.plain)
                     .accessibilityLabel("Settings")
                 }
                 #endif
@@ -246,6 +323,9 @@ struct ChatView: View {
                 SettingsView(preferences: preferences)
             }
             #endif
+            .sheet(isPresented: $showPaywall) {
+                SubscriptionPaywallView()
+            }
             .fileImporter(
                 isPresented: $showFileImporter,
                 allowedContentTypes: [.pdf, .image],
@@ -260,6 +340,14 @@ struct ChatView: View {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(importErrorMessage ?? "Please try another file.")
+            }
+            .alert("Upgrade to Ari+", isPresented: $showUpgradeAlert) {
+                Button("Not Now", role: .cancel) {}
+                Button("Upgrade") {
+                    showPaywall = true
+                }
+            } message: {
+                Text(upgradePromptMessage)
             }
         }
     }
@@ -284,6 +372,7 @@ struct ChatView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .lineSpacing(2)
+                    .frame(maxWidth: 420)
             }
 
             Button {
@@ -311,6 +400,12 @@ struct ChatView: View {
         let typedText = composerText.trimmingCharacters(in: .whitespacesAndNewlines)
         let attachmentContext = pendingAttachmentText
         guard !typedText.isEmpty || attachmentContext != nil else { return }
+
+        if !hasPremiumAccess && todayUserMessageCount >= Monetization.freeDailyMessageLimit {
+            promptUpgrade("You’ve reached today’s free message limit. Upgrade for unlimited chats.")
+            return
+        }
+
         let userMessageText = typedText.isEmpty ? "Analyze the attached file." : typedText
 
         // Create thread if needed
@@ -336,6 +431,19 @@ struct ChatView: View {
             )
             isGenerating = false
         }
+    }
+
+    private func handleAttachAction() {
+        guard hasPremiumAccess else {
+            promptUpgrade("File upload is available on Ari+ plans.")
+            return
+        }
+        showFileImporter = true
+    }
+
+    private func promptUpgrade(_ message: String) {
+        upgradePromptMessage = message
+        showUpgradeAlert = true
     }
 
     private func handleAriAction(_ action: AriActionType) {
