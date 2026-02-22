@@ -115,7 +115,7 @@ final class AssistantEngine {
                 preferences: preferences,
                 attachmentContext: attachmentContext
             )
-            state = .idle
+            state = .complete
             streamingText = ""
             return result
         } catch is CancellationError {
@@ -141,7 +141,7 @@ final class AssistantEngine {
             )
         }
         #else
-        state = .idle
+        state = .complete
         streamingText = ""
         return GenerationResult(
             text: "On-device AI is unavailable on this device right now.",

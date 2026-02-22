@@ -10,17 +10,21 @@ import Foundation
 private func normalizedDisplayText(_ rawText: String) -> String {
     var text = rawText.replacingOccurrences(of: "\r\n", with: "\n")
 
-    // Ensure punctuation is followed by a space when missing (e.g. "Title:Body").
+    // Ensure punctuation is followed by a space when missing, but skip
+    // URL-like sequences (://), digits after colons (times like 2:30),
+    // and slash-separated paths.
     text = text.replacingOccurrences(
-        of: #"([,:;.!?])(\S)"#,
+        of: #"([,:;!?])(?![/\d\s])([A-Za-z])"#,
         with: "$1 $2",
         options: .regularExpression
     )
 
-    // Break numbered lists into separate lines when the model returns a single block.
+    // Break numbered lists into separate lines only when preceded by a
+    // sentence-ending punctuation + space pattern (i.e. inline lists).
+    // Avoid breaking version numbers, dates, or mid-sentence numbers.
     text = text.replacingOccurrences(
-        of: #"(?<!^)(?<!\n)\s*(\d+\.)\s+"#,
-        with: "\n\n$1 ",
+        of: #"([.!?])\s+(\d+\.)\s+"#,
+        with: "$1\n\n$2 ",
         options: .regularExpression
     )
 

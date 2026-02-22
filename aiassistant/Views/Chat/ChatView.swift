@@ -22,6 +22,9 @@ struct ChatView: View {
     @Query(sort: \Thread.updatedAt, order: .reverse)
     private var threads: [Thread]
 
+    @Query(filter: #Predicate<Message> { $0.roleRaw == "user" })
+    private var allUserMessages: [Message]
+
     @State private var showThreadList = false
     @State private var showOutputStudio = false
     #if !os(macOS)
@@ -75,9 +78,9 @@ struct ChatView: View {
         #endif
     }
     private var todayUserMessageCount: Int {
-        threads
-            .flatMap { $0.sortedMessages }
-            .filter { $0.role == .user && Calendar.current.isDateInToday($0.createdAt) }
+        let calendar = Calendar.current
+        return allUserMessages
+            .filter { calendar.isDateInToday($0.createdAt) }
             .count
     }
     private var remainingFreeMessages: Int {
@@ -462,9 +465,17 @@ struct ChatView: View {
         let attachmentContext = pendingAttachmentText
         guard !typedText.isEmpty || attachmentContext != nil else { return }
 
-        if !hasPremiumAccess && todayUserMessageCount >= Monetization.freeDailyMessageLimit {
-            promptUpgrade("You’ve reached today’s free message limit. Upgrade for unlimited chats.")
-            return
+        if !hasPremiumAccess {
+            // Use a fresh fetch to avoid stale @Query data on rapid taps
+            let startOfDay = Calendar.current.startOfDay(for: .now)
+            let descriptor = FetchDescriptor<Message>(predicate: #Predicate {
+                $0.roleRaw == "user" && $0.createdAt >= startOfDay
+            })
+            let freshCount = (try? modelContext.fetchCount(descriptor)) ?? todayUserMessageCount
+            if freshCount >= Monetization.freeDailyMessageLimit {
+                promptUpgrade("You've reached today's free message limit. Upgrade for unlimited chats.")
+                return
+            }
         }
 
         let userMessageText = typedText.isEmpty ? "Analyze the attached file." : typedText

@@ -38,6 +38,11 @@ final class DataModel {
         if activeThread?.id == thread.id {
             activeThread = nil
         }
+        // Clear dangling reference if the last assistant message belongs to this thread
+        if let lastMsg = lastAssistantMessage,
+           lastMsg.thread?.id == thread.id {
+            lastAssistantMessage = nil
+        }
         context.delete(thread)
     }
 
@@ -50,11 +55,14 @@ final class DataModel {
         context: ModelContext,
         preferences: UserPreferences
     ) async {
-        // 1. Create user message
+        // 1. Classify intent and snapshot history before inserting the new message
         let mode = selectedMode == .general
             ? assistant.classifyIntent(text)
             : selectedMode
 
+        let historyBeforeSend = thread.sortedMessages
+
+        // 2. Create user message
         let userMessage = Message(
             thread: thread,
             role: .user,
@@ -64,18 +72,19 @@ final class DataModel {
         context.insert(userMessage)
         thread.updatedAt = .now
 
-        // 2. Update Ari before generation
+        // 3. Update Ari before generation
         ari.update(
             messages: thread.sortedMessages,
             lastMode: mode,
             preferences: preferences
         )
 
-        // 3. Generate response
+        // 4. Generate response (use pre-insert history to avoid duplicating
+        //    the user message in the prompt — the engine appends it separately)
         let result = await assistant.generate(
             input: text,
             mode: mode,
-            conversationHistory: thread.sortedMessages,
+            conversationHistory: historyBeforeSend,
             preferences: preferences,
             attachmentContext: attachmentContext
         )
@@ -85,7 +94,7 @@ final class DataModel {
             return
         }
 
-        // 4. Create assistant message
+        // 5. Create assistant message
         let replyText = result.text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !replyText.isEmpty else {
             saveContext(context, source: "sendMessage.emptyResult")
@@ -102,13 +111,13 @@ final class DataModel {
         context.insert(assistantMessage)
         lastAssistantMessage = assistantMessage
 
-        // 5. Update thread title if first exchange
+        // 6. Update thread title if first exchange
         if (thread.messages?.count ?? 0) <= 2 {
             thread.title = generateThreadTitle(from: text)
         }
         thread.updatedAt = .now
 
-        // 6. Update Ari after generation
+        // 7. Update Ari after generation
         ari.update(
             messages: thread.sortedMessages,
             lastMode: mode,
@@ -228,7 +237,10 @@ final class DataModel {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.count <= 40 { return trimmed }
         let words = trimmed.prefix(60).split(separator: " ")
-        return words.dropLast().joined(separator: " ") + "…"
+        if words.count > 1 {
+            return words.dropLast().joined(separator: " ") + "…"
+        }
+        return String(trimmed.prefix(40)) + "…"
     }
 
     private func saveContext(_ context: ModelContext, source: String) {

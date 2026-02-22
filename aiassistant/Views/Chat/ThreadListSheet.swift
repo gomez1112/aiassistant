@@ -32,6 +32,11 @@ struct ThreadListSheet: View {
                             ForEach(pinned, id: \.id) { thread in
                                 threadRow(thread)
                             }
+                            .onDelete { offsets in
+                                for index in offsets {
+                                    onDelete(pinned[index])
+                                }
+                            }
                         }
                     }
 

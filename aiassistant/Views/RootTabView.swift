@@ -17,34 +17,34 @@ struct RootTabView: View {
         ZStack {
             AppBackground()
 
-            TabView(selection: $selectedTab) {
-                Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 0) {
-                    ChatView(preferences: currentPreferences)
-                }
+            if let preferences {
+                TabView(selection: $selectedTab) {
+                    Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 0) {
+                        ChatView(preferences: preferences)
+                    }
 
-                Tab("Outputs", systemImage: "doc.richtext", value: 1) {
-                    OutputsView(preferences: currentPreferences)
-                }
+                    Tab("Outputs", systemImage: "doc.richtext", value: 1) {
+                        OutputsView(preferences: preferences)
+                    }
 
-                Tab("Library", systemImage: "books.vertical.fill", value: 2) {
-                    LibraryView(preferences: currentPreferences)
-                }
+                    Tab("Library", systemImage: "books.vertical.fill", value: 2) {
+                        LibraryView(preferences: preferences)
+                    }
 
+                }
+                .tabViewStyle(.sidebarAdaptable)
+                .tint(AppTheme.accent)
+                #if os(iOS)
+                .toolbarBackground(.ultraThinMaterial, for: .tabBar)
+                .toolbarBackground(.visible, for: .tabBar)
+                #endif
+            } else {
+                ProgressView("Loading…")
             }
-            .tabViewStyle(.sidebarAdaptable)
-            .tint(AppTheme.accent)
-            #if os(iOS)
-            .toolbarBackground(.ultraThinMaterial, for: .tabBar)
-            .toolbarBackground(.visible, for: .tabBar)
-            #endif
         }
         .onAppear {
             preferences = dataModel.loadOrCreatePreferences(in: modelContext)
         }
-    }
-
-    private var currentPreferences: UserPreferences {
-        preferences ?? .defaults
     }
 }
 
