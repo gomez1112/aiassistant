@@ -80,7 +80,11 @@ struct LibraryView: View {
                             for index in offsets {
                                 modelContext.delete(filtered[index])
                             }
-                            try? modelContext.save()
+                            do {
+                                try modelContext.save()
+                            } catch {
+                                dataModel.persistenceErrorMessage = "Save failed (deleteLibraryItem): \(error.localizedDescription)"
+                            }
                         }
                     }
                     .searchable(text: $searchText, prompt: "Search library")
@@ -132,6 +136,14 @@ struct LibraryView: View {
                 SettingsView(preferences: preferences)
             }
             #endif
+            .alert("Couldn’t save changes", isPresented: Binding(
+                get: { dataModel.persistenceErrorMessage != nil },
+                set: { if !$0 { dataModel.persistenceErrorMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(dataModel.persistenceErrorMessage ?? "Please try again.")
+            }
         }
     }
 }
@@ -178,6 +190,7 @@ struct LibraryItemRow: View {
 // MARK: - Add Library Item Sheet
 
 struct AddLibraryItemSheet: View {
+    @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
@@ -218,8 +231,12 @@ struct AddLibraryItemSheet: View {
                             rawText: rawText
                         )
                         modelContext.insert(item)
-                        try? modelContext.save()
-                        dismiss()
+                        do {
+                            try modelContext.save()
+                            dismiss()
+                        } catch {
+                            dataModel.persistenceErrorMessage = "Save failed (addLibraryItem): \(error.localizedDescription)"
+                        }
                     }
                     .disabled(rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     .fontWeight(.semibold)

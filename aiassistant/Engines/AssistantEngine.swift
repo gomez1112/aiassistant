@@ -49,8 +49,6 @@ final class AssistantEngine {
     var state: EngineState = .idle
     var streamingText: String = ""
 
-    private var currentTask: Task<Void, Never>?
-
     #if canImport(FoundationModels)
     private var session: LanguageModelSession?
     #endif
@@ -87,6 +85,18 @@ final class AssistantEngine {
         preferences: UserPreferences,
         attachmentContext: String? = nil
     ) async -> GenerationResult {
+        if Task.isCancelled {
+            state = .idle
+            streamingText = ""
+            return GenerationResult(
+                text: "",
+                mode: mode,
+                suggestedArtifact: nil,
+                ariGuidance: nil,
+                ariMood: nil
+            )
+        }
+
         state = .routing
         streamingText = ""
 
@@ -108,6 +118,16 @@ final class AssistantEngine {
             state = .idle
             streamingText = ""
             return result
+        } catch is CancellationError {
+            state = .idle
+            streamingText = ""
+            return GenerationResult(
+                text: "",
+                mode: mode,
+                suggestedArtifact: nil,
+                ariGuidance: nil,
+                ariMood: nil
+            )
         } catch {
             let errorMessage = error.localizedDescription
             state = .idle
@@ -121,7 +141,15 @@ final class AssistantEngine {
             )
         }
         #else
-        fatalError("Foundation Models is required on iOS 26+.")
+        state = .idle
+        streamingText = ""
+        return GenerationResult(
+            text: "On-device AI is unavailable on this device right now.",
+            mode: mode,
+            suggestedArtifact: nil,
+            ariGuidance: nil,
+            ariMood: nil
+        )
         #endif
     }
 
@@ -146,11 +174,13 @@ final class AssistantEngine {
                 type: type,
                 preferences: preferences
             )
+        } catch is CancellationError {
+            return ""
         } catch {
             return "Transform failed: \(error.localizedDescription)"
         }
         #else
-        fatalError("Foundation Models is required on iOS 26+.")
+        return "On-device AI is unavailable on this device right now."
         #endif
     }
 
@@ -166,19 +196,19 @@ final class AssistantEngine {
             let prompt = "Summarize the following text in 2-3 concise sentences:\n\n\(text)"
             let response = try await session.respond(to: prompt)
             return response.content
+        } catch is CancellationError {
+            return ""
         } catch {
             return "Summary failed: \(error.localizedDescription)"
         }
         #else
-        fatalError("Foundation Models is required on iOS 26+.")
+        return "On-device AI is unavailable on this device right now."
         #endif
     }
 
     // MARK: - Cancel
 
     func cancel() {
-        currentTask?.cancel()
-        currentTask = nil
         state = .idle
         streamingText = ""
     }

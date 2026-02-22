@@ -97,7 +97,11 @@ struct OutputsView: View {
                                 for index in offsets {
                                     modelContext.delete(filtered[index])
                                 }
-                                try? modelContext.save()
+                                do {
+                                    try modelContext.save()
+                                } catch {
+                                    dataModel.persistenceErrorMessage = "Save failed (deleteOutput): \(error.localizedDescription)"
+                                }
                             }
                         }
                         .searchable(text: $searchText, prompt: "Search outputs")
@@ -137,6 +141,14 @@ struct OutputsView: View {
                 SettingsView(preferences: preferences)
             }
             #endif
+            .alert("Couldn’t save changes", isPresented: Binding(
+                get: { dataModel.persistenceErrorMessage != nil },
+                set: { if !$0 { dataModel.persistenceErrorMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(dataModel.persistenceErrorMessage ?? "Please try again.")
+            }
         }
     }
 }

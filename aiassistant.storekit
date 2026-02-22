@@ -5,7 +5,7 @@
       {
         "locale" : "en_US",
         "policyText" : "",
-        "policyURL" : ""
+        "policyURL" : "https://gomez1112.github.io/Legal/privacy/"
       }
     ]
   },
@@ -81,7 +81,7 @@
   },
   "subscriptionGroups" : [
     {
-      "id" : "7E4D282D-E821-4B8B-875B-C01CF95B8EA8",
+      "id" : "21944633",
       "localizations" : [
         {
           "description" : "Unlock Ari+ weekly, monthly, or yearly plans.",
@@ -99,7 +99,7 @@
 
           ],
           "displayPrice" : "4.99",
-          "familyShareable" : false,
+          "familyShareable" : true,
           "groupNumber" : 3,
           "internalID" : "AIA_WEEKLY_001",
           "introductoryOffer" : {

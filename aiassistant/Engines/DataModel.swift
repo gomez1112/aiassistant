@@ -23,6 +23,7 @@ final class DataModel {
     var selectedMode: AssistantMode = .general
     var isOutputStudioPresented = false
     var lastAssistantMessage: Message?
+    var persistenceErrorMessage: String?
 
     // MARK: - Thread Management
 
@@ -79,7 +80,17 @@ final class DataModel {
             attachmentContext: attachmentContext
         )
 
+        if Task.isCancelled {
+            saveContext(context, source: "sendMessage.cancelled")
+            return
+        }
+
         // 4. Create assistant message
+        let replyText = result.text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !replyText.isEmpty else {
+            saveContext(context, source: "sendMessage.emptyResult")
+            return
+        }
         let assistantMessage = Message(
             thread: thread,
             role: .assistant,
@@ -104,7 +115,7 @@ final class DataModel {
             preferences: preferences
         )
 
-        try? context.save()
+        saveContext(context, source: "sendMessage")
     }
 
     // MARK: - Artifact Management
@@ -130,7 +141,7 @@ final class DataModel {
             message.artifactIDs = ids
         }
 
-        try? context.save()
+        saveContext(context, source: "saveArtifact.suggestion")
         return artifact
     }
 
@@ -149,7 +160,7 @@ final class DataModel {
             sourceThreadID: activeThread?.id
         )
         context.insert(artifact)
-        try? context.save()
+        saveContext(context, source: "saveArtifact.manual")
         return artifact
     }
 
@@ -182,7 +193,7 @@ final class DataModel {
             sourceMessageID: artifact.sourceMessageID
         )
         context.insert(newArtifact)
-        try? context.save()
+        saveContext(context, source: "transformArtifact")
         return newArtifact
     }
 
@@ -195,7 +206,7 @@ final class DataModel {
         let summary = await assistant.summarizeLibraryItem(text: item.rawText)
         item.aiSummary = summary
         item.updatedAt = .now
-        try? context.save()
+        saveContext(context, source: "summarizeItem")
     }
 
     // MARK: - Preferences
@@ -207,7 +218,7 @@ final class DataModel {
         }
         let prefs = UserPreferences()
         context.insert(prefs)
-        try? context.save()
+        saveContext(context, source: "loadOrCreatePreferences")
         return prefs
     }
 
@@ -218,5 +229,15 @@ final class DataModel {
         if trimmed.count <= 40 { return trimmed }
         let words = trimmed.prefix(60).split(separator: " ")
         return words.dropLast().joined(separator: " ") + "…"
+    }
+
+    private func saveContext(_ context: ModelContext, source: String) {
+        do {
+            try context.save()
+            persistenceErrorMessage = nil
+        } catch {
+            persistenceErrorMessage = "Save failed (\(source)): \(error.localizedDescription)"
+            assertionFailure("SwiftData save failed (\(source)): \(error)")
+        }
     }
 }

@@ -28,7 +28,7 @@ enum AppSubscriptionTier: Int, CaseIterable, SubscriptionTier {
 }
 
 enum Monetization {
-    static let subscriptionGroupID = "7E4D282D-E821-4B8B-875B-C01CF95B8EA8"
+    static let subscriptionGroupID = "21944633"
 
     static let subscriptionWeeklyID = "com.transfinite.aiassistant.premium.weekly"
     static let subscriptionMonthlyID = "com.transfinite.aiassistant.premium.monthly"

@@ -37,6 +37,8 @@ struct ChatView: View {
     @State private var showPaywall = false
     @State private var showUpgradeAlert = false
     @State private var upgradePromptMessage = ""
+    @State private var generationTask: Task<Void, Never>?
+    @State private var outputStudioSourceMessage: Message?
 
     private var activeThread: Thread? { dataModel.activeThread }
     private var assistantName: String { preferences.ariEnabled ? "Ari" : "Assistant" }
@@ -202,8 +204,9 @@ struct ChatView: View {
                                 justSavedArtifact: true
                             )
                         },
-                        onOpenOutputStudio: {
+                        onOpenOutputStudio: { message in
                             if hasPremiumAccess {
+                                outputStudioSourceMessage = message
                                 showOutputStudio = true
                             } else {
                                 promptUpgrade("Output transformations are a premium feature.")
@@ -238,7 +241,7 @@ struct ChatView: View {
                     hasAttachment: pendingAttachmentText != nil,
                     assistantName: assistantName,
                     onSend: sendMessage,
-                    onCancel: { dataModel.assistant.cancel() },
+                    onCancel: cancelGeneration,
                     onAttach: handleAttachAction
                 )
                 .frame(maxWidth: contentMaxWidth)
@@ -339,16 +342,25 @@ struct ChatView: View {
                     onTogglePin: { thread in
                         thread.pinned.toggle()
                         thread.updatedAt = .now
-                        try? modelContext.save()
+                        do {
+                            try modelContext.save()
+                        } catch {
+                            dataModel.persistenceErrorMessage = "Save failed (togglePin): \(error.localizedDescription)"
+                        }
                     }
                 )
             }
             .sheet(isPresented: $showOutputStudio) {
-                if let message = dataModel.lastAssistantMessage {
+                if let message = outputStudioSourceMessage ?? dataModel.lastAssistantMessage {
                     OutputStudioSheet(
                         sourceText: message.text,
                         preferences: preferences
                     )
+                }
+            }
+            .onChange(of: showOutputStudio) { _, isPresented in
+                if !isPresented {
+                    outputStudioSourceMessage = nil
                 }
             }
             #if !os(macOS)
@@ -382,11 +394,19 @@ struct ChatView: View {
             } message: {
                 Text(upgradePromptMessage)
             }
+            .alert("Couldn’t save changes", isPresented: Binding(
+                get: { dataModel.persistenceErrorMessage != nil },
+                set: { if !$0 { dataModel.persistenceErrorMessage = nil } }
+            )) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(dataModel.persistenceErrorMessage ?? "Please try again.")
+            }
         }
         .onAppear {
             ensureActiveThreadSelection()
         }
-        .onChange(of: threads.map(\.id)) { _, _ in
+            .onChange(of: threads.map(\.id)) { _, _ in
             ensureActiveThreadSelection()
         }
     }
@@ -462,8 +482,9 @@ struct ChatView: View {
         pendingAttachmentName = nil
         isGenerating = true
 
-        Task {
+        generationTask = Task {
             defer { isGenerating = false }
+            defer { generationTask = nil }
             await dataModel.sendMessage(
                 text: userMessageText,
                 attachmentContext: attachmentContext,
@@ -472,6 +493,13 @@ struct ChatView: View {
                 preferences: preferences
             )
         }
+    }
+
+    private func cancelGeneration() {
+        generationTask?.cancel()
+        generationTask = nil
+        dataModel.assistant.cancel()
+        isGenerating = false
     }
 
     private func handleAttachAction() {
@@ -507,6 +535,7 @@ struct ChatView: View {
             composerText = "Turn that into a checklist"
             sendMessage()
         case .refineTone:
+            outputStudioSourceMessage = dataModel.lastAssistantMessage
             showOutputStudio = true
         case .askFollowUp:
             composerText = "Tell me more about that"

@@ -32,7 +32,7 @@ struct MessageListView: View {
     let preferences: UserPreferences
     let isGenerating: Bool
     let onSaveArtifact: (Message, ArtifactSuggestion) -> Void
-    let onOpenOutputStudio: () -> Void
+    let onOpenOutputStudio: (Message) -> Void
 
     @Environment(DataModel.self) private var dataModel
     private let bottomID = "bottom_anchor"
@@ -147,7 +147,7 @@ struct MessageBubble: View {
     let message: Message
     let preferences: UserPreferences
     let onSaveArtifact: (ArtifactSuggestion) -> Void
-    let onOpenOutputStudio: () -> Void
+    let onOpenOutputStudio: (Message) -> Void
 
     private var isUser: Bool { message.role == .user }
 
@@ -195,7 +195,7 @@ struct MessageBubble: View {
                         }
                         if !isUser {
                             Button {
-                                onOpenOutputStudio()
+                                onOpenOutputStudio(message)
                             } label: {
                                 Label("Transform", systemImage: "wand.and.stars")
                             }
@@ -230,7 +230,7 @@ struct MessageBubble: View {
                     onCopy: {
                         Clipboard.copy(message.text)
                     },
-                    onTransform: onOpenOutputStudio
+                    onTransform: { onOpenOutputStudio(message) }
                 )
                 .padding(.top, 2)
             }

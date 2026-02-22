@@ -156,8 +156,12 @@ struct ArtifactDetailView: View {
         .alert("Delete Artifact?", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
                 modelContext.delete(artifact)
-                try? modelContext.save()
-                dismiss()
+                do {
+                    try modelContext.save()
+                    dismiss()
+                } catch {
+                    dataModel.persistenceErrorMessage = "Save failed (deleteArtifact): \(error.localizedDescription)"
+                }
             }
             Button("Cancel", role: .cancel) {}
         } message: {
@@ -177,6 +181,14 @@ struct ArtifactDetailView: View {
             Button("Upgrade") { showPaywall = true }
         } message: {
             Text(upgradePromptMessage)
+        }
+        .alert("Couldn’t save changes", isPresented: Binding(
+            get: { dataModel.persistenceErrorMessage != nil },
+            set: { if !$0 { dataModel.persistenceErrorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(dataModel.persistenceErrorMessage ?? "Please try again.")
         }
     }
 
