@@ -350,6 +350,12 @@ struct ChatView: View {
                 Text(upgradePromptMessage)
             }
         }
+        .onAppear {
+            ensureActiveThreadSelection()
+        }
+        .onChange(of: threads.map(\.id)) { _, _ in
+            ensureActiveThreadSelection()
+        }
     }
 
     // MARK: - Empty State
@@ -397,6 +403,8 @@ struct ChatView: View {
     // MARK: - Actions
 
     private func sendMessage() {
+        guard !isGenerating, !isImportingAttachment else { return }
+
         let typedText = composerText.trimmingCharacters(in: .whitespacesAndNewlines)
         let attachmentContext = pendingAttachmentText
         guard !typedText.isEmpty || attachmentContext != nil else { return }
@@ -422,6 +430,7 @@ struct ChatView: View {
         isGenerating = true
 
         Task {
+            defer { isGenerating = false }
             await dataModel.sendMessage(
                 text: userMessageText,
                 attachmentContext: attachmentContext,
@@ -429,7 +438,6 @@ struct ChatView: View {
                 context: modelContext,
                 preferences: preferences
             )
-            isGenerating = false
         }
     }
 
@@ -571,6 +579,15 @@ struct ChatView: View {
         return sorted
             .compactMap { $0.topCandidates(1).first?.string }
             .joined(separator: "\n")
+    }
+
+    private func ensureActiveThreadSelection() {
+        if let activeThread = dataModel.activeThread {
+            if threads.contains(where: { $0.id == activeThread.id }) {
+                return
+            }
+        }
+        dataModel.activeThread = threads.first
     }
 }
 

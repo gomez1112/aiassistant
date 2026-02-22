@@ -66,7 +66,11 @@ struct ComposerBar: View {
                 )
                 .focused($isFocused)
                 .submitLabel(.send)
-                .onSubmit(onSend)
+                .onSubmit {
+                    guard !isGenerating, !isImportingAttachment else { return }
+                    onSend()
+                }
+                .disabled(isGenerating || isImportingAttachment)
                 .accessibilityLabel("Message input")
 
             // Send / Stop button

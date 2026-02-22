@@ -5,6 +5,7 @@
 // polished bubbles, output actions, and Ari guidance.
 
 import SwiftUI
+import Foundation
 
 struct MessageListView: View {
     let thread: Thread
@@ -128,7 +129,6 @@ struct MessageBubble: View {
     let onSaveArtifact: (ArtifactSuggestion) -> Void
     let onOpenOutputStudio: () -> Void
 
-    @State private var showActions = false
     private var isUser: Bool { message.role == .user }
 
     var body: some View {
@@ -157,7 +157,7 @@ struct MessageBubble: View {
             HStack(alignment: .bottom, spacing: 0) {
                 if isUser { Spacer(minLength: 48) }
 
-                Text(message.text)
+                messageText(message.text)
                     .font(.body)
                     .lineSpacing(3)
                     .padding(.horizontal, 14)
@@ -247,6 +247,21 @@ struct MessageBubble: View {
         case .summarize: .summary
         case .plan: .plan
         default: .other
+        }
+    }
+
+    @ViewBuilder
+    private func messageText(_ rawText: String) -> some View {
+        if let attributed = try? AttributedString(
+            markdown: rawText,
+            options: .init(
+                interpretedSyntax: .full,
+                failurePolicy: .returnPartiallyParsedIfPossible
+            )
+        ) {
+            Text(attributed)
+        } else {
+            Text(rawText)
         }
     }
 }
@@ -349,8 +364,12 @@ struct StreamingBubble: View {
 
             HStack(alignment: .bottom) {
                 Text(text.isEmpty ? " " : text)
-                    .font(.body)
-                    .lineSpacing(3)
+                    .hidden()
+                    .overlay(alignment: .leading) {
+                        messageText(text.isEmpty ? " " : text)
+                            .font(.body)
+                            .lineSpacing(3)
+                    }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
                 .background(
@@ -369,6 +388,21 @@ struct StreamingBubble: View {
         .padding(.vertical, 6)
         .frame(maxWidth: .infinity, alignment: .leading)
         .accessibilityLabel("\(assistantName) is responding: \(text)")
+    }
+
+    @ViewBuilder
+    private func messageText(_ rawText: String) -> some View {
+        if let attributed = try? AttributedString(
+            markdown: rawText,
+            options: .init(
+                interpretedSyntax: .full,
+                failurePolicy: .returnPartiallyParsedIfPossible
+            )
+        ) {
+            Text(attributed)
+        } else {
+            Text(rawText)
+        }
     }
 }
 
