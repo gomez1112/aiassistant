@@ -121,6 +121,13 @@ struct SettingsView: View {
                 Text("Privacy")
             }
 
+            Section {
+                Link("Privacy Policy", destination: Monetization.privacyPolicyURL)
+                Link("Terms of Service", destination: Monetization.termsOfServiceURL)
+            } header: {
+                Text("Legal")
+            }
+
             // MARK: - About
             Section {
                 HStack {

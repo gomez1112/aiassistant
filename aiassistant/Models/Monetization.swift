@@ -34,6 +34,8 @@ enum Monetization {
     static let subscriptionMonthlyID = "com.transfinite.aiassistant.premium.monthly"
     static let subscriptionYearlyID = "com.transfinite.aiassistant.premium.yearly"
     static let lifetimeID = "com.transfinite.aiassistant.lifetime"
+    static let privacyPolicyURL = URL(string: "https://gomez1112.github.io/Legal/privacy/")!
+    static let termsOfServiceURL = URL(string: "https://gomez1112.github.io/Legal/terms/")!
 
     static let productIDs: Set<String> = [
         subscriptionWeeklyID,

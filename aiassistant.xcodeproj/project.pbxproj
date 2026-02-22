@@ -8,9 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		CC7F11262F4ABC1600504B6D /* OnboardingKit in Frameworks */ = {isa = PBXBuildFile; productRef = CC7F11252F4ABC1600504B6D /* OnboardingKit */; };
-		CC7F11292F4ABC2700504B6D /* FlexStore in Frameworks */ = {isa = PBXBuildFile; productRef = CC7F11282F4ABC2700504B6D /* FlexStore */; };
 		CC7F112F2F4ABDD300504B6D /* aiassistant.storekit in Resources */ = {isa = PBXBuildFile; fileRef = CC7F112E2F4ABDD300504B6D /* aiassistant.storekit */; };
 		CC7F11312F4ABFDD00504B6D /* StoreKitSchemaNotes.md in Resources */ = {isa = PBXBuildFile; fileRef = CC7F11302F4ABFDD00504B6D /* StoreKitSchemaNotes.md */; };
+		CC7F11342F4AD01D00504B6D /* FlexStore in Frameworks */ = {isa = PBXBuildFile; productRef = CC7F11332F4AD01D00504B6D /* FlexStore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,7 +75,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC7F11262F4ABC1600504B6D /* OnboardingKit in Frameworks */,
-				CC7F11292F4ABC2700504B6D /* FlexStore in Frameworks */,
+				CC7F11342F4AD01D00504B6D /* FlexStore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,7 +139,7 @@
 			name = aiassistant;
 			packageProductDependencies = (
 				CC7F11252F4ABC1600504B6D /* OnboardingKit */,
-				CC7F11282F4ABC2700504B6D /* FlexStore */,
+				CC7F11332F4AD01D00504B6D /* FlexStore */,
 			);
 			productName = aiassistant;
 			productReference = CC28DB622F48DA970082E4C6 /* aiassistant.app */;
@@ -225,7 +225,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CC7F11242F4ABC1600504B6D /* XCRemoteSwiftPackageReference "OnboardingKit" */,
-				CC7F11272F4ABC2700504B6D /* XCRemoteSwiftPackageReference "FlexStore" */,
+				CC7F11322F4AD01D00504B6D /* XCRemoteSwiftPackageReference "FlexStore" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CC28DB632F48DA970082E4C6 /* Products */;
@@ -671,7 +671,7 @@
 				kind = branch;
 			};
 		};
-		CC7F11272F4ABC2700504B6D /* XCRemoteSwiftPackageReference "FlexStore" */ = {
+		CC7F11322F4AD01D00504B6D /* XCRemoteSwiftPackageReference "FlexStore" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/gomez1112/FlexStore";
 			requirement = {
@@ -687,9 +687,9 @@
 			package = CC7F11242F4ABC1600504B6D /* XCRemoteSwiftPackageReference "OnboardingKit" */;
 			productName = OnboardingKit;
 		};
-		CC7F11282F4ABC2700504B6D /* FlexStore */ = {
+		CC7F11332F4AD01D00504B6D /* FlexStore */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CC7F11272F4ABC2700504B6D /* XCRemoteSwiftPackageReference "FlexStore" */;
+			package = CC7F11322F4AD01D00504B6D /* XCRemoteSwiftPackageReference "FlexStore" */;
 			productName = FlexStore;
 		};
 /* End XCSwiftPackageProductDependency section */

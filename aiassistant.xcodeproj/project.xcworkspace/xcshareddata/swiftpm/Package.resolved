@@ -1,13 +1,13 @@
 {
-  "originHash" : "011cf0d4734fc71ac5e2a8aee452ea6f064e291b24b744a514f1f7b0f53fb1c5",
+  "originHash" : "fdf7f47715cea91f6def1641912869deb0723c8e0033840d03bb159e0ce166f3",
   "pins" : [
     {
       "identity" : "flexstore",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/gomez1112/FlexStore",
       "state" : {
-        "revision" : "47dff9c5864c147fdfa794354bb484afb2b8e13c",
-        "version" : "1.1.1"
+        "revision" : "27338bd0020b216c74a011a4fb520784ae392a1c",
+        "version" : "1.2.0"
       }
     },
     {

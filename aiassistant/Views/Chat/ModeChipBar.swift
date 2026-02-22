@@ -11,6 +11,23 @@ struct ModeChipBar: View {
     private let modes: [AssistantMode] = [.general, .write, .summarize, .explain, .plan, .brainstorm]
 
     var body: some View {
+        #if os(macOS)
+        HStack {
+            Picker("Mode", selection: $selectedMode) {
+                ForEach(modes) { mode in
+                    Text(mode.chipLabel).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .frame(maxWidth: 760)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, AppTheme.spacingLG)
+        .padding(.vertical, 8)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Mode selector")
+        #else
         ScrollView(.horizontal) {
             HStack(spacing: 6) {
                 ForEach(modes) { mode in
@@ -27,6 +44,7 @@ struct ModeChipBar: View {
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Mode selector")
+        #endif
     }
 }
 

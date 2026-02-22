@@ -11,10 +11,10 @@ struct SubscriptionPaywallView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 0) {
-                    SubscriptionPassStoreView<AppSubscriptionTier, AnyView>(
+                    SubscriptionPassStoreView(
                         groupID: Monetization.subscriptionGroupID,
                         visibleRelationships: .all,
-                        iconProvider: { _, product in
+                        iconProvider: { (_: AppSubscriptionTier, product: Product) in
                             switch product.id {
                             case Monetization.subscriptionWeeklyID:
                                 return Image(systemName: "calendar.badge.clock")
@@ -26,9 +26,11 @@ struct SubscriptionPaywallView: View {
                                 return Image(systemName: "sparkles")
                             }
                         },
-                        marketing: {
-                            AnyView(marketingHeader)
-                        }
+                        policies: .init(
+                            privacyPolicyURL: Monetization.privacyPolicyURL,
+                            termsOfServiceURL: Monetization.termsOfServiceURL
+                        ),
+                        marketing: { marketingHeader }
                     )
 
                     lifetimeSection
@@ -85,6 +87,13 @@ struct SubscriptionPaywallView: View {
                 RestorePurchasesButton<AppSubscriptionTier>()
                 Spacer()
                 ManageSubscriptionsButton()
+            }
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+
+            HStack(spacing: 14) {
+                Link("Privacy Policy", destination: Monetization.privacyPolicyURL)
+                Link("Terms of Service", destination: Monetization.termsOfServiceURL)
             }
             .font(.footnote)
             .foregroundStyle(.secondary)
