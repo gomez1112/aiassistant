@@ -5,11 +5,11 @@
       {
         "locale" : "en_US",
         "policyText" : "",
-        "policyURL" : "https://gomez1112.github.io/Legal/privacy/"
+        "policyURL" : ""
       }
     ]
   },
-  "identifier" : "AIAssistant_StoreKit_Config",
+  "identifier" : "7E3E44C1",
   "nonRenewingSubscriptions" : [
 
   ],
@@ -17,7 +17,7 @@
     {
       "displayPrice" : "199.99",
       "familyShareable" : false,
-      "internalID" : "AIA_LIFETIME_001",
+      "internalID" : "6759521882",
       "localizations" : [
         {
           "description" : "One-time purchase for lifetime premium access.",
@@ -31,51 +31,19 @@
     }
   ],
   "settings" : {
+    "_applicationInternalID" : "6759457807",
     "_askToBuyEnabled" : false,
     "_billingGracePeriodEnabled" : false,
     "_billingIssuesEnabled" : false,
+    "_developerTeamID" : "88QL9VPLMY",
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 794617545.41638303,
     "_locale" : "en_US",
     "_renewalBillingIssuesEnabled" : false,
     "_storefront" : "USA",
     "_storeKitErrors" : [
-      {
-        "enabled" : false,
-        "name" : "Load Products"
-      },
-      {
-        "enabled" : false,
-        "name" : "Purchase"
-      },
-      {
-        "enabled" : false,
-        "name" : "Verification"
-      },
-      {
-        "enabled" : false,
-        "name" : "App Store Sync"
-      },
-      {
-        "enabled" : false,
-        "name" : "Subscription Status"
-      },
-      {
-        "enabled" : false,
-        "name" : "App Transaction"
-      },
-      {
-        "enabled" : false,
-        "name" : "Manage Subscriptions Sheet"
-      },
-      {
-        "enabled" : false,
-        "name" : "Refund Request Sheet"
-      },
-      {
-        "enabled" : false,
-        "name" : "Offer Code Redeem Sheet"
-      }
+
     ],
     "_timeRate" : 0
   },
@@ -83,11 +51,7 @@
     {
       "id" : "21944633",
       "localizations" : [
-        {
-          "description" : "Unlock Ari+ weekly, monthly, or yearly plans.",
-          "displayName" : "Ari+ Premium",
-          "locale" : "en_US"
-        }
+
       ],
       "name" : "Ari+ Premium",
       "subscriptions" : [
@@ -98,43 +62,10 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "4.99",
-          "familyShareable" : true,
-          "groupNumber" : 3,
-          "internalID" : "AIA_WEEKLY_001",
-          "introductoryOffer" : {
-            "displayPrice" : "0.00",
-            "internalID" : "AIA_WEEKLY_TRIAL_001",
-            "paymentMode" : "free",
-            "subscriptionPeriod" : "P3D"
-          },
-          "localizations" : [
-            {
-              "description" : "Weekly premium access with a 3-day free trial.",
-              "displayName" : "Ari+ Weekly",
-              "locale" : "en_US"
-            }
-          ],
-          "productID" : "com.transfinite.aiassistant.premium.weekly",
-          "recurringSubscriptionPeriod" : "P1W",
-          "referenceName" : "Ari+ Weekly",
-          "subscriptionGroupID" : "21944633",
-          "type" : "RecurringSubscription",
-          "winbackOffers" : [
-
-          ]
-        },
-        {
-          "adHocOffers" : [
-
-          ],
-          "codeOffers" : [
-
-          ],
           "displayPrice" : "9.99",
           "familyShareable" : false,
-          "groupNumber" : 2,
-          "internalID" : "AIA_MONTHLY_001",
+          "groupNumber" : 1,
+          "internalID" : "6759521988",
           "introductoryOffer" : null,
           "localizations" : [
             {
@@ -159,10 +90,38 @@
           "codeOffers" : [
 
           ],
+          "displayPrice" : "4.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "6759522031",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Weekly premium access with a 3-day free trial.",
+              "displayName" : "Ari+ Weekly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.transfinite.aiassistant.premium.weekly",
+          "recurringSubscriptionPeriod" : "P1W",
+          "referenceName" : "Ari+ Weekly",
+          "subscriptionGroupID" : "21944633",
+          "type" : "RecurringSubscription",
+          "winbackOffers" : [
+
+          ]
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
           "displayPrice" : "59.99",
           "familyShareable" : false,
           "groupNumber" : 1,
-          "internalID" : "AIA_YEARLY_001",
+          "internalID" : "6759522126",
           "introductoryOffer" : null,
           "localizations" : [
             {
