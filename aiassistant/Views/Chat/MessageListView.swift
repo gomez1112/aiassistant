@@ -58,20 +58,21 @@ struct MessageListView: View {
     }
 
     var body: some View {
+        let messages = thread.sortedMessages
+
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 2) {
                     // Date header
-                    if let first = thread.sortedMessages.first {
+                    if let first = messages.first {
                         Text(first.createdAt, format: .dateTime.month(.wide).day().year())
-                            .font(.caption2)
-                            .fontWeight(.medium)
+                            .font(.caption)
                             .foregroundStyle(.tertiary)
                             .padding(.top, 12)
                             .padding(.bottom, 4)
                     }
 
-                    ForEach(thread.sortedMessages, id: \.id) { message in
+                    ForEach(messages, id: \.id) { message in
                         MessageBubble(
                             message: message,
                             preferences: preferences,
@@ -118,7 +119,7 @@ struct MessageListView: View {
             .onAppear {
                 scrollToBottom(proxy, animated: false)
             }
-            .onChange(of: thread.sortedMessages.count) { _, _ in
+            .onChange(of: messages.count) { _, _ in
                 scrollToBottom(proxy)
             }
             .onChange(of: dataModel.assistant.streamingText) { _, _ in
@@ -171,8 +172,7 @@ struct MessageBubble: View {
             // Role label
             if !isUser {
                 Text(preferences.ariEnabled ? "Ari" : "Assistant")
-                    .font(.caption2)
-                    .fontWeight(.semibold)
+                    .font(.caption.bold())
                     .foregroundStyle(AppTheme.accent.opacity(0.8))
                     .padding(.leading, 4)
             }
@@ -241,7 +241,7 @@ struct MessageBubble: View {
 
             // Timestamp
             Text(message.createdAt, format: .dateTime.hour().minute())
-                .font(.system(size: 10))
+                .font(.caption)
                 .foregroundStyle(.quaternary)
                 .padding(.horizontal, 6)
                 .padding(.top, 1)
@@ -382,8 +382,7 @@ struct StreamingBubble: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(assistantName)
-                .font(.caption2)
-                .fontWeight(.semibold)
+                .font(.caption.bold())
                 .foregroundStyle(AppTheme.accent.opacity(0.8))
                 .padding(.leading, 4)
 
@@ -458,8 +457,10 @@ struct TypingIndicator: View {
 }
 
 private struct LLMTypingDots: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
-        TimelineView(.animation(minimumInterval: 0.24, paused: false)) { context in
+        TimelineView(.animation(minimumInterval: 0.24, paused: reduceMotion)) { context in
             let step = Int(context.date.timeIntervalSinceReferenceDate / 0.24) % 3
 
             HStack(spacing: 5) {
@@ -467,7 +468,7 @@ private struct LLMTypingDots: View {
                     Circle()
                         .fill(AppTheme.accent.opacity(0.75))
                         .frame(width: 7, height: 7)
-                        .opacity(opacity(for: index, activeStep: step))
+                        .opacity(reduceMotion ? 0.65 : opacity(for: index, activeStep: step))
                 }
             }
         }

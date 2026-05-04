@@ -5,6 +5,7 @@
 // then the assistant generates a new Artifact.
 
 import SwiftUI
+import SwiftData
 
 struct OutputStudioSheet: View {
     let sourceText: String
@@ -78,10 +79,10 @@ struct OutputStudioSheet: View {
                 ToolbarItem(placement: .confirmationAction) {
                     if result != nil {
                         Button("Save") { saveArtifact() }
-                            .fontWeight(.semibold)
+                            .bold()
                     } else {
                         Button("Generate") { generate() }
-                            .fontWeight(.semibold)
+                            .bold()
                             .disabled(isProcessing || selectedTransform == nil)
                     }
                 }
@@ -137,10 +138,11 @@ struct TransformButton: View {
                 Image(systemName: type.icon)
                     .font(.title3)
                 Text(type.rawValue)
-                    .font(.caption2)
+                    .font(.caption)
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity)
+            .frame(minHeight: AppTheme.minimumTapTarget)
             .padding(.vertical, 10)
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)

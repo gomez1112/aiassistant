@@ -65,6 +65,11 @@ enum AppTheme {
     static let radiusSmall: CGFloat = 12
     static let radiusChip: CGFloat = 24
 
+    // MARK: - Layout
+
+    static let readableContentWidth: CGFloat = 760
+    static let minimumTapTarget: CGFloat = 44
+
     // MARK: - Spacing
 
     static let spacingXS: CGFloat = 4
@@ -134,17 +139,27 @@ struct AppBackground: View {
 struct AppSurface: ViewModifier {
     var cornerRadius: CGFloat = AppTheme.radiusCard
 
+    @ViewBuilder
     func body(content: Content) -> some View {
-        content
-            .background(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .fill(.regularMaterial)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
-            )
-            .shadow(color: AppTheme.accent.opacity(0.10), radius: 14, x: 0, y: 6)
+        if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
+            content
+                .glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+                .overlay(surfaceStroke)
+                .shadow(color: AppTheme.accent.opacity(0.08), radius: 14, x: 0, y: 6)
+        } else {
+            content
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius)
+                        .fill(.regularMaterial)
+                )
+                .overlay(surfaceStroke)
+                .shadow(color: AppTheme.accent.opacity(0.10), radius: 14, x: 0, y: 6)
+        }
+    }
+
+    private var surfaceStroke: some View {
+        RoundedRectangle(cornerRadius: cornerRadius)
+            .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
     }
 }
 

@@ -18,6 +18,17 @@ struct SettingsView: View {
     @State private var isCheckingCloudKit = false
     #endif
 
+    private var appVersionDescription: String {
+        let shortVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String
+
+        if let buildNumber, !buildNumber.isEmpty {
+            return "\(shortVersion) (\(buildNumber))"
+        }
+
+        return shortVersion
+    }
+
     var body: some View {
         NavigationStack {
             formContent
@@ -32,7 +43,7 @@ struct SettingsView: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .fontWeight(.semibold)
+                    .bold()
                     .accessibilityLabel("Close settings")
                 }
             }
@@ -57,6 +68,12 @@ struct SettingsView: View {
         Form {
             // MARK: - Ari Character
             Section {
+                AppBanner(
+                    systemImage: "sparkles",
+                    message: "Tune Ari’s personality, defaults, privacy notes, and subscription access from one place.",
+                    tint: AppTheme.accent
+                )
+
                 Toggle("AI Character", isOn: $preferences.ariEnabled)
                     .tint(AppTheme.accent)
                     .accessibilityHint("Enable or disable the emotional character layer")
@@ -114,9 +131,9 @@ struct SettingsView: View {
 
             // MARK: - Privacy
             Section {
-                PrivacyRow(icon: "lock.shield", text: "All data stays on your device and in your iCloud.")
-                PrivacyRow(icon: "network.slash", text: "No external network calls are made.")
-                PrivacyRow(icon: "icloud", text: "Conversations sync via CloudKit.")
+                PrivacyRow(icon: "lock.shield", text: "Chat generation runs on-device when supported.")
+                PrivacyRow(icon: "icloud", text: "Your data can sync across devices through your iCloud account via CloudKit.")
+                PrivacyRow(icon: "cart", text: "Subscriptions and purchases use Apple's StoreKit services.")
             } header: {
                 Text("Privacy")
             }
@@ -130,10 +147,8 @@ struct SettingsView: View {
 
             // MARK: - About
             Section {
-                HStack {
-                    Text("Version")
-                    Spacer()
-                    Text("1.0.0")
+                LabeledContent("Version") {
+                    Text(appVersionDescription)
                         .foregroundStyle(.tertiary)
                 }
             } header: {
@@ -172,9 +187,13 @@ struct SettingsView: View {
                     refreshCloudKitHealth()
                 } label: {
                     if isCheckingCloudKit {
-                        ProgressView()
+                        Label {
+                            Text("Checking CloudKit")
+                        } icon: {
+                            ProgressView()
+                        }
                     } else {
-                        Text("Refresh CloudKit Status")
+                        Label("Refresh CloudKit Status", systemImage: "arrow.clockwise")
                     }
                 }
                 .disabled(isCheckingCloudKit)

@@ -22,6 +22,7 @@ struct ArtifactDetailView: View {
     @State private var showDeleteConfirmation = false
     @State private var copiedFeedback = false
     @State private var showPaywall = false
+    @State private var showPersistenceError = false
     @State private var showUpgradeAlert = false
     @State private var upgradePromptMessage = ""
 
@@ -30,16 +31,12 @@ struct ArtifactDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 // Header
                 HStack(spacing: 12) {
-                    Image(systemName: artifact.kind.icon)
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(AppTheme.accent)
-                        .frame(width: 40, height: 40)
-                        .background(AppTheme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    AppIconBadge(systemImage: artifact.kind.icon, tint: AppTheme.accent, size: 42)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(artifact.title)
                             .font(.title3)
-                            .fontWeight(.bold)
+                            .bold()
                         Text(artifact.kind.rawValue)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -51,17 +48,7 @@ struct ArtifactDetailView: View {
                 if !artifact.tags.isEmpty {
                     FlowLayout(spacing: 6) {
                         ForEach(artifact.tags, id: \.self) { tag in
-                            Text(tag)
-                                .font(.system(size: 11, weight: .medium))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 4)
-                                .background(
-                                    Capsule(style: .continuous).fill(AppTheme.surface)
-                                )
-                                .overlay(
-                                    Capsule(style: .continuous).stroke(AppTheme.surfaceStroke, lineWidth: 0.5)
-                                )
-                                .foregroundStyle(.secondary)
+                            AppTagPill(title: tag)
                         }
                     }
                 }
@@ -73,7 +60,7 @@ struct ArtifactDetailView: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Created")
-                            .font(.caption2)
+                            .font(.caption)
                             .foregroundStyle(.tertiary)
                         Text(artifact.createdAt, style: .date)
                             .font(.caption)
@@ -82,7 +69,7 @@ struct ArtifactDetailView: View {
                     Spacer()
                     VStack(alignment: .trailing, spacing: 4) {
                         Text("Updated")
-                            .font(.caption2)
+                            .font(.caption)
                             .foregroundStyle(.tertiary)
                         Text(artifact.updatedAt, style: .relative)
                             .font(.caption)
@@ -156,11 +143,8 @@ struct ArtifactDetailView: View {
         .alert("Delete Artifact?", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
                 modelContext.delete(artifact)
-                do {
-                    try modelContext.save()
+                if dataModel.saveChanges(in: modelContext, source: "deleteArtifact") {
                     dismiss()
-                } catch {
-                    dataModel.persistenceErrorMessage = "Save failed (deleteArtifact): \(error.localizedDescription)"
                 }
             }
             Button("Cancel", role: .cancel) {}
@@ -168,10 +152,7 @@ struct ArtifactDetailView: View {
             Text("This cannot be undone.")
         }
         .sheet(isPresented: $showTagEditor) {
-            TagEditorSheet(tags: Binding(
-                get: { artifact.tags },
-                set: { artifact.tags = $0; artifact.updatedAt = .now }
-            ))
+            TagEditorSheet(artifact: artifact)
         }
         .sheet(isPresented: $showPaywall) {
             SubscriptionPaywallView()
@@ -182,13 +163,15 @@ struct ArtifactDetailView: View {
         } message: {
             Text(upgradePromptMessage)
         }
-        .alert("Couldn’t save changes", isPresented: Binding(
-            get: { dataModel.persistenceErrorMessage != nil },
-            set: { if !$0 { dataModel.persistenceErrorMessage = nil } }
-        )) {
-            Button("OK", role: .cancel) {}
+        .alert("Couldn’t save changes", isPresented: $showPersistenceError) {
+            Button("OK", role: .cancel) {
+                dataModel.persistenceErrorMessage = nil
+            }
         } message: {
             Text(dataModel.persistenceErrorMessage ?? "Please try again.")
+        }
+        .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
+            showPersistenceError = newValue != nil
         }
     }
 
@@ -215,31 +198,32 @@ struct ArtifactDetailView: View {
 // MARK: - Tag Editor
 
 struct TagEditorSheet: View {
-    @Binding var tags: [String]
+    @Bindable var artifact: Artifact
     @State private var newTag = ""
+    @Environment(DataModel.self) private var dataModel
+    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
             List {
                 Section("Tags") {
-                    ForEach(tags, id: \.self) { tag in
+                    ForEach(artifact.tags, id: \.self) { tag in
                         Text(tag)
                     }
                     .onDelete { offsets in
+                        var tags = artifact.tags
                         tags.remove(atOffsets: offsets)
+                        artifact.tags = tags
+                        artifact.updatedAt = .now
+                        saveChanges()
                     }
                 }
 
                 Section("Add Tag") {
                     HStack {
                         TextField("New tag", text: $newTag)
-                        Button("Add") {
-                            let trimmed = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
-                            guard !trimmed.isEmpty, !tags.contains(trimmed) else { return }
-                            tags.append(trimmed)
-                            newTag = ""
-                        }
+                        Button("Add", action: addTag)
                         .disabled(newTag.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                     }
                 }
@@ -254,6 +238,21 @@ struct TagEditorSheet: View {
                 }
             }
         }
+    }
+
+    private func addTag() {
+        let trimmed = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, !artifact.tags.contains(trimmed) else { return }
+        var tags = artifact.tags
+        tags.append(trimmed)
+        artifact.tags = tags
+        artifact.updatedAt = .now
+        newTag = ""
+        saveChanges()
+    }
+
+    private func saveChanges() {
+        dataModel.saveChanges(in: modelContext, source: "editTags")
     }
 }
 
@@ -373,7 +372,7 @@ struct FlashcardDeckView: View {
                 .buttonStyle(.plain)
 
                 Text("Tap card to flip")
-                    .font(.caption2)
+                    .font(.caption)
                     .foregroundStyle(.tertiary)
             }
         }
@@ -1083,4 +1082,3 @@ struct StyledTextView: View {
         LibraryItem.self, UserPreferences.self
     ], inMemory: true)
 }
-

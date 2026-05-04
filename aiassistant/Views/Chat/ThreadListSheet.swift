@@ -63,11 +63,8 @@ struct ThreadListSheet: View {
                     Button("Done") { dismiss() }
                 }
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        onNew()
-                    } label: {
-                        Image(systemName: "plus")
-                    }
+                    Button("New chat", systemImage: "plus", action: onNew)
+                        .labelStyle(.iconOnly)
                 }
             }
         }
@@ -82,7 +79,7 @@ struct ThreadListSheet: View {
                 HStack {
                     Text(thread.title)
                         .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .bold()
                         .lineLimit(1)
                         .foregroundStyle(.primary)
 
@@ -101,7 +98,7 @@ struct ThreadListSheet: View {
                     .lineLimit(1)
 
                 Text(thread.updatedAt, style: .relative)
-                    .font(.caption2)
+                    .font(.caption)
                     .foregroundStyle(.tertiary)
             }
             .padding(.vertical, 2)

@@ -31,6 +31,7 @@ final class DataModel {
         let thread = Thread()
         context.insert(thread)
         activeThread = thread
+        saveContext(context, source: "createThread")
         return thread
     }
 
@@ -44,6 +45,7 @@ final class DataModel {
             lastAssistantMessage = nil
         }
         context.delete(thread)
+        saveContext(context, source: "deleteThread")
     }
 
     // MARK: - Message Handling
@@ -103,7 +105,7 @@ final class DataModel {
         let assistantMessage = Message(
             thread: thread,
             role: .assistant,
-            text: result.text,
+            text: replyText,
             mode: result.mode,
             ariGuidance: preferences.ariEnabled ? ari.guidanceLine : nil,
             ariMood: ari.currentMood
@@ -233,6 +235,11 @@ final class DataModel {
 
     // MARK: - Helpers
 
+    @discardableResult
+    func saveChanges(in context: ModelContext, source: String) -> Bool {
+        saveContext(context, source: source)
+    }
+
     private func generateThreadTitle(from input: String) -> String {
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.count <= 40 { return trimmed }
@@ -243,13 +250,16 @@ final class DataModel {
         return String(trimmed.prefix(40)) + "…"
     }
 
-    private func saveContext(_ context: ModelContext, source: String) {
+    @discardableResult
+    private func saveContext(_ context: ModelContext, source: String) -> Bool {
         do {
             try context.save()
             persistenceErrorMessage = nil
+            return true
         } catch {
             persistenceErrorMessage = "Save failed (\(source)): \(error.localizedDescription)"
             assertionFailure("SwiftData save failed (\(source)): \(error)")
+            return false
         }
     }
 }

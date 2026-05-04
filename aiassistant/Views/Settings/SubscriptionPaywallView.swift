@@ -4,7 +4,7 @@ import StoreKit
 
 struct SubscriptionPaywallView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var store = StoreKitService<AppSubscriptionTier>()
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var store
 
     var body: some View {
         NavigationStack {
@@ -92,7 +92,9 @@ struct SubscriptionPaywallView: View {
             .foregroundStyle(.secondary)
         }
         .padding(AppTheme.spacingLG)
-        .background(.regularMaterial)
+        .appSurface(cornerRadius: AppTheme.radiusCard)
+        .padding(.horizontal, AppTheme.spacingLG)
+        .padding(.bottom, AppTheme.spacingLG)
     }
 
     private var marketingHeader: some View {

@@ -38,7 +38,7 @@
     "_developerTeamID" : "88QL9VPLMY",
     "_disableDialogs" : false,
     "_failTransactionsEnabled" : false,
-    "_lastSynchronizedDate" : 794617545.41638303,
+    "_lastSynchronizedDate" : 794618671.95472503,
     "_locale" : "en_US",
     "_renewalBillingIssuesEnabled" : false,
     "_storefront" : "USA",
@@ -94,7 +94,12 @@
           "familyShareable" : true,
           "groupNumber" : 1,
           "internalID" : "6759522031",
-          "introductoryOffer" : null,
+          "introductoryOffer" : {
+            "internalID" : "B349FBD9",
+            "numberOfPeriods" : 1,
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P3D"
+          },
           "localizations" : [
             {
               "description" : "Weekly premium access with a 3-day free trial.",

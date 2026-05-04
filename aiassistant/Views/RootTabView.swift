@@ -10,7 +10,7 @@ struct RootTabView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
 
-    @State private var selectedTab = 0
+    @State private var selectedTab: AppTab = .chat
     @State private var preferences: UserPreferences?
 
     var body: some View {
@@ -19,18 +19,17 @@ struct RootTabView: View {
 
             if let preferences {
                 TabView(selection: $selectedTab) {
-                    Tab("Chat", systemImage: "bubble.left.and.bubble.right.fill", value: 0) {
+                    Tab(AppTab.chat.title, systemImage: AppTab.chat.systemImage, value: AppTab.chat) {
                         ChatView(preferences: preferences)
                     }
 
-                    Tab("Outputs", systemImage: "doc.richtext", value: 1) {
+                    Tab(AppTab.outputs.title, systemImage: AppTab.outputs.systemImage, value: AppTab.outputs) {
                         OutputsView(preferences: preferences)
                     }
 
-                    Tab("Library", systemImage: "books.vertical.fill", value: 2) {
+                    Tab(AppTab.library.title, systemImage: AppTab.library.systemImage, value: AppTab.library) {
                         LibraryView(preferences: preferences)
                     }
-
                 }
                 .tabViewStyle(.sidebarAdaptable)
                 .tint(AppTheme.accent)

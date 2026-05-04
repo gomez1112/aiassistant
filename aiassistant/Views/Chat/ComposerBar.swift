@@ -24,7 +24,8 @@ struct ComposerBar: View {
     var body: some View {
         HStack(alignment: .bottom, spacing: 10) {
             Button(action: onAttach) {
-                Image(systemName: "paperclip")
+                Label("Attach file", systemImage: "paperclip")
+                    .labelStyle(.iconOnly)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(
                         isImportingAttachment
@@ -43,7 +44,6 @@ struct ComposerBar: View {
             }
             .buttonStyle(.plain)
             .disabled(isImportingAttachment || isGenerating)
-            .accessibilityLabel("Attach file")
 
             // Text input
             TextField("Message \(assistantName)…", text: $text, axis: .vertical)
@@ -77,15 +77,16 @@ struct ComposerBar: View {
             Group {
                 if isGenerating {
                     Button(action: onCancel) {
-                        Image(systemName: "stop.circle.fill")
+                        Label("Stop generating", systemImage: "stop.circle.fill")
+                            .labelStyle(.iconOnly)
                             .font(.system(size: 32, weight: .medium))
                             .foregroundStyle(.red.opacity(0.9))
                     }
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Stop generating")
                 } else {
                     Button(action: onSend) {
-                        Image(systemName: "arrow.up")
+                        Label("Send message", systemImage: "arrow.up")
+                            .labelStyle(.iconOnly)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(
                                 hasText || hasAttachment
@@ -108,7 +109,6 @@ struct ComposerBar: View {
                     }
                     .buttonStyle(.plain)
                     .disabled(!hasText && !hasAttachment)
-                    .accessibilityLabel("Send message")
                 }
             }
             .transition(.scale.combined(with: .opacity))

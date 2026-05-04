@@ -17,6 +17,7 @@ struct OutputsView: View {
 
     @State private var searchText = ""
     @State private var filterKind: ArtifactKind?
+    @State private var showPersistenceError = false
     #if !os(macOS)
     @State private var showSettings = false
     #endif
@@ -26,8 +27,8 @@ struct OutputsView: View {
         if let kind = filterKind {
             result = result.filter { $0.kind == kind }
         }
-        if !searchText.isEmpty {
-            let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !query.isEmpty {
             result = result.filter {
                 $0.title.localizedStandardContains(query) ||
                 $0.content.localizedStandardContains(query) ||
@@ -37,28 +38,15 @@ struct OutputsView: View {
         return result
     }
 
+    private var isSearching: Bool {
+        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     var body: some View {
         NavigationStack {
             Group {
                 if artifacts.isEmpty {
-                    VStack(spacing: 20) {
-                        Spacer()
-                        Image(systemName: "doc.richtext")
-                            .font(.system(size: 44, weight: .light))
-                            .foregroundStyle(AppTheme.accentGradient)
-                        VStack(spacing: 8) {
-                            Text("No outputs yet")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                            Text("Chat with \(preferences.ariEnabled ? "Ari" : "the assistant") and save responses as artifacts.\nThey'll appear here.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                                .lineSpacing(2)
-                        }
-                        Spacer()
-                    }
-                    .frame(maxWidth: .infinity)
+                    OutputsEmptyStateView(assistantName: preferences.ariEnabled ? "Ari" : "the assistant")
                 } else {
                     VStack(spacing: 0) {
                         // Filter chips
@@ -83,30 +71,28 @@ struct OutputsView: View {
                             .padding(.vertical, 10)
                         }
 
-                        // Artifacts list
-                        List {
-                            ForEach(filtered, id: \.id) { artifact in
-                                NavigationLink(value: artifact.id) {
-                                    ArtifactRow(artifact: artifact)
+                        Group {
+                            if filtered.isEmpty {
+                                unavailableFilteredState
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            } else {
+                                // Artifacts list
+                                List {
+                                    ForEach(filtered, id: \.id) { artifact in
+                                        NavigationLink(value: artifact.id) {
+                                            ArtifactRow(artifact: artifact)
+                                        }
+                                        .listRowBackground(Color.clear)
+                                        .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                                    }
+                                    .onDelete(perform: deleteArtifacts)
                                 }
-                                .listRowBackground(Color.clear)
-                                .listRowSeparator(.hidden)
-                                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                            }
-                            .onDelete { offsets in
-                                for index in offsets {
-                                    modelContext.delete(filtered[index])
-                                }
-                                do {
-                                    try modelContext.save()
-                                } catch {
-                                    dataModel.persistenceErrorMessage = "Save failed (deleteOutput): \(error.localizedDescription)"
-                                }
+                                .scrollContentBackground(.hidden)
+                                .listStyle(.plain)
                             }
                         }
                         .searchable(text: $searchText, prompt: "Search outputs")
-                        .scrollContentBackground(.hidden)
-                        .listStyle(.plain)
                     }
                     .navigationDestination(for: UUID.self) { id in
                         if let artifact = artifacts.first(where: { $0.id == id }) {
@@ -122,13 +108,10 @@ struct OutputsView: View {
             #if !os(macOS)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
+                    Button("Settings", systemImage: "gearshape") {
                         showSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                            .fontWeight(.medium)
                     }
-                    .accessibilityLabel("Settings")
+                    .labelStyle(.iconOnly)
                 }
             }
             #endif
@@ -141,15 +124,37 @@ struct OutputsView: View {
                 SettingsView(preferences: preferences)
             }
             #endif
-            .alert("Couldn’t save changes", isPresented: Binding(
-                get: { dataModel.persistenceErrorMessage != nil },
-                set: { if !$0 { dataModel.persistenceErrorMessage = nil } }
-            )) {
-                Button("OK", role: .cancel) {}
+            .alert("Couldn’t save changes", isPresented: $showPersistenceError) {
+                Button("OK", role: .cancel) {
+                    dataModel.persistenceErrorMessage = nil
+                }
             } message: {
                 Text(dataModel.persistenceErrorMessage ?? "Please try again.")
             }
+            .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
+                showPersistenceError = newValue != nil
+            }
         }
+    }
+
+    @ViewBuilder
+    private var unavailableFilteredState: some View {
+        if isSearching {
+            ContentUnavailableView.search
+        } else {
+            ContentUnavailableView(
+                "No \(filterKind?.rawValue.lowercased() ?? "matching") outputs",
+                systemImage: filterKind?.icon ?? "tray",
+                description: Text("Try a different output type.")
+            )
+        }
+    }
+
+    private func deleteArtifacts(at offsets: IndexSet) {
+        for index in offsets {
+            modelContext.delete(filtered[index])
+        }
+        dataModel.saveChanges(in: modelContext, source: "deleteOutput")
     }
 }
 
@@ -161,19 +166,15 @@ struct ArtifactRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                Image(systemName: artifact.kind.icon)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(AppTheme.accent)
-                    .frame(width: 28, height: 28)
-                    .background(AppTheme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                AppIconBadge(systemImage: artifact.kind.icon, tint: AppTheme.accent, size: 30)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(artifact.title)
                         .font(.subheadline)
-                        .fontWeight(.semibold)
+                        .bold()
                         .lineLimit(1)
                     Text(artifact.updatedAt, style: .relative)
-                        .font(.caption2)
+                        .font(.caption)
                         .foregroundStyle(.tertiary)
                 }
 
@@ -189,15 +190,7 @@ struct ArtifactRow: View {
             if !artifact.tags.isEmpty {
                 HStack(spacing: 4) {
                     ForEach(artifact.tags.prefix(3), id: \.self) { tag in
-                        Text(tag)
-                            .font(.system(size: 10, weight: .medium))
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(
-                                Capsule(style: .continuous)
-                                    .fill(AppTheme.surface)
-                            )
-                            .foregroundStyle(.secondary)
+                        AppTagPill(title: tag)
                     }
                 }
             }
@@ -205,6 +198,18 @@ struct ArtifactRow: View {
         .padding(AppTheme.spacingMD)
         .appSurface()
         .accessibilityElement(children: .combine)
+    }
+}
+
+private struct OutputsEmptyStateView: View {
+    let assistantName: String
+
+    var body: some View {
+        AppEmptyStateView(
+            title: "No outputs yet",
+            systemImage: "doc.richtext",
+            description: "Chat with \(assistantName) and save responses as artifacts. They’ll appear here."
+        )
     }
 }
 

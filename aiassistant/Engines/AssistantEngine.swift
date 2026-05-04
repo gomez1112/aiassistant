@@ -49,6 +49,14 @@ final class AssistantEngine {
     var state: EngineState = .idle
     var streamingText: String = ""
 
+    private static let intentKeywords: [(mode: AssistantMode, keywords: [String])] = [
+        (.write, ["write", "draft", "compose", "create", "letter", "email", "essay", "blog"]),
+        (.summarize, ["summarize", "summary", "tldr", "tl;dr", "shorten", "condense", "gist"]),
+        (.explain, ["explain", "what is", "what are", "how does", "why", "define", "meaning"]),
+        (.plan, ["plan", "schedule", "outline", "steps", "roadmap", "strategy", "organize"]),
+        (.brainstorm, ["brainstorm", "ideas", "suggest", "alternatives", "options", "creative"])
+    ]
+
     #if canImport(FoundationModels)
     private var session: LanguageModelSession?
     #endif
@@ -57,22 +65,12 @@ final class AssistantEngine {
 
     /// Classify user input into an AssistantMode.
     func classifyIntent(_ input: String) -> AssistantMode {
-        let lowered = input.lowercased()
+        let lowered = input.trimmingCharacters(in: .whitespacesAndNewlines).localizedLowercase
+        guard !lowered.isEmpty else { return .general }
 
-        // Keyword-based routing
-        let writeKeywords = ["write", "draft", "compose", "create", "letter", "email", "essay", "blog"]
-        let summarizeKeywords = ["summarize", "summary", "tldr", "tl;dr", "shorten", "condense", "gist"]
-        let explainKeywords = ["explain", "what is", "what are", "how does", "why", "define", "meaning"]
-        let planKeywords = ["plan", "schedule", "outline", "steps", "roadmap", "strategy", "organize"]
-        let brainstormKeywords = ["brainstorm", "ideas", "suggest", "alternatives", "options", "creative"]
-
-        if writeKeywords.contains(where: { lowered.contains($0) }) { return .write }
-        if summarizeKeywords.contains(where: { lowered.contains($0) }) { return .summarize }
-        if explainKeywords.contains(where: { lowered.contains($0) }) { return .explain }
-        if planKeywords.contains(where: { lowered.contains($0) }) { return .plan }
-        if brainstormKeywords.contains(where: { lowered.contains($0) }) { return .brainstorm }
-
-        return .general
+        return Self.intentKeywords.first { rule in
+            rule.keywords.contains { lowered.contains($0) }
+        }?.mode ?? .general
     }
 
     // MARK: - Generate Response
@@ -371,6 +369,15 @@ final class AssistantEngine {
         case .concise: prompt += "Keep responses concise and to the point. "
         case .balanced: prompt += "Provide balanced responses with enough detail to be helpful. "
         case .detailed: prompt += "Provide thorough, detailed responses. "
+        }
+
+        switch preferences.outputStyle {
+        case .prose:
+            prompt += "Prefer natural prose paragraphs unless the user asks for another format. "
+        case .structured:
+            prompt += "Prefer headings and lists when they improve clarity. "
+        case .minimal:
+            prompt += "Use the shortest useful format with minimal framing. "
         }
 
         switch mode {

@@ -19,77 +19,51 @@ struct LibraryView: View {
 
     @State private var showAddSheet = false
     @State private var searchText = ""
+    @State private var showPersistenceError = false
     #if !os(macOS)
     @State private var showSettings = false
     #endif
 
     private var filtered: [LibraryItem] {
-        guard !searchText.isEmpty else { return items }
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return items }
         return items.filter {
             $0.title.localizedStandardContains(query) ||
             $0.rawText.localizedStandardContains(query)
         }
     }
 
+    private var isSearching: Bool {
+        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     var body: some View {
         NavigationStack {
             Group {
                 if items.isEmpty {
-                    VStack(spacing: 20) {
-                        Spacer()
-                        Image(systemName: "books.vertical")
-                            .font(.system(size: 44, weight: .light))
-                            .foregroundStyle(AppTheme.accentGradient)
-                        VStack(spacing: 8) {
-                            Text("Your library is empty")
-                                .font(.title3)
-                                .fontWeight(.semibold)
-                            Text("Add notes, snippets, or pasted text\nto use as source material in your chats.")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
-                                .multilineTextAlignment(.center)
-                                .lineSpacing(2)
-                        }
-                        Button {
-                            showAddSheet = true
-                        } label: {
-                            Text("Add Item")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal, 28)
-                                .padding(.vertical, 10)
-                                .background(AppTheme.accentGradient, in: Capsule())
-                                .foregroundStyle(.white)
-                        }
-                        .buttonStyle(.plain)
-                        Spacer()
-                    }
-                    .frame(maxWidth: .infinity)
+                    LibraryEmptyStateView(onAdd: presentAddSheet)
                 } else {
-                    List {
-                        ForEach(filtered, id: \.id) { item in
-                            NavigationLink(value: item.id) {
-                                LibraryItemRow(item: item)
+                    Group {
+                        if filtered.isEmpty {
+                            unavailableFilteredState
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else {
+                            List {
+                                ForEach(filtered, id: \.id) { item in
+                                    NavigationLink(value: item.id) {
+                                        LibraryItemRow(item: item)
+                                    }
+                                    .listRowBackground(Color.clear)
+                                    .listRowSeparator(.hidden)
+                                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                                }
+                                .onDelete(perform: deleteItems)
                             }
-                            .listRowBackground(Color.clear)
-                            .listRowSeparator(.hidden)
-                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                        }
-                        .onDelete { offsets in
-                            for index in offsets {
-                                modelContext.delete(filtered[index])
-                            }
-                            do {
-                                try modelContext.save()
-                            } catch {
-                                dataModel.persistenceErrorMessage = "Save failed (deleteLibraryItem): \(error.localizedDescription)"
-                            }
+                            .scrollContentBackground(.hidden)
+                            .listStyle(.plain)
                         }
                     }
                     .searchable(text: $searchText, prompt: "Search library")
-                    .scrollContentBackground(.hidden)
-                    .listStyle(.plain)
                     .navigationDestination(for: UUID.self) { id in
                         if let item = items.first(where: { $0.id == id }) {
                             LibraryItemDetailView(item: item, preferences: preferences)
@@ -103,24 +77,16 @@ struct LibraryView: View {
             #endif
             .toolbar {
                 ToolbarItem(placement: .automatic) {
-                    Button {
-                        showAddSheet = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .fontWeight(.medium)
-                    }
-                    .accessibilityLabel("Add library item")
+                    Button("Add library item", systemImage: "plus", action: presentAddSheet)
+                        .labelStyle(.iconOnly)
                 }
                 ToolbarSpacer(.fixed)
                 #if !os(macOS)
                 ToolbarItem(placement: .automatic) {
-                    Button {
+                    Button("Settings", systemImage: "gearshape") {
                         showSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                            .fontWeight(.medium)
                     }
-                    .accessibilityLabel("Settings")
+                    .labelStyle(.iconOnly)
                 }
                 #endif
             }
@@ -136,15 +102,41 @@ struct LibraryView: View {
                 SettingsView(preferences: preferences)
             }
             #endif
-            .alert("Couldn’t save changes", isPresented: Binding(
-                get: { dataModel.persistenceErrorMessage != nil },
-                set: { if !$0 { dataModel.persistenceErrorMessage = nil } }
-            )) {
-                Button("OK", role: .cancel) {}
+            .alert("Couldn’t save changes", isPresented: $showPersistenceError) {
+                Button("OK", role: .cancel) {
+                    dataModel.persistenceErrorMessage = nil
+                }
             } message: {
                 Text(dataModel.persistenceErrorMessage ?? "Please try again.")
             }
+            .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
+                showPersistenceError = newValue != nil
+            }
         }
+    }
+
+    @ViewBuilder
+    private var unavailableFilteredState: some View {
+        if isSearching {
+            ContentUnavailableView.search
+        } else {
+            ContentUnavailableView(
+                "No library items",
+                systemImage: "books.vertical",
+                description: Text("Try a different search.")
+            )
+        }
+    }
+
+    private func presentAddSheet() {
+        showAddSheet = true
+    }
+
+    private func deleteItems(at offsets: IndexSet) {
+        for index in offsets {
+            modelContext.delete(filtered[index])
+        }
+        dataModel.saveChanges(in: modelContext, source: "deleteLibraryItem")
     }
 }
 
@@ -156,15 +148,11 @@ struct LibraryItemRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
-                Image(systemName: item.kind.icon)
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(AppTheme.accent)
-                    .frame(width: 28, height: 28)
-                    .background(AppTheme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 7, style: .continuous))
+                AppIconBadge(systemImage: item.kind.icon, tint: AppTheme.accent, size: 30)
 
                 Text(item.title)
                     .font(.subheadline)
-                    .fontWeight(.semibold)
+                    .bold()
                     .lineLimit(1)
 
                 Spacer()
@@ -183,6 +171,40 @@ struct LibraryItemRow: View {
                 .lineSpacing(2)
         }
         .padding(AppTheme.spacingMD)
+        .appSurface()
+    }
+}
+
+private struct LibraryEmptyStateView: View {
+    let onAdd: () -> Void
+
+    var body: some View {
+        AppEmptyStateView(
+            title: "Your library is empty",
+            systemImage: "books.vertical",
+            description: "Add notes, snippets, or pasted text to use as source material in your chats.",
+            actionTitle: "Add Item",
+            actionSystemImage: "plus",
+            action: onAdd
+        )
+    }
+}
+
+private struct LibrarySummaryCard: View {
+    let summary: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("AI Summary", systemImage: "sparkles")
+                .font(.subheadline.bold())
+                .foregroundStyle(AppTheme.accent)
+            Text(summary)
+                .font(.callout)
+                .foregroundStyle(.secondary)
+                .lineSpacing(3)
+        }
+        .padding(AppTheme.spacingLG)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .appSurface()
     }
 }
@@ -210,9 +232,9 @@ struct AddLibraryItemSheet: View {
                     }
                 }
                 Section("Content") {
-                    TextEditor(text: $rawText)
-                        .frame(minHeight: 200)
-                        .accessibilityLabel("Content text editor")
+                    TextField("Paste notes, snippets, or source text", text: $rawText, axis: .vertical)
+                        .lineLimit(8...18)
+                        .accessibilityLabel("Content")
                 }
             }
             .navigationTitle("Add to Library")
@@ -224,24 +246,24 @@ struct AddLibraryItemSheet: View {
                     Button("Cancel") { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        let item = LibraryItem(
-                            title: title.isEmpty ? "Untitled" : title,
-                            kind: kind,
-                            rawText: rawText
-                        )
-                        modelContext.insert(item)
-                        do {
-                            try modelContext.save()
-                            dismiss()
-                        } catch {
-                            dataModel.persistenceErrorMessage = "Save failed (addLibraryItem): \(error.localizedDescription)"
-                        }
-                    }
+                    Button("Save", action: save)
                     .disabled(rawText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-                    .fontWeight(.semibold)
+                    .bold()
                 }
             }
+        }
+    }
+
+    private func save() {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let item = LibraryItem(
+            title: trimmedTitle.isEmpty ? "Untitled" : trimmedTitle,
+            kind: kind,
+            rawText: rawText
+        )
+        modelContext.insert(item)
+        if dataModel.saveChanges(in: modelContext, source: "addLibraryItem") {
+            dismiss()
         }
     }
 }
@@ -266,16 +288,12 @@ struct LibraryItemDetailView: View {
             VStack(alignment: .leading, spacing: 20) {
                 // Header
                 HStack(spacing: 12) {
-                    Image(systemName: item.kind.icon)
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundStyle(AppTheme.accent)
-                        .frame(width: 40, height: 40)
-                        .background(AppTheme.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    AppIconBadge(systemImage: item.kind.icon, tint: AppTheme.accent, size: 42)
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(item.title)
                             .font(.title3)
-                            .fontWeight(.bold)
+                            .bold()
                         Text(item.kind.rawValue)
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -296,32 +314,13 @@ struct LibraryItemDetailView: View {
 
                 // AI Summary
                 if let summary = item.aiSummary {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("AI Summary", systemImage: "sparkles")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(AppTheme.accent)
-                        Text(summary)
-                            .font(.callout)
-                            .foregroundStyle(.secondary)
-                            .lineSpacing(3)
-                    }
-                    .padding(AppTheme.spacingLG)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(
-                        RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
-                            .fill(AppTheme.accent.opacity(0.08))
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
-                            .stroke(AppTheme.accent.opacity(0.15), lineWidth: 0.5)
-                    )
+                    LibrarySummaryCard(summary: summary)
                 }
 
                 // Metadata
                 HStack {
                     Text("Created")
-                        .font(.caption2)
+                        .font(.caption)
                         .foregroundStyle(.tertiary)
                     Spacer()
                     Text(item.createdAt, style: .date)

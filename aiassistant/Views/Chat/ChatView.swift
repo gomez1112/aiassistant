@@ -37,7 +37,9 @@ struct ChatView: View {
     @State private var pendingAttachmentText: String?
     @State private var pendingAttachmentName: String?
     @State private var importErrorMessage: String?
+    @State private var showImportError = false
     @State private var showPaywall = false
+    @State private var showPersistenceError = false
     @State private var showUpgradeAlert = false
     @State private var upgradePromptMessage = ""
     @State private var generationTask: Task<Void, Never>?
@@ -65,7 +67,7 @@ struct ChatView: View {
     }
     private var contentMaxWidth: CGFloat {
         #if os(macOS)
-        760
+        AppTheme.readableContentWidth
         #else
         .infinity
         #endif
@@ -104,53 +106,41 @@ struct ChatView: View {
     }
 
     var body: some View {
+        @Bindable var dataModel = dataModel
+
         NavigationStack {
             VStack(spacing: 0) {
                 // Mode chips
-                ModeChipBar(selectedMode: Binding(
-                    get: { dataModel.selectedMode },
-                    set: { dataModel.selectedMode = $0 }
-                ))
+                ModeChipBar(selectedMode: $dataModel.selectedMode)
                 .frame(maxWidth: contentMaxWidth)
                 .frame(maxWidth: .infinity)
 
-                Text(modeGuidanceText)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(.ultraThinMaterial)
-                    )
+                AppBanner(
+                    systemImage: dataModel.selectedMode.icon,
+                    message: modeGuidanceText,
+                    tint: AppTheme.accent
+                )
                     .padding(.horizontal, AppTheme.spacingLG)
                     .padding(.top, 6)
                     .padding(.bottom, 8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .accessibilityLabel(modeGuidanceText)
                     .frame(maxWidth: contentMaxWidth)
                     .frame(maxWidth: .infinity)
 
                 if !hasPremiumAccess {
-                    HStack(spacing: 8) {
-                        Image(systemName: "sparkles")
-                            .foregroundStyle(AppTheme.accent)
-                        Text("Free plan: \(remainingFreeMessages) of \(Monetization.freeDailyMessageLimit) messages left today.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Spacer()
+                    AppBanner(
+                        systemImage: "sparkles",
+                        message: "Free plan: \(remainingFreeMessages) of \(Monetization.freeDailyMessageLimit) messages left today.",
+                        tint: AppTheme.highlight
+                    ) {
                         Button("Upgrade") {
                             showPaywall = true
                         }
-                        .font(.caption.weight(.semibold))
-                        .buttonStyle(.plain)
+                        .font(.footnote.bold())
+                        .buttonStyle(.bordered)
+                        .buttonBorderShape(.capsule)
+                        .controlSize(.small)
+                        .tint(AppTheme.accent)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(.ultraThinMaterial)
-                    )
                     .padding(.horizontal, AppTheme.spacingLG)
                     .padding(.bottom, 8)
                     .frame(maxWidth: contentMaxWidth)
@@ -158,30 +148,19 @@ struct ChatView: View {
                 }
 
                 if let pendingAttachmentName {
-                    HStack(spacing: 8) {
-                        Image(systemName: "paperclip")
-                            .foregroundStyle(.secondary)
-                        Text("Attached: \(pendingAttachmentName)")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                        Spacer()
-                        Button(role: .destructive) {
-                            pendingAttachmentText = nil
-                            self.pendingAttachmentName = nil
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.secondary)
+                    AppBanner(
+                        systemImage: "paperclip",
+                        message: "Attached: \(pendingAttachmentName)",
+                        tint: AppTheme.accentLight
+                    ) {
+                        Button(role: .destructive, action: clearAttachment) {
+                            Label("Remove attachment", systemImage: "xmark.circle.fill")
                         }
                         .buttonStyle(.plain)
-                        .accessibilityLabel("Remove attachment")
+                        .labelStyle(.iconOnly)
+                        .foregroundStyle(.secondary)
+                        .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
                     }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(.ultraThinMaterial)
-                    )
                     .padding(.horizontal, AppTheme.spacingLG)
                     .padding(.bottom, 8)
                     .frame(maxWidth: contentMaxWidth)
@@ -219,7 +198,10 @@ struct ChatView: View {
                     .frame(maxWidth: contentMaxWidth)
                     .frame(maxWidth: .infinity)
                 } else {
-                    emptyState
+                    ChatEmptyStateView(
+                        assistantName: assistantName,
+                        onNewChat: createNewThread
+                    )
                         .frame(maxWidth: contentMaxWidth)
                         .frame(maxWidth: .infinity)
                 }
@@ -262,64 +244,35 @@ struct ChatView: View {
             .toolbar {
                 #if os(macOS)
                 ToolbarItem(placement: .automatic) {
-                    Button {
-                        showThreadList = true
-                    } label: {
-                        Image(systemName: "line.3.horizontal")
-                            .font(.system(size: 16, weight: .semibold))
-                            .padding(8)
-                    }
+                    Button("Thread list", systemImage: "line.3.horizontal", action: presentThreadList)
                     .buttonStyle(.plain)
+                    .labelStyle(.iconOnly)
                     .help("Show threads")
-                    .accessibilityLabel("Thread list")
                 }
                 ToolbarSpacer(.fixed)
                 ToolbarItem(placement: .automatic) {
-                    Button {
-                        let thread = dataModel.createThread(in: modelContext)
-                        dataModel.activeThread = thread
-                    } label: {
-                        Image(systemName: "square.and.pencil")
-                            .font(.system(size: 16, weight: .semibold))
-                            .padding(8)
-                    }
+                    Button("New chat", systemImage: "square.and.pencil", action: createNewThread)
                     .buttonStyle(.plain)
+                    .labelStyle(.iconOnly)
                     .help("New chat")
-                    .accessibilityLabel("New chat")
                 }
                 #else
                 ToolbarItem(placement: .automatic) {
-                    Button {
-                        showThreadList = true
-                    } label: {
-                        Image(systemName: "line.3.horizontal")
-                            .fontWeight(.medium)
-                    }
+                    Button("Thread list", systemImage: "line.3.horizontal", action: presentThreadList)
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Thread list")
+                    .labelStyle(.iconOnly)
                 }
                 ToolbarSpacer(.fixed)
                 ToolbarItem(placement: .automatic) {
-                    Button {
-                        let thread = dataModel.createThread(in: modelContext)
-                        dataModel.activeThread = thread
-                    } label: {
-                        Image(systemName: "square.and.pencil")
-                            .fontWeight(.medium)
-                    }
+                    Button("New chat", systemImage: "square.and.pencil", action: createNewThread)
                     .buttonStyle(.plain)
-                    .accessibilityLabel("New chat")
+                    .labelStyle(.iconOnly)
                 }
                 ToolbarSpacer(.fixed)
                 ToolbarItem(placement: .automatic) {
-                    Button {
-                        showSettings = true
-                    } label: {
-                        Image(systemName: "gearshape")
-                            .fontWeight(.medium)
-                    }
+                    Button("Settings", systemImage: "gearshape", action: openSettings)
                     .buttonStyle(.plain)
-                    .accessibilityLabel("Settings")
+                    .labelStyle(.iconOnly)
                 }
                 #endif
             }
@@ -338,18 +291,13 @@ struct ChatView: View {
                         dataModel.deleteThread(thread, in: modelContext)
                     },
                     onNew: {
-                        let thread = dataModel.createThread(in: modelContext)
-                        dataModel.activeThread = thread
+                        createNewThread()
                         showThreadList = false
                     },
                     onTogglePin: { thread in
                         thread.pinned.toggle()
                         thread.updatedAt = .now
-                        do {
-                            try modelContext.save()
-                        } catch {
-                            dataModel.persistenceErrorMessage = "Save failed (togglePin): \(error.localizedDescription)"
-                        }
+                        dataModel.saveChanges(in: modelContext, source: "togglePin")
                     }
                 )
             }
@@ -381,11 +329,10 @@ struct ChatView: View {
             ) { result in
                 handleFileImport(result)
             }
-            .alert("Couldn’t import file", isPresented: Binding(
-                get: { importErrorMessage != nil },
-                set: { if !$0 { importErrorMessage = nil } }
-            )) {
-                Button("OK", role: .cancel) {}
+            .alert("Couldn’t import file", isPresented: $showImportError) {
+                Button("OK", role: .cancel) {
+                    importErrorMessage = nil
+                }
             } message: {
                 Text(importErrorMessage ?? "Please try another file.")
             }
@@ -397,66 +344,49 @@ struct ChatView: View {
             } message: {
                 Text(upgradePromptMessage)
             }
-            .alert("Couldn’t save changes", isPresented: Binding(
-                get: { dataModel.persistenceErrorMessage != nil },
-                set: { if !$0 { dataModel.persistenceErrorMessage = nil } }
-            )) {
-                Button("OK", role: .cancel) {}
+            .alert("Couldn’t save changes", isPresented: $showPersistenceError) {
+                Button("OK", role: .cancel) {
+                    dataModel.persistenceErrorMessage = nil
+                }
             } message: {
                 Text(dataModel.persistenceErrorMessage ?? "Please try again.")
+            }
+            .onChange(of: importErrorMessage) { _, newValue in
+                showImportError = newValue != nil
+            }
+            .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
+                showPersistenceError = newValue != nil
             }
         }
         .onAppear {
             ensureActiveThreadSelection()
         }
-            .onChange(of: threads.map(\.id)) { _, _ in
+        .onChange(of: threads.map(\.id)) { _, _ in
             ensureActiveThreadSelection()
         }
     }
 
-    // MARK: - Empty State
+    // MARK: - Actions
 
-    private var emptyState: some View {
-        VStack(spacing: 20) {
-            Spacer()
-
-            Image(systemName: "sparkles")
-                .font(.system(size: 44, weight: .light))
-                .foregroundStyle(AppTheme.accentGradient)
-
-            VStack(spacing: 8) {
-                Text("Hello!")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-
-                Text("Start a conversation with \(assistantName).\nPick a mode above or just say what's on your mind.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(2)
-                    .frame(maxWidth: 420)
-            }
-
-            Button {
-                let thread = dataModel.createThread(in: modelContext)
-                dataModel.activeThread = thread
-            } label: {
-                Text("New Chat")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 28)
-                    .padding(.vertical, 10)
-                    .background(AppTheme.accentGradient, in: Capsule())
-                    .foregroundStyle(.white)
-            }
-            .buttonStyle(.plain)
-
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    private func presentThreadList() {
+        showThreadList = true
     }
 
-    // MARK: - Actions
+    private func createNewThread() {
+        let thread = dataModel.createThread(in: modelContext)
+        dataModel.activeThread = thread
+    }
+
+    #if !os(macOS)
+    private func openSettings() {
+        showSettings = true
+    }
+    #endif
+
+    private func clearAttachment() {
+        pendingAttachmentText = nil
+        pendingAttachmentName = nil
+    }
 
     private func sendMessage() {
         guard !isGenerating, !isImportingAttachment else { return }
@@ -681,6 +611,22 @@ private enum ImportError: LocalizedError {
         case .pdfTooLong(let pageCount):
             "This PDF has \(pageCount) pages. The maximum allowed is 50 pages."
         }
+    }
+}
+
+private struct ChatEmptyStateView: View {
+    let assistantName: String
+    let onNewChat: () -> Void
+
+    var body: some View {
+        AppEmptyStateView(
+            title: "Hello!",
+            systemImage: "sparkles",
+            description: "Start a conversation with \(assistantName). Pick a mode above or just say what's on your mind.",
+            actionTitle: "New Chat",
+            actionSystemImage: "square.and.pencil",
+            action: onNewChat
+        )
     }
 }
 
