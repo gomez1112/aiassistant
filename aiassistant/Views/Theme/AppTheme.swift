@@ -13,17 +13,17 @@ import AppKit
 enum AppTheme {
     // MARK: - Colors
 
-    static let accent = Color(red: 0.91, green: 0.47, blue: 0.45)
-    static let accentLight = Color(red: 0.97, green: 0.63, blue: 0.58)
-    static let highlight = Color(red: 0.96, green: 0.69, blue: 0.35)
-    static let highlightSoft = Color(red: 1.0, green: 0.84, blue: 0.60)
-    static let deep = Color(red: 0.14, green: 0.11, blue: 0.14)
-    static let midground = Color(red: 0.22, green: 0.18, blue: 0.22)
-    static let petal = Color(red: 0.98, green: 0.95, blue: 0.96)
+    static let accent = Color(red: 0.11, green: 0.43, blue: 0.82)
+    static let accentLight = Color(red: 0.28, green: 0.66, blue: 0.96)
+    static let highlight = Color(red: 0.08, green: 0.64, blue: 0.50)
+    static let highlightSoft = Color(red: 0.54, green: 0.86, blue: 0.76)
+    static let deep = Color(red: 0.08, green: 0.10, blue: 0.14)
+    static let midground = Color(red: 0.17, green: 0.20, blue: 0.25)
+    static let petal = Color(red: 0.97, green: 0.98, blue: 1.0)
     static let surface = Color.primary.opacity(0.06)
-    static let surfaceElevated = Color.primary.opacity(0.10)
-    static let surfaceStroke = Color.primary.opacity(0.12)
-    static let surfaceStrokeStrong = Color.primary.opacity(0.20)
+    static let surfaceElevated = Color.primary.opacity(0.08)
+    static let surfaceStroke = Color.primary.opacity(0.10)
+    static let surfaceStrokeStrong = Color.primary.opacity(0.16)
 
     // Semantic colors
     static let success = Color(red: 0.30, green: 0.85, blue: 0.55)
@@ -42,8 +42,8 @@ enum AppTheme {
     static var userBubbleGradient: LinearGradient {
         LinearGradient(
             colors: [
-                Color(red: 0.84, green: 0.37, blue: 0.44),
-                Color(red: 0.94, green: 0.52, blue: 0.50)
+                accent,
+                Color(red: 0.18, green: 0.55, blue: 0.90)
             ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
@@ -60,8 +60,8 @@ enum AppTheme {
 
     // MARK: - Corner Radii
 
-    static let radiusBubble: CGFloat = 20
-    static let radiusCard: CGFloat = 16
+    static let radiusBubble: CGFloat = 18
+    static let radiusCard: CGFloat = 14
     static let radiusSmall: CGFloat = 12
     static let radiusChip: CGFloat = 24
 
@@ -98,37 +98,13 @@ struct AppBackground: View {
             .overlay {
                 LinearGradient(
                     colors: [
-                        AppTheme.accent.opacity(0.14),
+                        AppTheme.accent.opacity(0.07),
                         Color.clear,
-                        AppTheme.highlight.opacity(0.11)
+                        AppTheme.highlight.opacity(0.05)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-            }
-            .overlay {
-                RadialGradient(
-                    colors: [AppTheme.accent.opacity(0.20), .clear],
-                    center: .topLeading,
-                    startRadius: 20,
-                    endRadius: 420
-                )
-            }
-            .overlay {
-                RadialGradient(
-                    colors: [AppTheme.highlight.opacity(0.15), .clear],
-                    center: .bottomTrailing,
-                    startRadius: 40,
-                    endRadius: 500
-                )
-            }
-            .overlay(alignment: .top) {
-                // Soft concentric ring echoing the app icon motif.
-                Circle()
-                    .stroke(AppTheme.accent.opacity(0.07), lineWidth: 56)
-                    .frame(width: 520, height: 520)
-                    .blur(radius: 20)
-                    .offset(y: -260)
             }
             .ignoresSafeArea()
     }
@@ -145,7 +121,7 @@ struct AppSurface: ViewModifier {
             content
                 .glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
                 .overlay(surfaceStroke)
-                .shadow(color: AppTheme.accent.opacity(0.08), radius: 14, x: 0, y: 6)
+                .shadow(color: .black.opacity(0.06), radius: 10, x: 0, y: 5)
         } else {
             content
                 .background(
@@ -153,7 +129,7 @@ struct AppSurface: ViewModifier {
                         .fill(.regularMaterial)
                 )
                 .overlay(surfaceStroke)
-                .shadow(color: AppTheme.accent.opacity(0.10), radius: 14, x: 0, y: 6)
+                .shadow(color: .black.opacity(0.07), radius: 10, x: 0, y: 5)
         }
     }
 

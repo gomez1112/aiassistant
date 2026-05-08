@@ -46,7 +46,7 @@ struct ComposerBar: View {
             .disabled(isImportingAttachment || isGenerating)
 
             // Text input
-            TextField("Message \(assistantName)…", text: $text, axis: .vertical)
+            TextField("Ask \(assistantName)…", text: $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .lineLimit(1...6)
                 .padding(.horizontal, 16)
@@ -98,7 +98,7 @@ struct ComposerBar: View {
                                 Circle()
                                     .fill(
                                         hasText || hasAttachment
-                                            ? AnyShapeStyle(AppTheme.accentGradient)
+                                            ? AnyShapeStyle(AppTheme.accent)
                                             : AnyShapeStyle(.ultraThinMaterial)
                                     )
                                     .overlay(

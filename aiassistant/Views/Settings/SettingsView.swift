@@ -112,6 +112,16 @@ struct SettingsView: View {
                 Text("The character layer provides gentle guidance and emotional cues to help with focus and pacing. It never diagnoses, judges, or provides medical advice.")
             }
 
+            Section {
+                SettingsAriPlusCard {
+                    showPaywall = true
+                }
+            } header: {
+                Text("Ari+")
+            } footer: {
+                Text("Includes weekly, monthly, yearly, and lifetime options.")
+            }
+
             // MARK: - Assistant Defaults
             Section {
                 Picker("Verbosity", selection: $preferences.verbosity) {
@@ -153,18 +163,6 @@ struct SettingsView: View {
                 }
             } header: {
                 Text("About")
-            }
-
-            Section {
-                Button {
-                    showPaywall = true
-                } label: {
-                    Label("Upgrade to Ari+", systemImage: "sparkles")
-                }
-            } header: {
-                Text("Subscription")
-            } footer: {
-                Text("Includes weekly, monthly, yearly, and lifetime options.")
             }
 
             #if DEBUG
@@ -268,6 +266,63 @@ private enum CloudKitHealthStatus {
     }
 }
 #endif
+
+private struct SettingsAriPlusCard: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
+                HStack(alignment: .top, spacing: AppTheme.spacingMD) {
+                    AppIconBadge(systemImage: "sparkles", tint: AppTheme.highlight, size: 40)
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text("Upgrade when Ari becomes part of your workflow")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Text("Unlimited chats, file uploads, and Output Studio stay one tap away.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer(minLength: 0)
+                }
+
+                HStack(spacing: AppTheme.spacingSM) {
+                    SettingsFeaturePill(icon: "message", title: "Unlimited")
+                    SettingsFeaturePill(icon: "paperclip", title: "Files")
+                    SettingsFeaturePill(icon: "wand.and.stars", title: "Studio")
+                }
+
+                Label("View Plans", systemImage: "arrow.up.right")
+                    .font(.subheadline)
+                    .bold()
+                    .foregroundStyle(AppTheme.accent)
+            }
+            .padding(.vertical, AppTheme.spacingSM)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Upgrade to Ari+")
+    }
+}
+
+private struct SettingsFeaturePill: View {
+    let icon: String
+    let title: String
+
+    var body: some View {
+        Label(title, systemImage: icon)
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .padding(.horizontal, AppTheme.spacingSM)
+            .padding(.vertical, 5)
+            .background(.thinMaterial, in: Capsule())
+    }
+}
 
 // MARK: - Privacy Row
 

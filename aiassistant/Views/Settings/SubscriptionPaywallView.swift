@@ -5,6 +5,7 @@ import StoreKit
 struct SubscriptionPaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(StoreKitService<AppSubscriptionTier>.self) private var store
+    private let featureColumns = [GridItem(.adaptive(minimum: 96), spacing: AppTheme.spacingSM)]
 
     var body: some View {
         NavigationStack {
@@ -35,7 +36,7 @@ struct SubscriptionPaywallView: View {
                     lifetimeSection
                 }
             }
-            .navigationTitle("Upgrade")
+            .navigationTitle("Ari+")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -61,32 +62,39 @@ struct SubscriptionPaywallView: View {
     }
 
     private var lifetimeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Or own it forever")
-                .font(.headline)
+        VStack(alignment: .leading, spacing: AppTheme.spacingLG) {
+            HStack(alignment: .top, spacing: AppTheme.spacingMD) {
+                AppIconBadge(systemImage: "infinity", tint: AppTheme.highlight, size: 42)
 
-            Text("Lifetime access is a one-time purchase and priced higher than subscriptions.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Prefer one purchase?")
+                        .font(.headline)
+                    Text("Lifetime unlocks Ari+ once and keeps the premium tools available without a subscription.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            }
 
             NonConsumablePurchaseButton<AppSubscriptionTier>(
                 productID: Monetization.lifetimeID,
-                title: "Buy Lifetime Access",
+                title: "Buy Lifetime",
                 purchasedTitle: "Lifetime Unlocked"
             )
             .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .tint(AppTheme.accent)
 
-            HStack {
-                RestorePurchasesButton<AppSubscriptionTier>()
-                Spacer()
-                ManageSubscriptionsButton()
-            }
-            .font(.footnote)
-            .foregroundStyle(.secondary)
+            VStack(alignment: .leading, spacing: AppTheme.spacingSM) {
+                HStack {
+                    RestorePurchasesButton<AppSubscriptionTier>()
+                    Spacer()
+                    ManageSubscriptionsButton()
+                }
 
-            HStack(spacing: 14) {
-                Link("Privacy Policy", destination: Monetization.privacyPolicyURL)
-                Link("Terms of Service", destination: Monetization.termsOfServiceURL)
+                HStack(spacing: 14) {
+                    Link("Privacy Policy", destination: Monetization.privacyPolicyURL)
+                    Link("Terms of Service", destination: Monetization.termsOfServiceURL)
+                }
             }
             .font(.footnote)
             .foregroundStyle(.secondary)
@@ -98,49 +106,103 @@ struct SubscriptionPaywallView: View {
     }
 
     private var marketingHeader: some View {
-        VStack(spacing: 18) {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .fill(AppTheme.accentGradient)
-                .frame(width: 110, height: 110)
-                .overlay {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 44, weight: .semibold))
-                        .foregroundStyle(.white)
+        VStack(spacing: AppTheme.spacingLG) {
+            VStack(spacing: AppTheme.spacingSM) {
+                PaywallHeroMark()
+
+                VStack(spacing: AppTheme.spacingSM) {
+                    Text("Get more done with Ari+")
+                        .font(.title)
+                        .bold()
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text("Unlimited chats, file uploads, and Output Studio for turning rough answers into work you can use.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
                 }
+                .frame(maxWidth: 460)
+            }
 
-            Text("Ari+")
-                .font(.largeTitle.weight(.bold))
-
-            Text("Choose weekly, monthly, or yearly access.")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text("What's Included")
-                    .font(.headline)
+            LazyVGrid(columns: featureColumns, spacing: AppTheme.spacingSM) {
                 ForEach(Monetization.paywallFeatures) { feature in
-                    HStack(alignment: .top, spacing: 10) {
-                        Image(systemName: feature.icon)
-                            .foregroundStyle(feature.accentColor)
-                            .frame(width: 20)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(feature.title)
-                                .font(.subheadline.weight(.semibold))
-                            Text(feature.description)
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                    }
-                    .padding(10)
-                    .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    PaywallFeatureChip(feature: feature)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+
+            PaywallAssuranceGrid()
         }
         .padding(.horizontal, AppTheme.spacingLG)
         .padding(.top, AppTheme.spacingMD)
+        .padding(.bottom, AppTheme.spacingMD)
+    }
+}
+
+private struct PaywallHeroMark: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 22)
+                .fill(AppTheme.accent)
+                .frame(width: 68, height: 68)
+                .shadow(color: AppTheme.accent.opacity(0.18), radius: 14, x: 0, y: 8)
+
+            Image(systemName: "sparkles")
+                .font(.system(size: 28, weight: .semibold))
+                .foregroundStyle(.white)
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+private struct PaywallAssuranceGrid: View {
+    private let assurances = [
+        ("checkmark.seal", "Cancel anytime"),
+        ("lock.shield", "Apple checkout"),
+        ("rectangle.and.pencil.and.ellipsis", "No ads")
+    ]
+
+    private let columns = [GridItem(.adaptive(minimum: 98), spacing: AppTheme.spacingSM)]
+
+    var body: some View {
+        LazyVGrid(columns: columns, spacing: AppTheme.spacingSM) {
+            ForEach(assurances, id: \.1) { assurance in
+                Label(assurance.1, systemImage: assurance.0)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, AppTheme.spacingMD)
+                    .padding(.vertical, AppTheme.spacingSM)
+                    .background(.thinMaterial, in: Capsule())
+            }
+        }
+    }
+}
+
+private struct PaywallFeatureChip: View {
+    let feature: SubscriptionFeature
+
+    var body: some View {
+        VStack(spacing: AppTheme.spacingSM) {
+            AppIconBadge(systemImage: feature.icon, tint: feature.accentColor, size: 34)
+
+            Text(feature.title)
+                .font(.footnote)
+                .bold()
+                .foregroundStyle(.primary)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(minHeight: 92)
+        .padding(AppTheme.spacingSM)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: AppTheme.radiusSmall))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.radiusSmall)
+                .stroke(AppTheme.surfaceStroke, lineWidth: 0.5)
+        )
     }
 }
 

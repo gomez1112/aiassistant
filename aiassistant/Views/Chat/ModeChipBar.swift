@@ -29,7 +29,7 @@ struct ModeChipBar: View {
         .accessibilityLabel("Mode selector")
         #else
         ScrollView(.horizontal) {
-            HStack(spacing: 6) {
+            HStack(spacing: AppTheme.spacingSM) {
                 ForEach(modes) { mode in
                     ModeChip(
                         mode: mode,
@@ -56,18 +56,18 @@ struct ModeChip: View {
     var body: some View {
         Button(action: action) {
             Label(mode.chipLabel, systemImage: mode.icon)
-                .font(.system(size: 13, weight: isSelected ? .semibold : .medium))
+                .font(isSelected ? .subheadline.bold() : .subheadline)
                 .padding(.horizontal, 14)
-                .padding(.vertical, 7)
+                .padding(.vertical, 8)
                 .background(
-                    Capsule(style: .continuous)
+                    Capsule()
                         .fill(isSelected
-                            ? AnyShapeStyle(AppTheme.accentGradient)
-                            : AnyShapeStyle(AppTheme.surface)
+                            ? AnyShapeStyle(AppTheme.accent)
+                            : AnyShapeStyle(.thinMaterial)
                         )
                 )
                 .overlay(
-                    Capsule(style: .continuous)
+                    Capsule()
                         .stroke(
                             isSelected ? Color.clear : AppTheme.surfaceStroke,
                             lineWidth: 0.5

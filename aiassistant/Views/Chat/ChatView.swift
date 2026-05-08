@@ -88,22 +88,6 @@ struct ChatView: View {
     private var remainingFreeMessages: Int {
         max(0, Monetization.freeDailyMessageLimit - todayUserMessageCount)
     }
-    private var modeGuidanceText: String {
-        switch dataModel.selectedMode {
-        case .general:
-            "General mode: ask anything, or pick a mode above for more structured help."
-        case .write:
-            "Write mode: ask for drafts, rewrites, or polished messages."
-        case .summarize:
-            "Summarize mode: paste text and ask for key points or a short summary."
-        case .explain:
-            "Explain mode: ask concepts in simple terms, step-by-step."
-        case .plan:
-            "Plan mode: ask for actionable plans, timelines, or checklists."
-        case .brainstorm:
-            "Brainstorm mode: ask for ideas, options, and creative alternatives."
-        }
-    }
 
     var body: some View {
         @Bindable var dataModel = dataModel
@@ -115,33 +99,13 @@ struct ChatView: View {
                 .frame(maxWidth: contentMaxWidth)
                 .frame(maxWidth: .infinity)
 
-                AppBanner(
-                    systemImage: dataModel.selectedMode.icon,
-                    message: modeGuidanceText,
-                    tint: AppTheme.accent
-                )
-                    .padding(.horizontal, AppTheme.spacingLG)
-                    .padding(.top, 6)
-                    .padding(.bottom, 8)
-                    .frame(maxWidth: contentMaxWidth)
-                    .frame(maxWidth: .infinity)
-
                 if !hasPremiumAccess {
-                    AppBanner(
-                        systemImage: "sparkles",
-                        message: "Free plan: \(remainingFreeMessages) of \(Monetization.freeDailyMessageLimit) messages left today.",
-                        tint: AppTheme.highlight
-                    ) {
-                        Button("Upgrade") {
-                            showPaywall = true
-                        }
-                        .font(.footnote.bold())
-                        .buttonStyle(.bordered)
-                        .buttonBorderShape(.capsule)
-                        .controlSize(.small)
-                        .tint(AppTheme.accent)
-                    }
+                    UpgradeTeaserBanner(
+                        remainingFreeMessages: remainingFreeMessages,
+                        action: { showPaywall = true }
+                    )
                     .padding(.horizontal, AppTheme.spacingLG)
+                    .padding(.top, 2)
                     .padding(.bottom, 8)
                     .frame(maxWidth: contentMaxWidth)
                     .frame(maxWidth: .infinity)
@@ -620,13 +584,50 @@ private struct ChatEmptyStateView: View {
 
     var body: some View {
         AppEmptyStateView(
-            title: "Hello!",
+            title: "What can we finish today?",
             systemImage: "sparkles",
-            description: "Start a conversation with \(assistantName). Pick a mode above or just say what's on your mind.",
-            actionTitle: "New Chat",
+            description: "Ask \(assistantName) to draft, explain, plan, or turn a file into clear next steps.",
+            actionTitle: "Start Chat",
             actionSystemImage: "square.and.pencil",
             action: onNewChat
         )
+    }
+}
+
+private struct UpgradeTeaserBanner: View {
+    let remainingFreeMessages: Int
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(alignment: .center, spacing: AppTheme.spacingMD) {
+                AppIconBadge(systemImage: "sparkles", tint: AppTheme.highlight, size: 34)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Ari+ removes the limits")
+                        .font(.subheadline)
+                        .bold()
+                    Text("\(remainingFreeMessages) free messages left. Unlimited chats, files, and Output Studio.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                Label("Ari+", systemImage: "arrow.up.right")
+                    .font(.footnote)
+                    .bold()
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, AppTheme.spacingMD)
+                    .padding(.vertical, 7)
+                    .background(AppTheme.accent, in: Capsule())
+            }
+            .padding(.horizontal, AppTheme.spacingMD)
+            .padding(.vertical, AppTheme.spacingSM)
+            .appSurface(cornerRadius: AppTheme.radiusSmall)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Upgrade to Ari+. \(remainingFreeMessages) free messages left. Unlimited chats, files, and Output Studio.")
     }
 }
 

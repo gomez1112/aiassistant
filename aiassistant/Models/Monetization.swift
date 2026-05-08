@@ -53,9 +53,9 @@ enum Monetization {
     ]
 
     static let paywallFeatures: [SubscriptionFeature] = [
-        .init(icon: "message.badge.waveform", title: "Unlimited chats", description: "No daily cap for conversations and follow-ups.", accentColor: AppTheme.accent),
-        .init(icon: "wand.and.stars", title: "Advanced transforms", description: "Premium writing, planning, and output transformations.", accentColor: AppTheme.highlight),
-        .init(icon: "icloud", title: "Priority sync", description: "Faster CloudKit sync and cross-device continuity.", accentColor: AppTheme.accentLight)
+        .init(icon: "message.badge.waveform", title: "Unlimited conversations", description: "Follow ideas all the way through without the daily message cap.", accentColor: AppTheme.accent),
+        .init(icon: "paperclip", title: "File and image uploads", description: "Bring PDFs and images into chat when you need summaries or next steps.", accentColor: AppTheme.highlight),
+        .init(icon: "wand.and.stars", title: "Output Studio", description: "Turn any answer into drafts, plans, checklists, or study material.", accentColor: AppTheme.accentLight)
     ]
 }
 

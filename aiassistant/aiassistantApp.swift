@@ -87,22 +87,22 @@ struct AIAssistantApp: App {
     private var onboardingPages: [OnboardingPage] {
         [
             OnboardingPage(
-                title: "Welcome to Ari",
-                description: "Ask questions, write drafts, and turn ideas into polished outputs across all your devices.",
+                title: "Meet Ari",
+                description: "A calm place to ask, write, explain, and turn loose thoughts into finished work.",
                 systemImage: "sparkles",
                 backgroundColor: .clear,
                 iconColor: AppTheme.accent
             ),
             OnboardingPage(
-                title: "Upload and Understand",
-                description: "Bring PDFs and images into chat for summaries and explanations in seconds.",
+                title: "Bring the File",
+                description: "Upload PDFs and images, then ask for summaries, next steps, or plain-English explanations.",
                 systemImage: "paperclip",
                 backgroundColor: .clear,
                 iconColor: AppTheme.highlight
             ),
             OnboardingPage(
-                title: "Save Your Best Work",
-                description: "Artifacts and Library keep your drafts, plans, and references organized.",
+                title: "Keep the Good Stuff",
+                description: "Save useful answers as outputs and keep your source notes close in Library.",
                 systemImage: "books.vertical.fill",
                 backgroundColor: .clear,
                 iconColor: AppTheme.accentLight
@@ -113,16 +113,16 @@ struct AIAssistantApp: App {
     private var whatsNewFeatures: [FeatureItem] {
         [
             FeatureItem(
-                title: "Built-in Subscription Paywall",
-                description: "Choose weekly, monthly, yearly, or lifetime access from Settings.",
-                systemImage: "creditcard",
+                title: "Ari+",
+                description: "Upgrade for unlimited conversations, file uploads, Output Studio, or lifetime access.",
+                systemImage: "sparkles",
                 backgroundColor: .clear,
                 iconColor: AppTheme.accent
             ),
             FeatureItem(
-                title: "Cross-Platform Polish",
-                description: "Shared visual language and behavior across iOS, iPadOS, and macOS.",
-                systemImage: "ipad.and.iphone",
+                title: "Cleaner Workspace",
+                description: "A simpler chat surface keeps the focus on the answer you came here for.",
+                systemImage: "square.grid.2x2",
                 backgroundColor: .clear,
                 iconColor: AppTheme.highlight
             )

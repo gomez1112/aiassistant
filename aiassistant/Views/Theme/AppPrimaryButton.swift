@@ -4,17 +4,20 @@ struct AppPrimaryButton: View {
     let title: String
     let systemImage: String?
     let isDisabled: Bool
+    let fillsWidth: Bool
     let action: () -> Void
 
     init(
         _ title: String,
         systemImage: String? = nil,
         isDisabled: Bool = false,
+        fillsWidth: Bool = false,
         action: @escaping () -> Void
     ) {
         self.title = title
         self.systemImage = systemImage
         self.isDisabled = isDisabled
+        self.fillsWidth = fillsWidth
         self.action = action
     }
 
@@ -34,8 +37,9 @@ struct AppPrimaryButton: View {
     private var button: some View {
         Button(action: action) {
             label
-                .font(.subheadline.bold())
-                .frame(minHeight: AppTheme.minimumTapTarget)
+                .font(.headline)
+                .frame(maxWidth: fillsWidth ? .infinity : nil)
+                .frame(minHeight: 48)
         }
         .disabled(isDisabled)
     }
