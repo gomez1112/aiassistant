@@ -22,8 +22,6 @@ struct ArtifactDetailView: View {
     @State private var copiedFeedback = false
     @State private var showPaywall = false
     @State private var showPersistenceError = false
-    @State private var showUpgradeAlert = false
-    @State private var upgradePromptMessage = ""
 
     var body: some View {
         ScrollView {
@@ -160,13 +158,7 @@ struct ArtifactDetailView: View {
             TagEditorSheet(artifact: artifact)
         }
         .sheet(isPresented: $showPaywall) {
-            SubscriptionPaywallView()
-        }
-        .alert("Upgrade to Ari+", isPresented: $showUpgradeAlert) {
-            Button("Not Now", role: .cancel) {}
-            Button("Upgrade") { showPaywall = true }
-        } message: {
-            Text(upgradePromptMessage)
+            SubscriptionPaywallView(context: .outputStudio)
         }
         .alert("Couldn’t save changes", isPresented: $showPersistenceError) {
             Button("OK", role: .cancel) {
@@ -182,8 +174,7 @@ struct ArtifactDetailView: View {
 
     private func transformArtifact(type: TransformType) {
         guard subscriptionStore.hasPremiumAccess else {
-            upgradePromptMessage = "Artifact transforms are available on Ari+ plans."
-            showUpgradeAlert = true
+            showPaywall = true
             return
         }
 

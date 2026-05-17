@@ -75,4 +75,22 @@ struct AIAssistantTests {
         #expect(AppSubscriptionTier(productID: Monetization.lifetimeID) == nil)
         #expect(AppSubscriptionTier.yearly > .monthly)
     }
+
+    @Test func paywallUsesYearlyFirstSubscriptionPath() {
+        let preferredOrder = [
+            Monetization.subscriptionYearlyID,
+            Monetization.subscriptionMonthlyID,
+            Monetization.subscriptionWeeklyID
+        ]
+
+        #expect(preferredOrder.first == Monetization.subscriptionYearlyID)
+        #expect(preferredOrder.allSatisfy { Monetization.subscriptionProductIDs.contains($0) })
+    }
+
+    @Test func paywallContextsMatchPremiumFeatureGates() {
+        #expect(SubscriptionPaywallContext.messageLimit.title == "Keep the conversation going")
+        #expect(SubscriptionPaywallContext.fileUpload.eyebrow == "File upload")
+        #expect(SubscriptionPaywallContext.outputStudio.icon == "wand.and.stars")
+        #expect(SubscriptionPaywallContext.librarySummary.title == "Summarize saved source material")
+    }
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import OnboardingKit
+import FlexStore
 
 @main
 struct AIAssistantApp: App {
@@ -15,6 +16,7 @@ struct AIAssistantApp: App {
     
     @State private var dataModel = DataModel()
     @State private var subscriptionStore = SubscriptionStore()
+    @State private var flexStore = StoreKitService<AppSubscriptionTier>()
     
     init() {
         let schema = Schema([
@@ -57,6 +59,11 @@ struct AIAssistantApp: App {
                 RootTabView()
                     .environment(dataModel)
                     .environment(subscriptionStore)
+                    .attachStoreKit(
+                        manager: flexStore,
+                        groupID: Monetization.subscriptionGroupID,
+                        ids: Monetization.productIDs
+                    )
             }
             .task {
                 await subscriptionStore.start()
@@ -72,6 +79,11 @@ struct AIAssistantApp: App {
             AppSettingsSceneView()
                 .environment(dataModel)
                 .environment(subscriptionStore)
+                .attachStoreKit(
+                    manager: flexStore,
+                    groupID: Monetization.subscriptionGroupID,
+                    ids: Monetization.productIDs
+                )
         }
         .modelContainer(modelContainer)
         #endif

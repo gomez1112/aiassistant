@@ -103,6 +103,22 @@ final class AssistantEngine {
 
         state = .generating
 
+        #if targetEnvironment(simulator)
+        let fallbackText = simulatorFallbackResponse(
+            input: input,
+            mode: mode,
+            attachmentContext: attachmentContext
+        )
+        state = .complete
+        streamingText = ""
+        return GenerationResult(
+            text: fallbackText,
+            mode: mode,
+            suggestedArtifact: suggestArtifact(from: fallbackText, mode: mode),
+            ariGuidance: nil,
+            ariMood: nil
+        )
+        #else
         #if canImport(FoundationModels)
         do {
             let result = try await generateWithFoundationModels(
@@ -149,6 +165,7 @@ final class AssistantEngine {
             ariMood: nil
         )
         #endif
+        #endif
     }
 
     // MARK: - Transform Content
@@ -166,6 +183,9 @@ final class AssistantEngine {
         defer { isTransforming = false }
 
         #if canImport(FoundationModels)
+        #if targetEnvironment(simulator)
+        return simulatorTransformResponse(content: content, type: type)
+        #else
         do {
             return try await transformWithFoundationModels(
                 content: content,
@@ -177,6 +197,7 @@ final class AssistantEngine {
         } catch {
             return "Transform failed: \(error.localizedDescription)"
         }
+        #endif
         #else
         return "On-device AI is unavailable on this device right now."
         #endif
@@ -189,6 +210,9 @@ final class AssistantEngine {
         defer { isTransforming = false }
 
         #if canImport(FoundationModels)
+        #if targetEnvironment(simulator)
+        return simulatorSummaryResponse(text: text)
+        #else
         do {
             let session = LanguageModelSession()
             let prompt = "Summarize the following text in 2-3 concise sentences:\n\n\(text)"
@@ -199,6 +223,7 @@ final class AssistantEngine {
         } catch {
             return "Summary failed: \(error.localizedDescription)"
         }
+        #endif
         #else
         return "On-device AI is unavailable on this device right now."
         #endif
@@ -407,4 +432,90 @@ final class AssistantEngine {
             return "\(role): \(msg.text)"
         }.joined(separator: "\n\n")
     }
+
+    #if targetEnvironment(simulator)
+    private func simulatorFallbackResponse(
+        input: String,
+        mode: AssistantMode,
+        attachmentContext: String?
+    ) -> String {
+        let trimmedInput = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        let attachmentNote = attachmentContext == nil
+            ? ""
+            : "\n\nI also detected attached content and would use it as source material on device."
+
+        switch mode {
+        case .write:
+            return """
+            Welcome aboard. Ari gives you a calm place to draft, plan, summarize, and turn rough ideas into polished work.
+
+            Start with one small request, then keep refining until it feels ready.\(attachmentNote)
+            """
+        case .summarize:
+            return """
+            ## Summary
+
+            • The request asks for a concise summary.
+            • Ari would identify the main point, preserve useful details, and remove extra noise.
+            • On a physical device, the on-device model generates the full response.\(attachmentNote)
+            """
+        case .explain:
+            return """
+            Ari would explain "\(trimmedInput)" in plain language, then add a short example so the idea is easier to use.
+
+            The simulator is using a local test response to keep chat testing responsive.\(attachmentNote)
+            """
+        case .plan:
+            return """
+            1. Define the goal.
+            2. Break it into the next three actions.
+            3. Decide what can be finished today.
+            4. Save the useful output for later.\(attachmentNote)
+            """
+        case .brainstorm:
+            return """
+            • Start with the most obvious version.
+            • Try a calmer, simpler version.
+            • Try a more ambitious version.
+            • Pick the one that makes the next step easiest.\(attachmentNote)
+            """
+        case .general:
+            return """
+            I can help with that. For "\(trimmedInput)", I would start by clarifying the outcome, then give you a short draft or plan you can immediately edit.\(attachmentNote)
+            """
+        }
+    }
+
+    private func simulatorTransformResponse(content: String, type: TransformType) -> String {
+        let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        switch type {
+        case .shorter:
+            return String(trimmed.prefix(180))
+        case .moreFormal:
+            return "Here is a more polished version:\n\n\(trimmed)"
+        case .bullets:
+            return "• \(trimmed.replacingOccurrences(of: "\n", with: "\n• "))"
+        case .quiz:
+            return """
+            Q: What is the main idea?
+            A) A detail
+            B) The central point
+            C) An unrelated option
+            D) None of the above
+            Correct: B
+            """
+        case .flashcards:
+            return """
+            Q: What should I remember?
+            A: The key point from the saved content.
+            """
+        }
+    }
+
+    private func simulatorSummaryResponse(text: String) -> String {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let preview = trimmed.count > 180 ? String(trimmed.prefix(180)) + "..." : trimmed
+        return "Simulator summary: \(preview)"
+    }
+    #endif
 }

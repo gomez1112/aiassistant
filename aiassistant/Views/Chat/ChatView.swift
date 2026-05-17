@@ -38,11 +38,11 @@ struct ChatView: View {
     @State private var importErrorMessage: String?
     @State private var showImportError = false
     @State private var showPaywall = false
+    @State private var paywallContext: SubscriptionPaywallContext = .general
     @State private var showPersistenceError = false
-    @State private var showUpgradeAlert = false
-    @State private var upgradePromptMessage = ""
     @State private var generationTask: Task<Void, Never>?
     @State private var outputStudioSourceMessage: Message?
+    @State private var ariGuidanceThreadID: UUID?
 
     private var activeThread: Thread? { dataModel.activeThread }
     private var assistantName: String { preferences.ariEnabled ? "Ari" : "Assistant" }
@@ -87,6 +87,11 @@ struct ChatView: View {
     private var remainingFreeMessages: Int {
         max(0, Monetization.freeDailyMessageLimit - todayUserMessageCount)
     }
+    private var shouldShowAriGuidance: Bool {
+        preferences.ariEnabled &&
+        !dataModel.ari.guidanceLine.isEmpty &&
+        activeThread?.id == ariGuidanceThreadID
+    }
 
     var body: some View {
         @Bindable var dataModel = dataModel
@@ -101,7 +106,9 @@ struct ChatView: View {
                 if !hasPremiumAccess {
                     UpgradeTeaserBanner(
                         remainingFreeMessages: remainingFreeMessages,
-                        action: { showPaywall = true }
+                        action: {
+                            presentPaywall(context: remainingFreeMessages <= 2 ? .messageLimit : .general)
+                        }
                     )
                     .padding(.horizontal, AppTheme.spacingLG)
                     .padding(.top, 0)
@@ -132,34 +139,41 @@ struct ChatView: View {
 
                 // Messages
                 if let thread = activeThread {
-                    MessageListView(
-                        thread: thread,
-                        preferences: preferences,
-                        isGenerating: isGenerating,
-                        onSaveArtifact: { message, suggestion in
-                            let _ = dataModel.saveArtifact(
-                                from: suggestion,
-                                message: message,
-                                in: modelContext
-                            )
-                            dataModel.ari.update(
-                                messages: thread.sortedMessages,
-                                lastMode: dataModel.selectedMode,
-                                preferences: preferences,
-                                justSavedArtifact: true
-                            )
-                        },
-                        onOpenOutputStudio: { message in
-                            if hasPremiumAccess {
-                                outputStudioSourceMessage = message
-                                showOutputStudio = true
-                            } else {
-                                promptUpgrade("Output transformations are a premium feature.")
+                    if thread.sortedMessages.isEmpty {
+                        ChatEmptyStateView(assistantName: assistantName)
+                            .frame(maxWidth: contentMaxWidth)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        MessageListView(
+                            thread: thread,
+                            preferences: preferences,
+                            isGenerating: isGenerating,
+                            onSaveArtifact: { message, suggestion in
+                                let _ = dataModel.saveArtifact(
+                                    from: suggestion,
+                                    message: message,
+                                    in: modelContext
+                                )
+                                dataModel.ari.update(
+                                    messages: thread.sortedMessages,
+                                    lastMode: dataModel.selectedMode,
+                                    preferences: preferences,
+                                    justSavedArtifact: true
+                                )
+                                ariGuidanceThreadID = thread.id
+                            },
+                            onOpenOutputStudio: { message in
+                                if hasPremiumAccess {
+                                    outputStudioSourceMessage = message
+                                    showOutputStudio = true
+                                } else {
+                                    presentPaywall(context: .outputStudio)
+                                }
                             }
-                        }
-                    )
-                    .frame(maxWidth: contentMaxWidth)
-                    .frame(maxWidth: .infinity)
+                        )
+                        .frame(maxWidth: contentMaxWidth)
+                        .frame(maxWidth: .infinity)
+                    }
                 } else {
                     ChatEmptyStateView(
                         assistantName: assistantName,
@@ -170,9 +184,7 @@ struct ChatView: View {
                 }
 
                 // Ari guidance
-                if preferences.ariEnabled,
-                   !dataModel.ari.guidanceLine.isEmpty,
-                   activeThread != nil {
+                if shouldShowAriGuidance {
                     AriGuidanceBar(
                         ari: dataModel.ari,
                         onAction: handleAriAction
@@ -247,7 +259,7 @@ struct ChatView: View {
                 ThreadListSheet(
                     threads: threads,
                     onSelect: { thread in
-                        dataModel.activeThread = thread
+                        selectThread(thread)
                         showThreadList = false
                     },
                     onDelete: { thread in
@@ -283,7 +295,7 @@ struct ChatView: View {
             }
             #endif
             .sheet(isPresented: $showPaywall) {
-                SubscriptionPaywallView()
+                SubscriptionPaywallView(context: paywallContext)
             }
             .fileImporter(
                 isPresented: $showFileImporter,
@@ -298,14 +310,6 @@ struct ChatView: View {
                 }
             } message: {
                 Text(importErrorMessage ?? "Please try another file.")
-            }
-            .alert("Upgrade to Ari+", isPresented: $showUpgradeAlert) {
-                Button("Not Now", role: .cancel) {}
-                Button("Upgrade") {
-                    showPaywall = true
-                }
-            } message: {
-                Text(upgradePromptMessage)
             }
             .alert("Couldn’t save changes", isPresented: $showPersistenceError) {
                 Button("OK", role: .cancel) {
@@ -337,7 +341,26 @@ struct ChatView: View {
 
     private func createNewThread() {
         let thread = dataModel.createThread(in: modelContext)
+        selectThread(thread)
+    }
+
+    private func selectThread(_ thread: Thread) {
         dataModel.activeThread = thread
+        syncAriGuidance(to: thread)
+    }
+
+    private func syncAriGuidance(to thread: Thread?) {
+        guard let thread, !thread.sortedMessages.isEmpty else {
+            ariGuidanceThreadID = nil
+            return
+        }
+
+        dataModel.ari.update(
+            messages: thread.sortedMessages,
+            lastMode: thread.sortedMessages.last?.mode ?? dataModel.selectedMode,
+            preferences: preferences
+        )
+        ariGuidanceThreadID = thread.id
     }
 
     #if !os(macOS)
@@ -366,7 +389,7 @@ struct ChatView: View {
             })
             let freshCount = (try? modelContext.fetchCount(descriptor)) ?? todayUserMessageCount
             if freshCount >= Monetization.freeDailyMessageLimit {
-                promptUpgrade("You've reached today's free message limit. Upgrade for unlimited chats.")
+                presentPaywall(context: .messageLimit)
                 return
             }
         }
@@ -385,6 +408,7 @@ struct ChatView: View {
         pendingAttachmentText = nil
         pendingAttachmentName = nil
         isGenerating = true
+        ariGuidanceThreadID = thread.id
 
         generationTask = Task {
             defer { isGenerating = false }
@@ -396,6 +420,9 @@ struct ChatView: View {
                 context: modelContext,
                 preferences: preferences
             )
+            if dataModel.activeThread?.id == thread.id {
+                ariGuidanceThreadID = thread.id
+            }
         }
     }
 
@@ -408,21 +435,22 @@ struct ChatView: View {
 
     private func handleAttachAction() {
         guard hasPremiumAccess else {
-            promptUpgrade("File upload is available on Ari+ plans.")
+            presentPaywall(context: .fileUpload)
             return
         }
         showFileImporter = true
     }
 
-    private func promptUpgrade(_ message: String) {
-        upgradePromptMessage = message
-        showUpgradeAlert = true
+    private func presentPaywall(context: SubscriptionPaywallContext) {
+        paywallContext = context
+        showPaywall = true
     }
 
     private func handleAriAction(_ action: AriActionType) {
         switch action {
         case .saveArtifact:
-            if let msg = dataModel.lastAssistantMessage {
+            if let msg = dataModel.lastAssistantMessage,
+               let thread = activeThread {
                 let suggestion = ArtifactSuggestion(
                     kind: .other,
                     title: "Saved Output",
@@ -434,13 +462,24 @@ struct ChatView: View {
                     message: msg,
                     in: modelContext
                 )
+                dataModel.ari.update(
+                    messages: thread.sortedMessages,
+                    lastMode: dataModel.selectedMode,
+                    preferences: preferences,
+                    justSavedArtifact: true
+                )
+                ariGuidanceThreadID = thread.id
             }
         case .createChecklist:
             composerText = "Turn that into a checklist"
             sendMessage()
         case .refineTone:
-            outputStudioSourceMessage = dataModel.lastAssistantMessage
-            showOutputStudio = true
+            if hasPremiumAccess {
+                outputStudioSourceMessage = dataModel.lastAssistantMessage
+                showOutputStudio = true
+            } else {
+                presentPaywall(context: .outputStudio)
+            }
         case .askFollowUp:
             composerText = "Tell me more about that"
             sendMessage()
@@ -550,10 +589,16 @@ struct ChatView: View {
     private func ensureActiveThreadSelection() {
         if let activeThread = dataModel.activeThread {
             if threads.contains(where: { $0.id == activeThread.id }) {
+                syncAriGuidance(to: activeThread)
                 return
             }
         }
-        dataModel.activeThread = threads.first
+        if let thread = threads.first {
+            selectThread(thread)
+        } else {
+            dataModel.activeThread = nil
+            ariGuidanceThreadID = nil
+        }
     }
 }
 
@@ -579,15 +624,15 @@ private enum ImportError: LocalizedError {
 
 private struct ChatEmptyStateView: View {
     let assistantName: String
-    let onNewChat: () -> Void
+    var onNewChat: (() -> Void)?
 
     var body: some View {
         AppEmptyStateView(
             title: "What can we finish today?",
             systemImage: "sparkles",
             description: "Ask \(assistantName) to draft, explain, plan, or turn a file into clear next steps.",
-            actionTitle: "Start Chat",
-            actionSystemImage: "square.and.pencil",
+            actionTitle: onNewChat == nil ? nil : "Start Chat",
+            actionSystemImage: onNewChat == nil ? nil : "square.and.pencil",
             action: onNewChat
         )
     }
@@ -597,23 +642,30 @@ private struct UpgradeTeaserBanner: View {
     let remainingFreeMessages: Int
     let action: () -> Void
 
+    private var isLimitClose: Bool {
+        remainingFreeMessages <= 2
+    }
+
     var body: some View {
         Button(action: action) {
             HStack(spacing: AppTheme.spacingSM) {
-                Image(systemName: "sparkles")
+                Image(systemName: isLimitClose ? "message.badge" : "sparkles")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(AppTheme.highlight)
                     .frame(width: 20)
 
-                Text("\(remainingFreeMessages) free messages left")
+                Text(isLimitClose ? "\(remainingFreeMessages) free messages left today" : "Start trial for unlimited chat")
                     .font(.footnote.weight(.medium))
                     .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.82)
 
                 Spacer(minLength: AppTheme.spacingSM)
 
-                Label("Ari+", systemImage: "arrow.up.right")
+                Label(isLimitClose ? "Start Trial" : "Ari+", systemImage: "arrow.up.right")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(AppTheme.accent)
+                    .lineLimit(1)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 7)
@@ -621,7 +673,7 @@ private struct UpgradeTeaserBanner: View {
             .overlay(Capsule().stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Upgrade to Ari+. \(remainingFreeMessages) free messages left. Unlimited chats, files, and Output Studio.")
+        .accessibilityLabel("Upgrade to Ari+. \(remainingFreeMessages) free messages left. Start a free trial for unlimited chats, files, and Output Studio.")
     }
 }
 

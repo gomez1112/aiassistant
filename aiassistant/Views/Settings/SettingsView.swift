@@ -203,7 +203,7 @@ struct SettingsView: View {
             #endif
         }
         .sheet(isPresented: $showPaywall) {
-            SubscriptionPaywallView()
+            SubscriptionPaywallView(context: .settings)
         }
     }
 
@@ -277,7 +277,7 @@ private struct SettingsAriPlusCard: View {
                     AppIconBadge(systemImage: "sparkles", tint: AppTheme.highlight, size: 40)
 
                     VStack(alignment: .leading, spacing: 3) {
-                        Text("Upgrade when Ari becomes part of your workflow")
+                        Text("Upgrade with Ari+")
                             .font(.headline)
                             .foregroundStyle(.primary)
                             .fixedSize(horizontal: false, vertical: true)
@@ -297,7 +297,7 @@ private struct SettingsAriPlusCard: View {
                     SettingsFeaturePill(icon: "wand.and.stars", title: "Studio")
                 }
 
-                Label("View Plans", systemImage: "arrow.up.right")
+                Label("View Subscriptions", systemImage: "arrow.up.right")
                     .font(.subheadline)
                     .bold()
                     .foregroundStyle(AppTheme.accent)

@@ -17,6 +17,7 @@ enum AppTheme {
     static let accentLight = Color(red: 0.32, green: 0.58, blue: 0.86)
     static let highlight = Color(red: 0.12, green: 0.56, blue: 0.48)
     static let highlightSoft = Color(red: 0.68, green: 0.86, blue: 0.82)
+    static let paywallTint = Color(red: 0.10, green: 0.36, blue: 0.72)
     static let deep = Color(red: 0.08, green: 0.10, blue: 0.14)
     static let midground = Color(red: 0.17, green: 0.20, blue: 0.25)
     static let petal = Color(red: 0.97, green: 0.98, blue: 1.0)

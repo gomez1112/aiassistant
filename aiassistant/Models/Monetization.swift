@@ -1,6 +1,7 @@
 import SwiftUI
+import FlexStore
 
-enum AppSubscriptionTier: Int, CaseIterable, Comparable, Identifiable, Sendable {
+enum AppSubscriptionTier: Int, CaseIterable, Comparable, Identifiable, Sendable, SubscriptionTier {
     case free = 0
     case weekly = 1
     case monthly = 2
@@ -15,11 +16,11 @@ enum AppSubscriptionTier: Int, CaseIterable, Comparable, Identifiable, Sendable 
 
     init?(productID: String) {
         switch productID {
-        case Monetization.subscriptionWeeklyID:
+        case "com.transfinite.aiassistant.premium.weekly":
             self = .weekly
-        case Monetization.subscriptionMonthlyID:
+        case "com.transfinite.aiassistant.premium.monthly":
             self = .monthly
-        case Monetization.subscriptionYearlyID:
+        case "com.transfinite.aiassistant.premium.yearly":
             self = .yearly
         default:
             return nil
@@ -31,11 +32,11 @@ enum AppSubscriptionTier: Int, CaseIterable, Comparable, Identifiable, Sendable 
         case .free:
             nil
         case .weekly:
-            Monetization.subscriptionWeeklyID
+            "com.transfinite.aiassistant.premium.weekly"
         case .monthly:
-            Monetization.subscriptionMonthlyID
+            "com.transfinite.aiassistant.premium.monthly"
         case .yearly:
-            Monetization.subscriptionYearlyID
+            "com.transfinite.aiassistant.premium.yearly"
         }
     }
 
@@ -83,9 +84,9 @@ enum Monetization {
     ]
 
     static let paywallFeatures: [PaywallFeature] = [
-        .init(icon: "message.badge.waveform", title: "Unlimited conversations", description: "Follow ideas all the way through without the daily message cap.", accentColor: AppTheme.accent),
-        .init(icon: "paperclip", title: "File and image uploads", description: "Bring PDFs and images into chat when you need summaries or next steps.", accentColor: AppTheme.highlight),
-        .init(icon: "wand.and.stars", title: "Output Studio", description: "Turn any answer into drafts, plans, checklists, or study material.", accentColor: AppTheme.accentLight)
+        .init(icon: "message.badge.waveform", title: "Unlimited chats", description: "No daily cap for conversations and follow-ups.", accentColor: AppTheme.accent),
+        .init(icon: "wand.and.stars", title: "Advanced transforms", description: "Premium writing, planning, and output transformations.", accentColor: AppTheme.highlight),
+        .init(icon: "icloud", title: "Priority sync", description: "Faster CloudKit sync and cross-device continuity.", accentColor: AppTheme.accentLight)
     ]
 }
 
@@ -114,5 +115,54 @@ struct SubscriptionCatalog: Sendable {
         subscriptionGroupID: Monetization.subscriptionGroupID,
         subscriptionProductIDs: Monetization.subscriptionProductIDs,
         lifetimeProductID: Monetization.lifetimeID
+    )
+}
+
+struct SubscriptionPaywallContext: Equatable, Sendable {
+    let icon: String
+    let eyebrow: String
+    let title: String
+    let subtitle: String
+
+    static let general = SubscriptionPaywallContext(
+        icon: "sparkles",
+        eyebrow: "Ari+",
+        title: "Unlock Ari without limits",
+        subtitle: "Start with the free trial, then keep unlimited conversations, uploads, and Output Studio when Ari becomes part of your workflow."
+    )
+
+    static let settings = SubscriptionPaywallContext(
+        icon: "sparkles",
+        eyebrow: "Ari+",
+        title: "Choose your Ari+ plan",
+        subtitle: "Start with the free trial or pick the plan that matches how often you use Ari."
+    )
+
+    static let messageLimit = SubscriptionPaywallContext(
+        icon: "message.badge",
+        eyebrow: "Daily limit reached",
+        title: "Keep the conversation going",
+        subtitle: "Ari+ removes the daily cap so you can finish drafts, plans, summaries, and follow-ups in one session."
+    )
+
+    static let fileUpload = SubscriptionPaywallContext(
+        icon: "paperclip",
+        eyebrow: "File upload",
+        title: "Bring documents into Ari",
+        subtitle: "Ari+ unlocks PDFs and images so you can summarize, extract next steps, and ask follow-up questions."
+    )
+
+    static let outputStudio = SubscriptionPaywallContext(
+        icon: "wand.and.stars",
+        eyebrow: "Output Studio",
+        title: "Turn answers into finished work",
+        subtitle: "Ari+ unlocks transformations for drafts, checklists, study notes, plans, and cleaner versions of saved outputs."
+    )
+
+    static let librarySummary = SubscriptionPaywallContext(
+        icon: "books.vertical",
+        eyebrow: "Library summaries",
+        title: "Summarize saved source material",
+        subtitle: "Ari+ turns Library notes into concise summaries you can reuse in chat and saved outputs."
     )
 }

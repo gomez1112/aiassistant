@@ -1,28 +1,46 @@
 import SwiftUI
 import StoreKit
+import FlexStore
 
 struct SubscriptionPaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
-    @Environment(SubscriptionStore.self) private var store
+    @Environment(SubscriptionStore.self) private var entitlementStore
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
 
-    private let featureColumns = [GridItem(.adaptive(minimum: 100), spacing: AppTheme.spacingSM)]
+    let context: SubscriptionPaywallContext
+
+    @State private var selectedProductID = Monetization.subscriptionYearlyID
+    @State private var purchasingProductID: String?
+    @State private var errorMessage: String?
+
     private let subscriptionsURL = URL(string: "https://apps.apple.com/account/subscriptions")!
+    private let productOrder = [
+        Monetization.subscriptionYearlyID,
+        Monetization.subscriptionMonthlyID,
+        Monetization.subscriptionWeeklyID
+    ]
+
+    init(context: SubscriptionPaywallContext = .general) {
+        self.context = context
+    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: AppTheme.spacingLG) {
-                    marketingHeader
-                    subscriptionSection
+                VStack(alignment: .leading, spacing: AppTheme.spacingXL) {
+                    includedFeatures
+                    subscriptionPlans
+                    subscribeButton
                     lifetimeSection
                     policySection
                 }
-                .padding(.horizontal, AppTheme.spacingLG)
-                .padding(.top, AppTheme.spacingMD)
-                .padding(.bottom, AppTheme.spacingLG)
+                .padding(.horizontal, AppTheme.spacingXL)
+                .padding(.top, AppTheme.spacingLG)
+                .padding(.bottom, AppTheme.spacingXL)
             }
-            .navigationTitle("Ari+")
+            .background(AppTheme.appBackground)
+            .navigationTitle("Upgrade")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -32,106 +50,170 @@ struct SubscriptionPaywallView: View {
                 }
             }
             #if os(macOS)
-            .frame(minWidth: 760, minHeight: 760)
+            .frame(minWidth: 620, minHeight: 760)
             #endif
         }
+        .tint(AppTheme.paywallTint)
         .task {
-            await store.refresh()
+            await entitlementStore.refresh()
+            syncSelection()
         }
-        .onChange(of: store.hasPremiumAccess) { _, hasAccess in
+        .onChange(of: flexStore.products.map(\.id)) { _, _ in
+            syncSelection()
+        }
+        .onChange(of: hasPremiumAccess) { _, hasAccess in
             if hasAccess {
                 dismiss()
             }
         }
-        .alert("StoreKit", isPresented: errorBinding) {
+        .alert("Purchase Error", isPresented: errorBinding) {
             Button("OK", role: .cancel) {
-                store.errorMessage = nil
+                errorMessage = nil
             }
         } message: {
-            Text(store.errorMessage ?? "Please try again.")
+            Text(errorMessage ?? "Please try again.")
         }
     }
 
     private var errorBinding: Binding<Bool> {
         Binding(
-            get: { store.errorMessage != nil },
+            get: { errorMessage != nil },
             set: { isPresented in
                 if !isPresented {
-                    store.errorMessage = nil
+                    errorMessage = nil
                 }
             }
         )
     }
 
-    @ViewBuilder
-    private var subscriptionSection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
-            PaywallSectionHeader(
-                icon: "sparkles",
-                title: "Subscriptions",
-                subtitle: "Weekly, monthly, or yearly access. StoreKit keeps entitlement changes in sync."
-            )
+    private var hasPremiumAccess: Bool {
+        entitlementStore.hasPremiumAccess || flexStore.isSubscribed || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID)
+    }
 
-            if store.subscriptionProducts.isEmpty {
-                ProductLoadingState(
-                    state: store.loadingState,
-                    retry: { Task { await store.refresh() } }
-                )
-            } else {
-                VStack(spacing: AppTheme.spacingSM) {
-                    ForEach(store.subscriptionProducts, id: \.id) { product in
-                        ProductPurchaseRow(
-                            product: product,
-                            icon: icon(for: product.id),
-                            tint: tint(for: product.id),
-                            isCurrent: store.purchasedProductIDs.contains(product.id),
-                            isPurchasing: store.purchaseInProgressProductID == product.id,
-                            action: { purchase(product) }
-                        )
-                    }
+    private var subscriptionProducts: [Product] {
+        productOrder.compactMap { flexStore.product(for: $0) }
+    }
+
+    private var selectedProduct: Product? {
+        flexStore.product(for: selectedProductID) ?? subscriptionProducts.first
+    }
+
+    private var lifetimeProduct: Product? {
+        flexStore.product(for: Monetization.lifetimeID)
+    }
+
+    private var includedFeatures: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
+            Text("What's included")
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            VStack(spacing: AppTheme.spacingSM) {
+                ForEach(Monetization.paywallFeatures) { feature in
+                    PaywallFeatureRow(feature: feature)
                 }
             }
         }
-        .padding(AppTheme.spacingLG)
-        .appSurface(cornerRadius: AppTheme.radiusCard)
+    }
+
+    private var subscriptionPlans: some View {
+        VStack(spacing: AppTheme.spacingLG) {
+            if flexStore.isLoading && subscriptionProducts.isEmpty {
+                ProgressView("Loading plans...")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, AppTheme.spacingXL)
+            } else {
+                ForEach(subscriptionProducts, id: \.id) { product in
+                    SubscriptionPlanCard(
+                        product: product,
+                        isSelected: selectedProductID == product.id,
+                        action: { selectedProductID = product.id }
+                    )
+                }
+            }
+        }
     }
 
     @ViewBuilder
+    private var subscribeButton: some View {
+        if let selectedProduct {
+            Button {
+                purchase(selectedProduct)
+            } label: {
+                VStack(spacing: 4) {
+                    if purchasingProductID == selectedProduct.id {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(.white)
+                    } else {
+                        Text("Subscribe")
+                            .font(.title3.weight(.bold))
+                    }
+
+                    Text(renewalDisclosure(for: selectedProduct))
+                        .font(.footnote.weight(.semibold))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                }
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: 58)
+            }
+            .buttonStyle(.plain)
+            .background(AppTheme.paywallTint, in: Capsule())
+            .disabled(purchasingProductID != nil)
+            .accessibilityLabel("Subscribe. \(renewalDisclosure(for: selectedProduct))")
+        }
+    }
+
     private var lifetimeSection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
-            PaywallSectionHeader(
-                icon: "infinity",
-                title: "Lifetime",
-                subtitle: "Unlock Ari+ once without a renewing subscription."
-            )
+            Text("Or own it forever")
+                .font(.title3.weight(.bold))
 
-            if let product = store.lifetimeProduct {
-                ProductPurchaseRow(
-                    product: product,
-                    icon: "infinity",
-                    tint: AppTheme.highlight,
-                    isCurrent: store.hasLifetimeAccess,
-                    isPurchasing: store.purchaseInProgressProductID == product.id,
-                    action: { purchase(product) }
-                )
-            } else {
-                ProductLoadingState(
-                    state: store.loadingState,
-                    retry: { Task { await store.refresh() } }
-                )
+            Text("Lifetime access is a one-time purchase and priced higher than subscriptions.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Button {
+                if let lifetimeProduct {
+                    purchase(lifetimeProduct)
+                }
+            } label: {
+                if purchasingProductID == Monetization.lifetimeID {
+                    HStack(spacing: AppTheme.spacingSM) {
+                        ProgressView()
+                            .controlSize(.small)
+                            .tint(.white)
+                        Text("Purchasing...")
+                    }
+                } else if flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID) {
+                    Label("Lifetime Active", systemImage: "checkmark.circle.fill")
+                } else {
+                    Text(lifetimeProduct == nil ? "Loading Lifetime Access" : "Buy Lifetime Access")
+                }
             }
+            .font(.headline)
+            .foregroundStyle(.white)
+            .padding(.horizontal, AppTheme.spacingXL)
+            .frame(minHeight: AppTheme.minimumTapTarget)
+            .background(AppTheme.paywallTint, in: Capsule())
+            .buttonStyle(.plain)
+            .disabled(lifetimeProduct == nil || purchasingProductID != nil || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID))
         }
-        .padding(AppTheme.spacingLG)
-        .appSurface(cornerRadius: AppTheme.radiusCard)
+        .padding(.top, AppTheme.spacingXL)
     }
 
     private var policySection: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingSM) {
+        VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
             HStack {
-                Button {
-                    Task { await store.restorePurchases() }
-                } label: {
-                    Label("Restore", systemImage: "arrow.clockwise")
+                Button("Restore Purchases") {
+                    Task {
+                        await flexStore.restorePurchases()
+                        await entitlementStore.restorePurchases()
+                    }
                 }
 
                 Spacer()
@@ -139,274 +221,209 @@ struct SubscriptionPaywallView: View {
                 Button {
                     openURL(subscriptionsURL)
                 } label: {
-                    Label("Manage", systemImage: "slider.horizontal.3")
+                    Label("Manage Subscriptions", systemImage: "gearshape")
                 }
             }
-            .font(.footnote)
-            .buttonStyle(.borderless)
 
-            HStack(spacing: 14) {
+            HStack(spacing: AppTheme.spacingXL) {
                 Link("Privacy Policy", destination: Monetization.privacyPolicyURL)
                 Link("Terms of Service", destination: Monetization.termsOfServiceURL)
             }
-            .font(.footnote)
-            .foregroundStyle(.secondary)
         }
-    }
-
-    private var marketingHeader: some View {
-        VStack(spacing: AppTheme.spacingLG) {
-            VStack(spacing: AppTheme.spacingSM) {
-                PaywallHeroMark()
-
-                VStack(spacing: AppTheme.spacingSM) {
-                    Text("Get more done with Ari+")
-                        .font(.title2.weight(.semibold))
-                        .multilineTextAlignment(.center)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    Text("Unlimited chats, file uploads, and Output Studio for turning rough answers into work you can use.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .lineSpacing(2)
-                }
-                .frame(maxWidth: 460)
-            }
-
-            LazyVGrid(columns: featureColumns, spacing: AppTheme.spacingSM) {
-                ForEach(Monetization.paywallFeatures) { feature in
-                    PaywallFeatureChip(feature: feature)
-                }
-            }
-
-            PaywallAssuranceGrid()
-        }
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .buttonStyle(.plain)
     }
 
     private func purchase(_ product: Product) {
+        guard purchasingProductID == nil else { return }
+
+        purchasingProductID = product.id
         Task {
-            let outcome = await store.purchase(product)
-            if outcome == .purchased {
-                dismiss()
+            defer { purchasingProductID = nil }
+
+            do {
+                let outcome = try await flexStore.purchase(product)
+                await entitlementStore.refresh()
+                switch outcome {
+                case .success:
+                    dismiss()
+                case .cancelled:
+                    break
+                case .pending:
+                    errorMessage = "Purchase is pending approval."
+                }
+            } catch {
+                errorMessage = error.localizedDescription
             }
+        }
+    }
+
+    private func syncSelection() {
+        if flexStore.product(for: selectedProductID) == nil,
+           let firstProduct = subscriptionProducts.first {
+            selectedProductID = firstProduct.id
+        }
+    }
+
+    private func renewalDisclosure(for product: Product) -> String {
+        switch product.id {
+        case Monetization.subscriptionYearlyID:
+            "Plan auto-renews for \(product.displayPrice)/year until canceled."
+        case Monetization.subscriptionMonthlyID:
+            "Plan auto-renews for \(product.displayPrice)/month until canceled."
+        case Monetization.subscriptionWeeklyID:
+            "Plan auto-renews for \(product.displayPrice)/week until canceled."
+        default:
+            "\(product.displayPrice) one-time purchase."
+        }
+    }
+}
+
+private struct PaywallFeatureRow: View {
+    let feature: PaywallFeature
+
+    var body: some View {
+        HStack(alignment: .top, spacing: AppTheme.spacingMD) {
+            Image(systemName: feature.icon)
+                .font(.system(size: 22, weight: .medium))
+                .foregroundStyle(feature.accentColor)
+                .frame(width: 30, height: 30)
+
+            VStack(alignment: .leading, spacing: AppTheme.spacingXS) {
+                Text(feature.title)
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(feature.description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineSpacing(2)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .padding(.horizontal, AppTheme.spacingLG)
+        .padding(.vertical, AppTheme.spacingMD)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
+        )
+        .accessibilityElement(children: .combine)
+    }
+}
+
+private struct SubscriptionPlanCard: View {
+    let product: Product
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: AppTheme.spacingLG) {
+                HStack(alignment: .top) {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingSM) {
+                        Text(product.displayName)
+                            .font(.title2.weight(.bold))
+                            .foregroundStyle(.primary)
+
+                        Text(priceLine(for: product))
+                            .font(.headline.weight(.regular))
+                            .foregroundStyle(.primary)
+                    }
+
+                    Spacer(minLength: AppTheme.spacingMD)
+
+                    SelectionIndicator(isSelected: isSelected)
+                }
+
+                Divider()
+
+                Label(descriptionLine(for: product), systemImage: icon(for: product.id))
+                    .font(.subheadline)
+                    .foregroundStyle(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(AppTheme.spacingLG)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                    .stroke(isSelected ? AppTheme.paywallTint : AppTheme.surfaceStrokeStrong, lineWidth: isSelected ? 2 : 1)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(product.displayName), \(priceLine(for: product)), \(descriptionLine(for: product))")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
+    }
+
+    private func priceLine(for product: Product) -> String {
+        switch product.id {
+        case Monetization.subscriptionYearlyID:
+            "\(product.displayPrice)/year"
+        case Monetization.subscriptionMonthlyID:
+            "\(product.displayPrice)/month"
+        case Monetization.subscriptionWeeklyID:
+            "3 days free, then \(product.displayPrice)/week"
+        default:
+            product.displayPrice
+        }
+    }
+
+    private func descriptionLine(for product: Product) -> String {
+        switch product.id {
+        case Monetization.subscriptionYearlyID:
+            "Best value yearly premium access."
+        case Monetization.subscriptionMonthlyID:
+            "Monthly premium access."
+        case Monetization.subscriptionWeeklyID:
+            "Weekly premium access with a 3-day free trial."
+        default:
+            product.description
         }
     }
 
     private func icon(for productID: String) -> String {
         switch productID {
-        case Monetization.subscriptionWeeklyID:
-            "calendar.badge.clock"
-        case Monetization.subscriptionMonthlyID:
-            "calendar"
         case Monetization.subscriptionYearlyID:
             "calendar.badge.checkmark"
+        case Monetization.subscriptionMonthlyID:
+            "calendar"
+        case Monetization.subscriptionWeeklyID:
+            "calendar.badge.clock"
         default:
             "sparkles"
         }
     }
-
-    private func tint(for productID: String) -> Color {
-        switch productID {
-        case Monetization.subscriptionWeeklyID:
-            AppTheme.highlight
-        case Monetization.subscriptionMonthlyID:
-            AppTheme.accent
-        case Monetization.subscriptionYearlyID:
-            AppTheme.accentLight
-        default:
-            AppTheme.accent
-        }
-    }
 }
 
-private struct PaywallSectionHeader: View {
-    let icon: String
-    let title: String
-    let subtitle: String
+private struct SelectionIndicator: View {
+    let isSelected: Bool
 
-    var body: some View {
-        HStack(alignment: .top, spacing: AppTheme.spacingMD) {
-            AppIconBadge(systemImage: icon, tint: AppTheme.accent, size: 38)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-
-                Text(subtitle)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-    }
-}
-
-private struct ProductPurchaseRow: View {
-    let product: Product
-    let icon: String
-    let tint: Color
-    let isCurrent: Bool
-    let isPurchasing: Bool
-    let action: () -> Void
-
-    var body: some View {
-        HStack(alignment: .center, spacing: AppTheme.spacingMD) {
-            AppIconBadge(systemImage: icon, tint: tint, size: 36)
-
-            VStack(alignment: .leading, spacing: 3) {
-                HStack(spacing: AppTheme.spacingSM) {
-                    Text(product.displayName)
-                        .font(.headline)
-
-                    if isCurrent {
-                        Text("Active")
-                            .font(.caption)
-                            .bold()
-                            .foregroundStyle(AppTheme.accent)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(AppTheme.accent.opacity(0.12), in: Capsule())
-                    }
-                }
-
-                Text(product.description)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            Spacer(minLength: AppTheme.spacingSM)
-
-            Button(action: action) {
-                if isPurchasing {
-                    ProgressView()
-                        .controlSize(.small)
-                        .frame(width: 68)
-                } else {
-                    Text(isCurrent ? "Current" : product.displayPrice)
-                        .font(.subheadline)
-                        .bold()
-                        .frame(minWidth: 68)
-                }
-            }
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .tint(AppTheme.accent)
-            .disabled(isCurrent || isPurchasing)
-        }
-        .padding(AppTheme.spacingMD)
-        .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
-                .stroke(isCurrent ? tint.opacity(0.45) : AppTheme.surfaceStroke, lineWidth: isCurrent ? 1 : 0.5)
-        )
-    }
-}
-
-private struct ProductLoadingState: View {
-    let state: SubscriptionStore.LoadingState
-    let retry: () -> Void
-
-    var body: some View {
-        VStack(spacing: AppTheme.spacingSM) {
-            switch state {
-            case .loading:
-                ProgressView("Loading plans...")
-            case .failed(let message):
-                ContentUnavailableView(
-                    "Plans Unavailable",
-                    systemImage: "wifi.exclamationmark",
-                    description: Text(message)
-                )
-
-                Button("Retry", action: retry)
-                    .buttonStyle(.bordered)
-            case .idle, .loaded:
-                ContentUnavailableView(
-                    "Plans Unavailable",
-                    systemImage: "cart.badge.questionmark",
-                    description: Text("StoreKit did not return products for this storefront.")
-                )
-
-                Button("Retry", action: retry)
-                    .buttonStyle(.bordered)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(AppTheme.spacingLG)
-    }
-}
-
-private struct PaywallHeroMark: View {
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
-                .fill(AppTheme.accent)
-                .frame(width: 58, height: 58)
+            Circle()
+                .stroke(isSelected ? AppTheme.paywallTint : AppTheme.surfaceStrokeStrong, lineWidth: 2)
+                .frame(width: 28, height: 28)
 
-            Image(systemName: "sparkles")
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundStyle(.white)
-        }
-        .accessibilityHidden(true)
-    }
-}
+            if isSelected {
+                Circle()
+                    .fill(AppTheme.paywallTint)
+                    .frame(width: 28, height: 28)
 
-private struct PaywallAssuranceGrid: View {
-    private let assurances = [
-        ("checkmark.seal", "Cancel anytime"),
-        ("lock.shield", "Apple checkout"),
-        ("rectangle.and.pencil.and.ellipsis", "No ads")
-    ]
-
-    private let columns = [GridItem(.adaptive(minimum: 98), spacing: AppTheme.spacingSM)]
-
-    var body: some View {
-        LazyVGrid(columns: columns, spacing: AppTheme.spacingSM) {
-            ForEach(assurances, id: \.1) { assurance in
-                Label(assurance.1, systemImage: assurance.0)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity)
-                    .padding(.horizontal, AppTheme.spacingMD)
-                    .padding(.vertical, AppTheme.spacingSM)
-                    .background(AppTheme.surfaceFill, in: Capsule())
-                    .overlay(Capsule().stroke(AppTheme.surfaceStroke, lineWidth: 0.5))
+                Image(systemName: "checkmark")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(.white)
             }
         }
-    }
-}
-
-private struct PaywallFeatureChip: View {
-    let feature: PaywallFeature
-
-    var body: some View {
-        VStack(spacing: AppTheme.spacingSM) {
-            AppIconBadge(systemImage: feature.icon, tint: feature.accentColor, size: 34)
-
-            Text(feature.title)
-                .font(.footnote)
-                .bold()
-                .foregroundStyle(.primary)
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(minHeight: 84)
-        .padding(AppTheme.spacingSM)
-        .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
-                .stroke(AppTheme.surfaceStroke, lineWidth: 0.5)
-        )
+        .accessibilityHidden(true)
     }
 }
 
 #Preview {
     SubscriptionPaywallView()
         .environment(SubscriptionStore())
+        .environment(StoreKitService<AppSubscriptionTier>())
 }

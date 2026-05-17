@@ -279,8 +279,6 @@ struct LibraryItemDetailView: View {
 
     @State private var isSummarizing = false
     @State private var showPaywall = false
-    @State private var showUpgradeAlert = false
-    @State private var upgradePromptMessage = ""
 
     var body: some View {
         ScrollView {
@@ -360,20 +358,13 @@ struct LibraryItemDetailView: View {
             }
         }
         .sheet(isPresented: $showPaywall) {
-            SubscriptionPaywallView()
-        }
-        .alert("Upgrade to Ari+", isPresented: $showUpgradeAlert) {
-            Button("Not Now", role: .cancel) {}
-            Button("Upgrade") { showPaywall = true }
-        } message: {
-            Text(upgradePromptMessage)
+            SubscriptionPaywallView(context: .librarySummary)
         }
     }
 
     private func summarize() {
         guard subscriptionStore.hasPremiumAccess else {
-            upgradePromptMessage = "AI summaries for Library items are available on Ari+ plans."
-            showUpgradeAlert = true
+            showPaywall = true
             return
         }
 
