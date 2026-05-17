@@ -10,14 +10,13 @@ import UniformTypeIdentifiers
 import PDFKit
 import Vision
 import ImageIO
-import FlexStore
 
 struct ChatView: View {
     let preferences: UserPreferences
 
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
-    @Environment(StoreKitService<AppSubscriptionTier>.self) private var storeKitService
+    @Environment(SubscriptionStore.self) private var subscriptionStore
 
     @Query(sort: \Thread.updatedAt, order: .reverse)
     private var threads: [Thread]
@@ -47,7 +46,7 @@ struct ChatView: View {
 
     private var activeThread: Thread? { dataModel.activeThread }
     private var assistantName: String { preferences.ariEnabled ? "Ari" : "Assistant" }
-    private var hasPremiumAccess: Bool { storeKitService.hasPremiumAccess }
+    private var hasPremiumAccess: Bool { subscriptionStore.hasPremiumAccess }
     private var navigationTitleText: String {
         #if os(macOS)
         "Chat"
@@ -105,8 +104,8 @@ struct ChatView: View {
                         action: { showPaywall = true }
                     )
                     .padding(.horizontal, AppTheme.spacingLG)
-                    .padding(.top, 2)
-                    .padding(.bottom, 8)
+                    .padding(.top, 0)
+                    .padding(.bottom, 6)
                     .frame(maxWidth: contentMaxWidth)
                     .frame(maxWidth: .infinity)
                 }
@@ -241,7 +240,7 @@ struct ChatView: View {
                 #endif
             }
             #if os(iOS)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             #endif
             .sheet(isPresented: $showThreadList) {
@@ -600,31 +599,26 @@ private struct UpgradeTeaserBanner: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(alignment: .center, spacing: AppTheme.spacingMD) {
-                AppIconBadge(systemImage: "sparkles", tint: AppTheme.highlight, size: 34)
+            HStack(spacing: AppTheme.spacingSM) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundStyle(AppTheme.highlight)
+                    .frame(width: 20)
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Ari+ removes the limits")
-                        .font(.subheadline)
-                        .bold()
-                    Text("\(remainingFreeMessages) free messages left. Unlimited chats, files, and Output Studio.")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(2)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                Text("\(remainingFreeMessages) free messages left")
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(.secondary)
+
+                Spacer(minLength: AppTheme.spacingSM)
 
                 Label("Ari+", systemImage: "arrow.up.right")
-                    .font(.footnote)
-                    .bold()
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, AppTheme.spacingMD)
-                    .padding(.vertical, 7)
-                    .background(AppTheme.accent, in: Capsule())
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(AppTheme.accent)
             }
-            .padding(.horizontal, AppTheme.spacingMD)
-            .padding(.vertical, AppTheme.spacingSM)
-            .appSurface(cornerRadius: AppTheme.radiusSmall)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 7)
+            .background(AppTheme.surfaceFill, in: Capsule())
+            .overlay(Capsule().stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Upgrade to Ari+. \(remainingFreeMessages) free messages left. Unlimited chats, files, and Output Studio.")
@@ -636,6 +630,7 @@ private struct UpgradeTeaserBanner: View {
 #Preview {
     ChatView(preferences: .defaults)
         .environment(DataModel())
+        .environment(SubscriptionStore())
         .modelContainer(for: [
             Thread.self, Message.self, Artifact.self,
             LibraryItem.self, UserPreferences.self

@@ -1,13 +1,13 @@
 import SwiftUI
-import FlexStore
 
-enum AppSubscriptionTier: Int, CaseIterable, SubscriptionTier {
+enum AppSubscriptionTier: Int, CaseIterable, Comparable, Identifiable, Sendable {
     case free = 0
     case weekly = 1
     case monthly = 2
     case yearly = 3
 
     static var defaultTier: AppSubscriptionTier { .free }
+    var id: Int { rawValue }
 
     init?(levelOfService: Int) {
         self.init(rawValue: levelOfService)
@@ -24,6 +24,36 @@ enum AppSubscriptionTier: Int, CaseIterable, SubscriptionTier {
         default:
             return nil
         }
+    }
+
+    var productID: String? {
+        switch self {
+        case .free:
+            nil
+        case .weekly:
+            Monetization.subscriptionWeeklyID
+        case .monthly:
+            Monetization.subscriptionMonthlyID
+        case .yearly:
+            Monetization.subscriptionYearlyID
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .free:
+            "Free"
+        case .weekly:
+            "Weekly"
+        case .monthly:
+            "Monthly"
+        case .yearly:
+            "Yearly"
+        }
+    }
+
+    static func < (lhs: AppSubscriptionTier, rhs: AppSubscriptionTier) -> Bool {
+        lhs.rawValue < rhs.rawValue
     }
 }
 
@@ -46,25 +76,43 @@ enum Monetization {
 
     static let freeDailyMessageLimit = 10
 
-    static let appSubscriptionTiers: [FlexStore.AppSubscriptionTier] = [
-        .init(productID: subscriptionWeeklyID, systemImage: "calendar.badge.clock", color: AppTheme.highlight),
-        .init(productID: subscriptionMonthlyID, systemImage: "calendar", color: AppTheme.accent),
-        .init(productID: subscriptionYearlyID, systemImage: "calendar.badge.checkmark", color: AppTheme.accentLight)
+    static let subscriptionProductIDs: [String] = [
+        subscriptionWeeklyID,
+        subscriptionMonthlyID,
+        subscriptionYearlyID
     ]
 
-    static let paywallFeatures: [SubscriptionFeature] = [
+    static let paywallFeatures: [PaywallFeature] = [
         .init(icon: "message.badge.waveform", title: "Unlimited conversations", description: "Follow ideas all the way through without the daily message cap.", accentColor: AppTheme.accent),
         .init(icon: "paperclip", title: "File and image uploads", description: "Bring PDFs and images into chat when you need summaries or next steps.", accentColor: AppTheme.highlight),
         .init(icon: "wand.and.stars", title: "Output Studio", description: "Turn any answer into drafts, plans, checklists, or study material.", accentColor: AppTheme.accentLight)
     ]
 }
 
-extension StoreKitService where Tier == AppSubscriptionTier {
-    var hasLifetimeAccess: Bool {
-        purchasedNonConsumables.contains(Monetization.lifetimeID)
+struct PaywallFeature: Identifiable, Sendable {
+    let id = UUID()
+    let icon: String
+    let title: String
+    let description: String
+    let accentColor: Color
+}
+
+struct SubscriptionCatalog: Sendable {
+    let subscriptionGroupID: String
+    let subscriptionProductIDs: [String]
+    let lifetimeProductID: String
+
+    var allProductIDs: [String] {
+        subscriptionProductIDs + [lifetimeProductID]
     }
 
-    var hasPremiumAccess: Bool {
-        subscriptionTier != .free || hasLifetimeAccess
+    var productIDSet: Set<String> {
+        Set(allProductIDs)
     }
+
+    static let ariPlus = SubscriptionCatalog(
+        subscriptionGroupID: Monetization.subscriptionGroupID,
+        subscriptionProductIDs: Monetization.subscriptionProductIDs,
+        lifetimeProductID: Monetization.lifetimeID
+    )
 }

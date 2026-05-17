@@ -18,4 +18,4 @@ Current app IDs:
 - Monthly: `com.transfinite.aiassistant.premium.monthly`
 - Yearly: `com.transfinite.aiassistant.premium.yearly`
 - Lifetime: `com.transfinite.aiassistant.lifetime`
-- Subscription group ID: `7E4D282D-E821-4B8B-875B-C01CF95B8EA8`
+- Subscription group ID: `21944633`

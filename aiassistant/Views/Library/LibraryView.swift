@@ -6,7 +6,6 @@
 
 import SwiftUI
 import SwiftData
-import FlexStore
 
 struct LibraryView: View {
     let preferences: UserPreferences
@@ -91,7 +90,7 @@ struct LibraryView: View {
                 #endif
             }
             #if os(iOS)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             #endif
             .sheet(isPresented: $showAddSheet) {
@@ -276,7 +275,7 @@ struct LibraryItemDetailView: View {
 
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
-    @Environment(StoreKitService<AppSubscriptionTier>.self) private var storeKitService
+    @Environment(SubscriptionStore.self) private var subscriptionStore
 
     @State private var isSummarizing = false
     @State private var showPaywall = false
@@ -332,7 +331,9 @@ struct LibraryItemDetailView: View {
             .padding(AppTheme.spacingLG)
         }
         #if os(iOS)
+        .safeAreaPadding(.bottom, 72)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         #endif
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -351,7 +352,11 @@ struct LibraryItemDetailView: View {
             if isSummarizing {
                 ProgressView("Summarizing…")
                     .padding()
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
+                            .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
+                    )
             }
         }
         .sheet(isPresented: $showPaywall) {
@@ -366,7 +371,7 @@ struct LibraryItemDetailView: View {
     }
 
     private func summarize() {
-        guard storeKitService.hasPremiumAccess else {
+        guard subscriptionStore.hasPremiumAccess else {
             upgradePromptMessage = "AI summaries for Library items are available on Ari+ plans."
             showUpgradeAlert = true
             return
@@ -385,6 +390,7 @@ struct LibraryItemDetailView: View {
 #Preview {
     LibraryView(preferences: .defaults)
         .environment(DataModel())
+        .environment(SubscriptionStore())
         .modelContainer(for: [
             Thread.self, Message.self, Artifact.self,
             LibraryItem.self, UserPreferences.self

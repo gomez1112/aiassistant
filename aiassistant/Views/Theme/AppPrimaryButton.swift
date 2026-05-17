@@ -22,24 +22,19 @@ struct AppPrimaryButton: View {
     }
 
     var body: some View {
-        if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
-            button
-                .buttonStyle(.glassProminent)
-                .tint(AppTheme.accent)
-        } else {
-            button
-                .buttonStyle(.borderedProminent)
-                .buttonBorderShape(.capsule)
-                .tint(AppTheme.accent)
-        }
+        button
+            .buttonStyle(.borderedProminent)
+            .buttonBorderShape(.capsule)
+            .controlSize(.large)
+            .tint(AppTheme.accent)
     }
 
     private var button: some View {
         Button(action: action) {
             label
-                .font(.headline)
+                .font(.subheadline.weight(.semibold))
                 .frame(maxWidth: fillsWidth ? .infinity : nil)
-                .frame(minHeight: 48)
+                .frame(minHeight: 44)
         }
         .disabled(isDisabled)
     }

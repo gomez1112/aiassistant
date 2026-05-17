@@ -116,7 +116,7 @@ struct OutputsView: View {
             }
             #endif
             #if os(iOS)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             #endif
             #if !os(macOS)
@@ -181,7 +181,7 @@ struct ArtifactRow: View {
                 Spacer()
             }
 
-            Text(artifact.content.prefix(120).description)
+            Text(normalizedDisplayText(artifact.content).prefix(120).description)
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .lineLimit(2)
@@ -230,7 +230,7 @@ struct FilterChip: View {
                 .background(
                     Capsule(style: .continuous)
                         .fill(isSelected
-                            ? AnyShapeStyle(AppTheme.accentGradient)
+                            ? AnyShapeStyle(AppTheme.accent)
                             : AnyShapeStyle(AppTheme.surface)
                         )
                 )
@@ -251,6 +251,7 @@ struct FilterChip: View {
 #Preview {
     OutputsView(preferences: .defaults)
         .environment(DataModel())
+        .environment(SubscriptionStore())
         .modelContainer(for: [
             Thread.self, Message.self, Artifact.self,
             LibraryItem.self, UserPreferences.self

@@ -91,7 +91,11 @@ struct OutputStudioSheet: View {
                 if isProcessing {
                     ProgressView("Generating…")
                         .padding()
-                        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                        .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
+                                .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
+                        )
                 }
             }
         }
@@ -145,12 +149,12 @@ struct TransformButton: View {
             .frame(minHeight: AppTheme.minimumTapTarget)
             .padding(.vertical, 10)
             .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(isSelected ? Color.accentColor.opacity(0.15) : AppTheme.surface)
+                RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
+                    .fill(isSelected ? AppTheme.accent.opacity(0.12) : AppTheme.surfaceFill)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(isSelected ? Color.accentColor : .clear, lineWidth: 1.5)
+                RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
+                    .stroke(isSelected ? AppTheme.accent : AppTheme.surfaceStroke, lineWidth: isSelected ? 1.2 : 0.5)
             )
         }
         .buttonStyle(.plain)

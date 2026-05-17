@@ -31,10 +31,12 @@ struct RootTabView: View {
                         LibraryView(preferences: preferences)
                     }
                 }
+                #if os(macOS)
                 .tabViewStyle(.sidebarAdaptable)
+                #endif
                 .tint(AppTheme.accent)
                 #if os(iOS)
-                .toolbarBackground(.ultraThinMaterial, for: .tabBar)
+                .toolbarBackground(AppTheme.groupedBackground, for: .tabBar)
                 .toolbarBackground(.visible, for: .tabBar)
                 #endif
             } else {
@@ -52,6 +54,7 @@ struct RootTabView: View {
 #Preview {
     RootTabView()
         .environment(DataModel())
+        .environment(SubscriptionStore())
         .modelContainer(for: [
             Thread.self, Message.self, Artifact.self,
             LibraryItem.self, UserPreferences.self

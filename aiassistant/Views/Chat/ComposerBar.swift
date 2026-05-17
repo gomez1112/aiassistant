@@ -32,10 +32,10 @@ struct ComposerBar: View {
                             ? AnyShapeStyle(.tertiary)
                             : AnyShapeStyle(AppTheme.accent)
                     )
-                    .frame(width: 42, height: 42)
+                    .frame(width: 40, height: 40)
                     .background(
                         Circle()
-                            .fill(.ultraThinMaterial)
+                            .fill(AppTheme.surfaceFill)
                             .overlay(
                                 Circle()
                                     .stroke(AppTheme.surfaceStrokeStrong, lineWidth: 0.7)
@@ -49,13 +49,13 @@ struct ComposerBar: View {
             TextField("Ask \(assistantName)…", text: $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .lineLimit(1...6)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 9)
                 .background(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .fill(.ultraThinMaterial)
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .fill(AppTheme.surfaceFill)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 22, style: .continuous)
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
                                 .stroke(
                                     isFocused
                                         ? AppTheme.highlight.opacity(0.65)
@@ -79,8 +79,10 @@ struct ComposerBar: View {
                     Button(action: onCancel) {
                         Label("Stop generating", systemImage: "stop.circle.fill")
                             .labelStyle(.iconOnly)
-                            .font(.system(size: 32, weight: .medium))
-                            .foregroundStyle(.red.opacity(0.9))
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 40, height: 40)
+                            .background(Circle().fill(AppTheme.destructive))
                     }
                     .buttonStyle(.plain)
                 } else {
@@ -93,13 +95,13 @@ struct ComposerBar: View {
                                     ? AnyShapeStyle(.white)
                                     : AnyShapeStyle(.secondary)
                             )
-                            .frame(width: 42, height: 42)
+                            .frame(width: 40, height: 40)
                             .background(
                                 Circle()
                                     .fill(
                                         hasText || hasAttachment
                                             ? AnyShapeStyle(AppTheme.accent)
-                                            : AnyShapeStyle(.ultraThinMaterial)
+                                            : AnyShapeStyle(AppTheme.surfaceFill)
                                     )
                                     .overlay(
                                         Circle()
@@ -115,12 +117,12 @@ struct ComposerBar: View {
             .animation(.snappy(duration: 0.2), value: isGenerating)
         }
         .padding(.horizontal, AppTheme.spacingLG)
-        .padding(.vertical, 10)
+        .padding(.top, 8)
+        .padding(.bottom, 10)
         .background(
             Rectangle()
-                .fill(Color.clear)
-                .overlay(Divider(), alignment: .top)
-                .shadow(color: .black.opacity(0.04), radius: 8, x: 0, y: -2)
+                .fill(AppTheme.groupedBackground.opacity(0.92))
+                .overlay(Divider().opacity(0.7), alignment: .top)
         )
         .animation(.easeOut(duration: 0.15), value: isFocused)
     }

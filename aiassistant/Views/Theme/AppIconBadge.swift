@@ -11,12 +11,12 @@ struct AppIconBadge: View {
             .foregroundStyle(tint)
             .frame(width: size, height: size)
             .background(
-                RoundedRectangle(cornerRadius: size * 0.26)
-                    .fill(tint.opacity(0.12))
+                RoundedRectangle(cornerRadius: min(size * 0.2, AppTheme.radiusCard), style: .continuous)
+                    .fill(tint.opacity(0.09))
             )
             .overlay(
-                RoundedRectangle(cornerRadius: size * 0.26)
-                    .stroke(tint.opacity(0.18), lineWidth: 0.7)
+                RoundedRectangle(cornerRadius: min(size * 0.2, AppTheme.radiusCard), style: .continuous)
+                    .stroke(tint.opacity(0.14), lineWidth: 0.7)
             )
             .accessibilityHidden(true)
     }

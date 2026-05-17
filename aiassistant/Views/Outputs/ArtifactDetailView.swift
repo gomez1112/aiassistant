@@ -6,7 +6,6 @@
 
 import SwiftUI
 import SwiftData
-import FlexStore
 
 struct ArtifactDetailView: View {
     @Bindable var artifact: Artifact
@@ -15,7 +14,7 @@ struct ArtifactDetailView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Environment(StoreKitService<AppSubscriptionTier>.self) private var storeKitService
+    @Environment(SubscriptionStore.self) private var subscriptionStore
 
     @State private var isTransforming = false
     @State private var showTagEditor = false
@@ -81,7 +80,9 @@ struct ArtifactDetailView: View {
             .padding(AppTheme.spacingLG)
         }
         #if os(iOS)
+        .safeAreaPadding(.bottom, 72)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         #endif
         .toolbar {
             ToolbarItem(placement: .automatic) {
@@ -128,7 +129,11 @@ struct ArtifactDetailView: View {
             if isTransforming {
                 ProgressView("Transforming…")
                     .padding()
-                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12))
+                    .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
+                            .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
+                    )
             }
         }
         .sensoryFeedback(.success, trigger: copiedFeedback)
@@ -176,7 +181,7 @@ struct ArtifactDetailView: View {
     }
 
     private func transformArtifact(type: TransformType) {
-        guard storeKitService.hasPremiumAccess else {
+        guard subscriptionStore.hasPremiumAccess else {
             upgradePromptMessage = "Artifact transforms are available on Ari+ plans."
             showUpgradeAlert = true
             return
@@ -509,22 +514,12 @@ struct FlashcardView: View {
         .padding(AppTheme.spacingXL)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .shadow(color: (isBack ? AppTheme.highlight : AppTheme.accent).opacity(0.15), radius: 16, x: 0, y: 8)
+            RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                .fill(AppTheme.surfaceFill)
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(
-                    LinearGradient(
-                        colors: isBack
-                            ? [AppTheme.highlight.opacity(0.3), AppTheme.highlightSoft.opacity(0.1)]
-                            : [AppTheme.accent.opacity(0.3), AppTheme.accentLight.opacity(0.1)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ),
-                    lineWidth: 1
-                )
+            RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                .stroke((isBack ? AppTheme.highlight : AppTheme.accent).opacity(0.28), lineWidth: 1)
         )
     }
 }
@@ -639,7 +634,7 @@ struct QuizView: View {
                                 .font(.system(size: 15, weight: .semibold))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
-                                .background(AppTheme.accent.gradient, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .background(AppTheme.accent, in: RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
                                 .foregroundStyle(.white)
                         }
                         .buttonStyle(.plain)
@@ -660,7 +655,7 @@ struct QuizView: View {
                     }
                 }
                 .padding(AppTheme.spacingXL)
-                .appSurface(cornerRadius: 20)
+                .appSurface(cornerRadius: AppTheme.radiusCard)
 
                 // Navigation
                 HStack(spacing: 20) {
@@ -707,7 +702,7 @@ struct QuizView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(AppTheme.spacingXL)
-                    .appSurface(cornerRadius: 20)
+                    .appSurface(cornerRadius: AppTheme.radiusCard)
                     .transition(.scale.combined(with: .opacity))
                 }
             }
@@ -871,11 +866,11 @@ struct QuizOptionRow: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
                     .fill(backgroundColor)
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
                     .stroke(borderColor, lineWidth: isSelected || (isRevealed && isCorrect) ? 1.5 : 0.5)
             )
         }
@@ -916,7 +911,7 @@ struct BulletListView: View {
             }
             .padding(AppTheme.spacingXL)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .appSurface(cornerRadius: 20)
+            .appSurface(cornerRadius: AppTheme.radiusCard)
         }
     }
 
@@ -1030,24 +1025,25 @@ struct StyledTextView: View {
             // Decorative accent bar
             HStack(spacing: 0) {
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(accentColor.gradient)
+                    .fill(accentColor)
                     .frame(width: 3, height: 24)
                 Spacer()
             }
 
             // Content paragraphs with refined typography
-            let paragraphs = content.components(separatedBy: "\n\n").filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+            let displayContent = normalizedDisplayText(content)
+            let paragraphs = displayContent.components(separatedBy: "\n\n").filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
             if paragraphs.count > 1 {
                 ForEach(Array(paragraphs.enumerated()), id: \.offset) { idx, paragraph in
-                    Text(paragraph.trimmingCharacters(in: .whitespacesAndNewlines))
+                    Text(verbatim: paragraph.trimmingCharacters(in: .whitespacesAndNewlines))
                         .font(idx == 0 ? .system(size: 17, weight: .medium) : .system(size: 16))
                         .lineSpacing(6)
                         .foregroundStyle(Color.primary.opacity(idx == 0 ? 1.0 : 0.85))
                         .textSelection(.enabled)
                 }
             } else {
-                Text(content.trimmingCharacters(in: .whitespacesAndNewlines))
+                Text(verbatim: displayContent.trimmingCharacters(in: .whitespacesAndNewlines))
                     .font(.system(size: 16))
                     .lineSpacing(6)
                     .textSelection(.enabled)
@@ -1055,7 +1051,7 @@ struct StyledTextView: View {
         }
         .padding(AppTheme.spacingXL)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .appSurface(cornerRadius: 20)
+        .appSurface(cornerRadius: AppTheme.radiusCard)
     }
 }
 // MARK: - Preview
@@ -1077,6 +1073,7 @@ struct StyledTextView: View {
         )
     }
     .environment(DataModel())
+    .environment(SubscriptionStore())
     .modelContainer(for: [
         Thread.self, Message.self, Artifact.self,
         LibraryItem.self, UserPreferences.self

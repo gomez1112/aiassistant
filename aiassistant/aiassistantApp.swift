@@ -8,14 +8,13 @@
 import SwiftUI
 import SwiftData
 import OnboardingKit
-import FlexStore
 
 @main
 struct AIAssistantApp: App {
     let modelContainer: ModelContainer
     
     @State private var dataModel = DataModel()
-    @State private var storeKitService = StoreKitService<AppSubscriptionTier>()
+    @State private var subscriptionStore = SubscriptionStore()
     
     init() {
         let schema = Schema([
@@ -57,12 +56,11 @@ struct AIAssistantApp: App {
             ) {
                 RootTabView()
                     .environment(dataModel)
+                    .environment(subscriptionStore)
             }
-            .attachStoreKit(
-                manager: storeKitService,
-                groupID: Monetization.subscriptionGroupID,
-                ids: Monetization.productIDs
-            )
+            .task {
+                await subscriptionStore.start()
+            }
         }
         #if os(macOS)
         .defaultSize(width: 1360, height: 900)
@@ -73,6 +71,7 @@ struct AIAssistantApp: App {
         Settings {
             AppSettingsSceneView()
                 .environment(dataModel)
+                .environment(subscriptionStore)
         }
         .modelContainer(modelContainer)
         #endif

@@ -25,13 +25,35 @@ struct AppEmptyStateView: View {
     }
 
     var body: some View {
-        ContentUnavailableView {
-            Label(title, systemImage: systemImage)
-                .foregroundStyle(AppTheme.accent)
-        } description: {
-            Text(description)
-                .multilineTextAlignment(.center)
-        } actions: {
+        VStack(spacing: AppTheme.spacingLG) {
+            Image(systemName: systemImage)
+                .font(.system(size: 34, weight: .regular))
+                .foregroundStyle(AppTheme.accent.opacity(0.72))
+                .frame(width: 56, height: 56)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                        .fill(AppTheme.surfaceFill)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                        .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
+                )
+                .accessibilityHidden(true)
+
+            VStack(spacing: AppTheme.spacingSM) {
+                Text(title)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .multilineTextAlignment(.center)
+
+                Text(description)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(2)
+                    .frame(maxWidth: 320)
+            }
+
             if let actionTitle, let action {
                 AppPrimaryButton(
                     actionTitle,

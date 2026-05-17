@@ -61,9 +61,8 @@ struct AriGuidanceBar: View {
         .padding(.vertical, 8)
         .background(
             Rectangle()
-                .fill(.regularMaterial)
-                .overlay(Divider(), alignment: .top)
-                .shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: -2)
+                .fill(AppTheme.groupedBackground.opacity(0.92))
+                .overlay(Divider().opacity(0.7), alignment: .top)
         )
         .transition(.move(edge: .bottom).combined(with: .opacity))
         .animation(.easeInOut(duration: 0.3), value: ari.guidanceLine)

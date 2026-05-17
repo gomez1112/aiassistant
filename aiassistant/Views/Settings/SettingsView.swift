@@ -36,7 +36,7 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -320,7 +320,8 @@ private struct SettingsFeaturePill: View {
             .lineLimit(1)
             .padding(.horizontal, AppTheme.spacingSM)
             .padding(.vertical, 5)
-            .background(.thinMaterial, in: Capsule())
+            .background(AppTheme.surfaceFill, in: Capsule())
+            .overlay(Capsule().stroke(AppTheme.surfaceStroke, lineWidth: 0.5))
     }
 }
 
@@ -347,4 +348,5 @@ private struct PrivacyRow: View {
 #Preview {
     SettingsView(preferences: .defaults)
         .environment(DataModel())
+        .environment(SubscriptionStore())
 }

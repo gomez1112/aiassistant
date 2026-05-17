@@ -39,4 +39,40 @@ struct AIAssistantTests {
         #expect(thread.sortedMessages.map(\.text) == ["First", "Second"])
         #expect(thread.lastMessagePreview == "Second")
     }
+
+    @Test func displayTextNormalizesMarkdownAndMissingSpacing() {
+        let raw = """
+        Here are some tips.Use headings:
+        * **Use headings:** Headings help.
+        * **Use shorter sentences:** Shorter is clearer.
+        """
+
+        let displayText = normalizedDisplayText(raw)
+
+        #expect(displayText.contains("tips. Use headings"))
+        #expect(displayText.contains("• Use headings: Headings help."))
+        #expect(displayText.contains("• Use shorter sentences: Shorter is clearer."))
+        #expect(!displayText.contains("**"))
+    }
+
+    @Test func subscriptionCatalogUsesExpectedProductIDs() {
+        let catalog = SubscriptionCatalog.ariPlus
+
+        #expect(catalog.subscriptionGroupID == Monetization.subscriptionGroupID)
+        #expect(catalog.subscriptionProductIDs == [
+            Monetization.subscriptionWeeklyID,
+            Monetization.subscriptionMonthlyID,
+            Monetization.subscriptionYearlyID
+        ])
+        #expect(catalog.allProductIDs.contains(Monetization.lifetimeID))
+        #expect(catalog.productIDSet.count == catalog.allProductIDs.count)
+    }
+
+    @Test func subscriptionTierMapsFromProductID() {
+        #expect(AppSubscriptionTier(productID: Monetization.subscriptionWeeklyID) == .weekly)
+        #expect(AppSubscriptionTier(productID: Monetization.subscriptionMonthlyID) == .monthly)
+        #expect(AppSubscriptionTier(productID: Monetization.subscriptionYearlyID) == .yearly)
+        #expect(AppSubscriptionTier(productID: Monetization.lifetimeID) == nil)
+        #expect(AppSubscriptionTier.yearly > .monthly)
+    }
 }

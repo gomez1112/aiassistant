@@ -7,14 +7,40 @@
 import SwiftUI
 import Foundation
 
-private func normalizedDisplayText(_ rawText: String) -> String {
-    var text = rawText.replacingOccurrences(of: "\r\n", with: "\n")
+func normalizedDisplayText(_ rawText: String) -> String {
+    var text = rawText
+        .replacingOccurrences(of: "\r\n", with: "\n")
+        .replacingOccurrences(of: "\r", with: "\n")
+
+    text = text.replacingOccurrences(
+        of: #"(?m)^\s*[\*\-]\s+"#,
+        with: "• ",
+        options: .regularExpression
+    )
+
+    text = text.replacingOccurrences(
+        of: #"\*\*([^*]+)\*\*"#,
+        with: "$1",
+        options: .regularExpression
+    )
+
+    text = text.replacingOccurrences(
+        of: #"__([^_]+)__"#,
+        with: "$1",
+        options: .regularExpression
+    )
 
     // Ensure punctuation is followed by a space when missing, but skip
     // URL-like sequences (://), digits after colons (times like 2:30),
     // and slash-separated paths.
     text = text.replacingOccurrences(
         of: #"([,:;!?])(?![/\d\s])([A-Za-z])"#,
+        with: "$1 $2",
+        options: .regularExpression
+    )
+
+    text = text.replacingOccurrences(
+        of: #"([.!?])([A-Z])"#,
         with: "$1 $2",
         options: .regularExpression
     )
@@ -183,7 +209,7 @@ struct MessageBubble: View {
 
                 messageText(message.text)
                     .font(.body)
-                    .lineSpacing(3)
+                    .lineSpacing(4)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
                     .background(bubbleShape)
@@ -256,12 +282,10 @@ struct MessageBubble: View {
     private var bubbleShape: some View {
         let shape = RoundedRectangle(cornerRadius: AppTheme.radiusBubble, style: .continuous)
         if isUser {
-            shape.fill(AppTheme.userBubbleGradient)
-                .shadow(color: AppTheme.accent.opacity(0.20), radius: 12, x: 0, y: 4)
+            shape.fill(AppTheme.accent)
         } else {
-            shape.fill(.ultraThinMaterial)
-                .overlay(shape.stroke(AppTheme.surfaceStroke, lineWidth: 0.5))
-                .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 3)
+            shape.fill(AppTheme.surfaceFill)
+                .overlay(shape.stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
         }
     }
 
@@ -277,17 +301,7 @@ struct MessageBubble: View {
     @ViewBuilder
     private func messageText(_ rawText: String) -> some View {
         let displayText = normalizedDisplayText(rawText)
-        if let attributed = try? AttributedString(
-            markdown: displayText,
-            options: .init(
-                interpretedSyntax: .full,
-                failurePolicy: .returnPartiallyParsedIfPossible
-            )
-        ) {
-            Text(attributed)
-        } else {
-            Text(.init(displayText))
-        }
+        Text(verbatim: displayText)
     }
 }
 
@@ -302,20 +316,23 @@ struct OutputCardView: View {
     @State private var copiedFeedback = false
 
     var body: some View {
-        HStack(spacing: 6) {
-            ActionPill(icon: "doc.on.doc", label: copiedFeedback ? "Copied" : "Copy") {
-                onCopy()
-                copiedFeedback = true
-                Task {
-                    try? await Task.sleep(for: .seconds(1.2))
-                    copiedFeedback = false
+        ScrollView(.horizontal) {
+            HStack(spacing: 6) {
+                ActionPill(icon: "doc.on.doc", label: copiedFeedback ? "Copied" : "Copy") {
+                    onCopy()
+                    copiedFeedback = true
+                    Task {
+                        try? await Task.sleep(for: .seconds(1.2))
+                        copiedFeedback = false
+                    }
                 }
+
+                ActionPill(icon: "square.and.arrow.down", label: "Save", action: onSave)
+
+                ActionPill(icon: "wand.and.stars", label: "Transform", action: onTransform)
             }
-
-            ActionPill(icon: "square.and.arrow.down", label: "Save to Outputs", action: onSave)
-
-            ActionPill(icon: "wand.and.stars", label: "Transform", action: onTransform)
         }
+        .scrollIndicators(.hidden)
         .sensoryFeedback(.impact(flexibility: .soft), trigger: copiedFeedback)
     }
 }
@@ -329,18 +346,18 @@ struct ActionPill: View {
     var body: some View {
         Button(action: action) {
             Label(label, systemImage: icon)
-                .font(.system(size: 11, weight: .medium))
+                .font(.caption.weight(.medium))
                 .padding(.horizontal, 10)
-                .padding(.vertical, 5)
+                .padding(.vertical, 6)
                 .background(
                     Capsule(style: .continuous)
-                        .fill(AppTheme.surface)
+                        .fill(AppTheme.surfaceFill)
                 )
                 .overlay(
                     Capsule(style: .continuous)
                         .stroke(AppTheme.surfaceStroke, lineWidth: 0.5)
                 )
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppTheme.accent)
         }
         .buttonStyle(.plain)
     }
@@ -366,7 +383,7 @@ struct AriGuidanceLine: View {
         .padding(.vertical, 5)
         .background(
             Capsule(style: .continuous)
-                .fill(.ultraThinMaterial)
+                .fill(AppTheme.surfaceFill)
                 .overlay(Capsule(style: .continuous).stroke(AppTheme.surfaceStroke, lineWidth: 0.5))
         )
         .transition(.opacity.combined(with: .move(edge: .top)))
@@ -392,18 +409,17 @@ struct StreamingBubble: View {
                     .overlay(alignment: .leading) {
                         messageText(text.isEmpty ? " " : text)
                             .font(.body)
-                            .lineSpacing(3)
+                            .lineSpacing(4)
                     }
                 .padding(.horizontal, 14)
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.radiusBubble, style: .continuous)
-                        .fill(.ultraThinMaterial)
+                        .fill(AppTheme.surfaceFill)
                         .overlay(
                             RoundedRectangle(cornerRadius: AppTheme.radiusBubble, style: .continuous)
-                                .stroke(AppTheme.surfaceStroke, lineWidth: 0.5)
+                                .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
                         )
-                        .shadow(color: .black.opacity(0.08), radius: 8, x: 0, y: 3)
                 )
 
                 Spacer(minLength: 48)
@@ -417,17 +433,7 @@ struct StreamingBubble: View {
     @ViewBuilder
     private func messageText(_ rawText: String) -> some View {
         let displayText = normalizedDisplayText(rawText)
-        if let attributed = try? AttributedString(
-            markdown: displayText,
-            options: .init(
-                interpretedSyntax: .full,
-                failurePolicy: .returnPartiallyParsedIfPossible
-            )
-        ) {
-            Text(attributed)
-        } else {
-            Text(.init(displayText))
-        }
+        Text(verbatim: displayText)
     }
 }
 
@@ -443,10 +449,10 @@ struct TypingIndicator: View {
             .padding(.vertical, 12)
             .background(
                 RoundedRectangle(cornerRadius: AppTheme.radiusBubble, style: .continuous)
-                    .fill(.ultraThinMaterial)
+                    .fill(AppTheme.surfaceFill)
                     .overlay(
                         RoundedRectangle(cornerRadius: AppTheme.radiusBubble, style: .continuous)
-                            .stroke(AppTheme.surfaceStroke, lineWidth: 0.5)
+                            .stroke(AppTheme.surfaceStroke, lineWidth: 0.6)
                     )
             )
             Spacer()
