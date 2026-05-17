@@ -20,6 +20,7 @@ struct ModeChipBar: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            .tint(AppTheme.accent)
             .frame(maxWidth: 760)
             Spacer(minLength: 0)
         }

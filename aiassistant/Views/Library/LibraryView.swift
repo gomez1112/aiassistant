@@ -38,37 +38,63 @@ struct LibraryView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if items.isEmpty {
-                    LibraryEmptyStateView(onAdd: presentAddSheet)
-                } else {
-                    Group {
-                        if filtered.isEmpty {
-                            unavailableFilteredState
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        } else {
-                            List {
-                                ForEach(filtered, id: \.id) { item in
-                                    NavigationLink(value: item.id) {
-                                        LibraryItemRow(item: item)
-                                    }
-                                    .listRowBackground(Color.clear)
-                                    .listRowSeparator(.hidden)
-                                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                                }
-                                .onDelete(perform: deleteItems)
-                            }
-                            .scrollContentBackground(.hidden)
-                            .listStyle(.plain)
-                        }
+            VStack(spacing: 0) {
+                #if os(macOS)
+                MacSearchHeader(
+                    title: "Library",
+                    subtitle: librarySubtitle,
+                    searchText: $searchText,
+                    prompt: "Search library"
+                ) {
+                    Button(action: presentAddSheet) {
+                        Label("Add Item", systemImage: "plus")
                     }
-                    .searchable(text: $searchText, prompt: "Search library")
-                    .navigationDestination(for: UUID.self) { id in
-                        if let item = items.first(where: { $0.id == id }) {
-                            LibraryItemDetailView(item: item, preferences: preferences)
+                    .buttonStyle(.borderedProminent)
+                    .tint(AppTheme.accent)
+                    .keyboardShortcut("l", modifiers: [.command, .shift])
+                }
+                #endif
+
+                Group {
+                    if items.isEmpty {
+                        LibraryEmptyStateView(onAdd: presentAddSheet)
+                    } else {
+                        Group {
+                            if filtered.isEmpty {
+                                unavailableFilteredState
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            } else {
+                                List {
+                                    ForEach(filtered, id: \.id) { item in
+                                        NavigationLink(value: item.id) {
+                                            LibraryItemRow(item: item)
+                                        }
+                                        #if os(macOS)
+                                        .listRowBackground(Color.clear)
+                                        .listRowInsets(EdgeInsets(top: 2, leading: 18, bottom: 2, trailing: 18))
+                                        #else
+                                        .listRowBackground(Color.clear)
+                                        .listRowSeparator(.hidden)
+                                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                                        #endif
+                                    }
+                                    .onDelete(perform: deleteItems)
+                                }
+                                .scrollContentBackground(.hidden)
+                                .listStyle(.plain)
+                            }
+                        }
+                        #if !os(macOS)
+                        .searchable(text: $searchText, prompt: "Search library")
+                        #endif
+                        .navigationDestination(for: UUID.self) { id in
+                            if let item = items.first(where: { $0.id == id }) {
+                                LibraryItemDetailView(item: item, preferences: preferences)
+                            }
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .navigationTitle("Library")
             #if os(iOS)
@@ -114,6 +140,14 @@ struct LibraryView: View {
         }
     }
 
+    private var librarySubtitle: String {
+        if items.isEmpty {
+            return "No source items yet"
+        }
+
+        return "\(filtered.count) of \(items.count) source items"
+    }
+
     @ViewBuilder
     private var unavailableFilteredState: some View {
         if isSearching {
@@ -145,6 +179,34 @@ struct LibraryItemRow: View {
     let item: LibraryItem
 
     var body: some View {
+        #if os(macOS)
+        HStack(alignment: .top, spacing: AppTheme.spacingMD) {
+            AppIconBadge(systemImage: item.kind.icon, tint: AppTheme.accent, size: 28)
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: AppTheme.spacingSM) {
+                    Text(item.title)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+
+                    if item.aiSummary != nil {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 11, weight: .semibold))
+                            .foregroundStyle(AppTheme.accent)
+                    }
+                }
+
+                Text(item.rawText.prefix(140).description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, AppTheme.spacingSM)
+        .accessibilityElement(children: .combine)
+        #else
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 AppIconBadge(systemImage: item.kind.icon, tint: AppTheme.accent, size: 30)
@@ -171,6 +233,7 @@ struct LibraryItemRow: View {
         }
         .padding(AppTheme.spacingMD)
         .appSurface()
+        #endif
     }
 }
 

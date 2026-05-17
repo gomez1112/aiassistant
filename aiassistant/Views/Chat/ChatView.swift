@@ -104,6 +104,27 @@ struct ChatView: View {
 
         NavigationStack {
             VStack(spacing: 0) {
+                #if os(macOS)
+                MacPlainHeader(
+                    title: "Chat",
+                    subtitle: macNavigationSubtitle
+                ) {
+                    HStack(spacing: AppTheme.spacingSM) {
+                        Button(action: presentThreadList) {
+                            Label("Threads", systemImage: "line.3.horizontal")
+                        }
+                        .help("Show threads")
+
+                        Button(action: createNewThread) {
+                            Label("New Chat", systemImage: "square.and.pencil")
+                        }
+                        .keyboardShortcut("n", modifiers: [.command])
+                        .help("New chat")
+                    }
+                    .buttonStyle(.bordered)
+                }
+                #endif
+
                 // Mode chips
                 ModeChipBar(selectedMode: $dataModel.selectedMode)
                 .frame(maxWidth: contentMaxWidth)
@@ -223,21 +244,7 @@ struct ChatView: View {
             .toolbarTitleDisplayMode(.inline)
             #endif
             .toolbar {
-                #if os(macOS)
-                ToolbarItem(placement: .automatic) {
-                    Button("Thread list", systemImage: "line.3.horizontal", action: presentThreadList)
-                    .buttonStyle(.plain)
-                    .labelStyle(.iconOnly)
-                    .help("Show threads")
-                }
-                ToolbarSpacer(.fixed)
-                ToolbarItem(placement: .automatic) {
-                    Button("New chat", systemImage: "square.and.pencil", action: createNewThread)
-                    .buttonStyle(.plain)
-                    .labelStyle(.iconOnly)
-                    .help("New chat")
-                }
-                #else
+                #if !os(macOS)
                 ToolbarItem(placement: .automatic) {
                     Button("Thread list", systemImage: "line.3.horizontal", action: presentThreadList)
                     .buttonStyle(.plain)

@@ -41,7 +41,7 @@ enum AppTheme {
         #if canImport(UIKit)
         Color(uiColor: .systemGroupedBackground)
         #elseif canImport(AppKit)
-        Color(nsColor: .underPageBackgroundColor)
+        Color(nsColor: .windowBackgroundColor)
         #else
         Color.primary.opacity(0.03)
         #endif
@@ -54,6 +54,14 @@ enum AppTheme {
         Color(nsColor: .controlBackgroundColor)
         #else
         Color.white
+        #endif
+    }
+
+    static var macSidebarBackground: Color {
+        #if canImport(AppKit)
+        Color(nsColor: .controlBackgroundColor)
+        #else
+        groupedBackground
         #endif
     }
 

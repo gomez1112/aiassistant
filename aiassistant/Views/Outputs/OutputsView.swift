@@ -44,62 +44,83 @@ struct OutputsView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if artifacts.isEmpty {
-                    OutputsEmptyStateView(assistantName: preferences.ariEnabled ? "Ari" : "the assistant")
-                } else {
-                    VStack(spacing: 0) {
-                        // Filter chips
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 6) {
-                                FilterChip(
-                                    label: "All",
-                                    icon: "tray.full",
-                                    isSelected: filterKind == nil,
-                                    action: { filterKind = nil }
-                                )
-                                ForEach(ArtifactKind.allCases) { kind in
-                                    FilterChip(
-                                        label: kind.rawValue,
-                                        icon: kind.icon,
-                                        isSelected: filterKind == kind,
-                                        action: { filterKind = kind }
-                                    )
-                                }
-                            }
-                            .padding(.horizontal, AppTheme.spacingLG)
-                            .padding(.vertical, 10)
-                        }
+            VStack(spacing: 0) {
+                #if os(macOS)
+                MacSearchHeader(
+                    title: "Outputs",
+                    subtitle: outputsSubtitle,
+                    searchText: $searchText,
+                    prompt: "Search outputs"
+                ) {
+                    EmptyView()
+                }
+                #endif
 
-                        Group {
-                            if filtered.isEmpty {
-                                unavailableFilteredState
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            } else {
-                                // Artifacts list
-                                List {
-                                    ForEach(filtered, id: \.id) { artifact in
-                                        NavigationLink(value: artifact.id) {
-                                            ArtifactRow(artifact: artifact)
-                                        }
-                                        .listRowBackground(Color.clear)
-                                        .listRowSeparator(.hidden)
-                                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                Group {
+                    if artifacts.isEmpty {
+                        OutputsEmptyStateView(assistantName: preferences.ariEnabled ? "Ari" : "the assistant")
+                    } else {
+                        VStack(spacing: 0) {
+                            // Filter chips
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 6) {
+                                    FilterChip(
+                                        label: "All",
+                                        icon: "tray.full",
+                                        isSelected: filterKind == nil,
+                                        action: { filterKind = nil }
+                                    )
+                                    ForEach(ArtifactKind.allCases) { kind in
+                                        FilterChip(
+                                            label: kind.rawValue,
+                                            icon: kind.icon,
+                                            isSelected: filterKind == kind,
+                                            action: { filterKind = kind }
+                                        )
                                     }
-                                    .onDelete(perform: deleteArtifacts)
                                 }
-                                .scrollContentBackground(.hidden)
-                                .listStyle(.plain)
+                                .padding(.horizontal, AppTheme.spacingLG)
+                                .padding(.vertical, 10)
                             }
+
+                            Group {
+                                if filtered.isEmpty {
+                                    unavailableFilteredState
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                } else {
+                                    // Artifacts list
+                                    List {
+                                        ForEach(filtered, id: \.id) { artifact in
+                                            NavigationLink(value: artifact.id) {
+                                                ArtifactRow(artifact: artifact)
+                                            }
+                                            #if os(macOS)
+                                            .listRowBackground(Color.clear)
+                                            .listRowInsets(EdgeInsets(top: 2, leading: 18, bottom: 2, trailing: 18))
+                                            #else
+                                            .listRowBackground(Color.clear)
+                                            .listRowSeparator(.hidden)
+                                            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                                            #endif
+                                        }
+                                        .onDelete(perform: deleteArtifacts)
+                                    }
+                                    .scrollContentBackground(.hidden)
+                                    .listStyle(.plain)
+                                }
+                            }
+                            #if !os(macOS)
+                            .searchable(text: $searchText, prompt: "Search outputs")
+                            #endif
                         }
-                        .searchable(text: $searchText, prompt: "Search outputs")
-                    }
-                    .navigationDestination(for: UUID.self) { id in
-                        if let artifact = artifacts.first(where: { $0.id == id }) {
-                            ArtifactDetailView(artifact: artifact, preferences: preferences)
+                        .navigationDestination(for: UUID.self) { id in
+                            if let artifact = artifacts.first(where: { $0.id == id }) {
+                                ArtifactDetailView(artifact: artifact, preferences: preferences)
+                            }
                         }
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .navigationTitle("Outputs")
             #if os(iOS)
@@ -137,6 +158,14 @@ struct OutputsView: View {
         }
     }
 
+    private var outputsSubtitle: String {
+        if artifacts.isEmpty {
+            return "No saved outputs yet"
+        }
+
+        return "\(filtered.count) of \(artifacts.count) saved"
+    }
+
     @ViewBuilder
     private var unavailableFilteredState: some View {
         if isSearching {
@@ -164,6 +193,41 @@ struct ArtifactRow: View {
     let artifact: Artifact
 
     var body: some View {
+        #if os(macOS)
+        HStack(alignment: .top, spacing: AppTheme.spacingMD) {
+            AppIconBadge(systemImage: artifact.kind.icon, tint: AppTheme.accent, size: 28)
+
+            VStack(alignment: .leading, spacing: 4) {
+                HStack(spacing: AppTheme.spacingSM) {
+                    Text(artifact.title)
+                        .font(.subheadline.weight(.semibold))
+                        .lineLimit(1)
+
+                    Text(artifact.updatedAt, style: .relative)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
+
+                Text(normalizedDisplayText(artifact.content).prefix(150).description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+
+                if !artifact.tags.isEmpty {
+                    HStack(spacing: 4) {
+                        ForEach(artifact.tags.prefix(3), id: \.self) { tag in
+                            AppTagPill(title: tag)
+                        }
+                    }
+                    .padding(.top, 2)
+                }
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.vertical, AppTheme.spacingSM)
+        .accessibilityElement(children: .combine)
+        #else
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
                 AppIconBadge(systemImage: artifact.kind.icon, tint: AppTheme.accent, size: 30)
@@ -198,6 +262,7 @@ struct ArtifactRow: View {
         .padding(AppTheme.spacingMD)
         .appSurface()
         .accessibilityElement(children: .combine)
+        #endif
     }
 }
 
