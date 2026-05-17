@@ -27,7 +27,6 @@ struct RootTabView: View {
                         .background(AppTheme.appBackground)
                 }
                 .background(AppTheme.appBackground)
-                .toolbar(.hidden, for: .windowToolbar)
                 #else
                 TabView(selection: $selectedTab) {
                     Tab(AppTab.chat.title, systemImage: AppTab.chat.systemImage, value: AppTab.chat) {
