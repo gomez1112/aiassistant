@@ -68,6 +68,10 @@ struct AIAssistantTests {
         #expect(catalog.productIDSet.count == catalog.allProductIDs.count)
     }
 
+    @Test func freeChatLimitTriggersAfterThreeMessages() {
+        #expect(Monetization.freeDailyMessageLimit == 3)
+    }
+
     @Test func subscriptionTierMapsFromProductID() {
         #expect(AppSubscriptionTier(productID: Monetization.subscriptionWeeklyID) == .weekly)
         #expect(AppSubscriptionTier(productID: Monetization.subscriptionMonthlyID) == .monthly)

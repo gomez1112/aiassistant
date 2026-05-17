@@ -92,6 +92,12 @@ struct ChatView: View {
         !dataModel.ari.guidanceLine.isEmpty &&
         activeThread?.id == ariGuidanceThreadID
     }
+    private var todaysUserMessageFetchDescriptor: FetchDescriptor<Message> {
+        let startOfDay = Calendar.current.startOfDay(for: .now)
+        return FetchDescriptor<Message>(predicate: #Predicate {
+            $0.roleRaw == "user" && $0.createdAt >= startOfDay
+        })
+    }
 
     var body: some View {
         @Bindable var dataModel = dataModel
@@ -381,18 +387,20 @@ struct ChatView: View {
         let attachmentContext = pendingAttachmentText
         guard !typedText.isEmpty || attachmentContext != nil else { return }
 
+        let freeMessageCountBeforeSend: Int?
         if !hasPremiumAccess {
             // Use a fresh fetch to avoid stale @Query data on rapid taps
-            let startOfDay = Calendar.current.startOfDay(for: .now)
-            let descriptor = FetchDescriptor<Message>(predicate: #Predicate {
-                $0.roleRaw == "user" && $0.createdAt >= startOfDay
-            })
-            let freshCount = (try? modelContext.fetchCount(descriptor)) ?? todayUserMessageCount
+            let freshCount = todaysFreeMessageCount()
             if freshCount >= Monetization.freeDailyMessageLimit {
                 presentPaywall(context: .messageLimit)
                 return
             }
+            freeMessageCountBeforeSend = freshCount
+        } else {
+            freeMessageCountBeforeSend = nil
         }
+        let shouldPresentLimitPaywallAfterSend = freeMessageCountBeforeSend
+            .map { $0 + 1 >= Monetization.freeDailyMessageLimit } ?? false
 
         let userMessageText = typedText.isEmpty ? "Analyze the attached file." : typedText
 
@@ -409,6 +417,10 @@ struct ChatView: View {
         pendingAttachmentName = nil
         isGenerating = true
         ariGuidanceThreadID = thread.id
+
+        if shouldPresentLimitPaywallAfterSend {
+            presentPaywall(context: .messageLimit)
+        }
 
         generationTask = Task {
             defer { isGenerating = false }
@@ -444,6 +456,10 @@ struct ChatView: View {
     private func presentPaywall(context: SubscriptionPaywallContext) {
         paywallContext = context
         showPaywall = true
+    }
+
+    private func todaysFreeMessageCount() -> Int {
+        (try? modelContext.fetchCount(todaysUserMessageFetchDescriptor)) ?? todayUserMessageCount
     }
 
     private func handleAriAction(_ action: AriActionType) {

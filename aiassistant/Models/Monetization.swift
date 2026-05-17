@@ -75,7 +75,7 @@ enum Monetization {
         lifetimeID
     ]
 
-    static let freeDailyMessageLimit = 10
+    static let freeDailyMessageLimit = 3
 
     static let subscriptionProductIDs: [String] = [
         subscriptionWeeklyID,
