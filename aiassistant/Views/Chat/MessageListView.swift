@@ -61,10 +61,13 @@ struct MessageListView: View {
     let thread: Thread
     let preferences: UserPreferences
     let isGenerating: Bool
+    let isComposerFocused: Bool
+    let usesCompactChrome: Bool
     let onSaveArtifact: (Message, ArtifactSuggestion) -> Void
     let onOpenOutputStudio: (Message) -> Void
 
     @Environment(DataModel.self) private var dataModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let bottomID = "bottom_anchor"
 
     /// Whether the engine is actively streaming a chat response.
@@ -102,16 +105,14 @@ struct MessageListView: View {
                         MessageBubble(
                             message: message,
                             preferences: preferences,
+                            usesCompactActions: usesCompactChrome,
                             onSaveArtifact: { suggestion in
                                 onSaveArtifact(message, suggestion)
                             },
                             onOpenOutputStudio: onOpenOutputStudio
                         )
                         .id(message.id)
-                        .transition(.asymmetric(
-                            insertion: .scale(scale: 0.95).combined(with: .opacity),
-                            removal: .opacity
-                        ))
+                        .transition(messageTransition)
                     }
 
                     // Streaming bubble — only during active chat generation
@@ -121,14 +122,14 @@ struct MessageListView: View {
                             assistantName: preferences.ariEnabled ? "Ari" : "Assistant"
                         )
                             .id("streaming")
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
                     }
 
                     // Typing indicator — only during active chat generation
                     if isChatThinking {
                         TypingIndicator(assistantName: preferences.ariEnabled ? "Ari" : "Assistant")
                             .id("typing")
-                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                            .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
                     }
 
                     // Bottom anchor
@@ -158,11 +159,29 @@ struct MessageListView: View {
                     scrollToBottom(proxy, animated: false)
                 }
             }
+            .onChange(of: isComposerFocused) { _, newValue in
+                if newValue {
+                    scrollToBottom(proxy, animated: !reduceMotion)
+                }
+            }
+            .onChange(of: usesCompactChrome) { _, _ in
+                scrollToBottom(proxy, animated: !reduceMotion)
+            }
+            .accessibilityIdentifier("chat.messageList")
         }
     }
 
+    private var messageTransition: AnyTransition {
+        reduceMotion
+            ? .opacity
+            : .asymmetric(
+                insertion: .scale(scale: 0.95).combined(with: .opacity),
+                removal: .opacity
+            )
+    }
+
     private func scrollToBottom(_ proxy: ScrollViewProxy, animated: Bool = true) {
-        if animated {
+        if animated && !reduceMotion {
             withAnimation(.easeOut(duration: 0.2)) {
                 proxy.scrollTo(bottomID, anchor: .bottom)
             }
@@ -177,10 +196,12 @@ struct MessageListView: View {
 struct MessageBubble: View {
     let message: Message
     let preferences: UserPreferences
+    let usesCompactActions: Bool
     let onSaveArtifact: (ArtifactSuggestion) -> Void
     let onOpenOutputStudio: (Message) -> Void
 
     private var isUser: Bool { message.role == .user }
+    private var roleName: String { isUser ? "You" : (preferences.ariEnabled ? "Ari" : "Assistant") }
 
     var body: some View {
         VStack(alignment: isUser ? .trailing : .leading, spacing: 4) {
@@ -241,6 +262,8 @@ struct MessageBubble: View {
                             }
                         }
                     }
+                    .accessibilityLabel("\(roleName): \(message.text)")
+                    .accessibilityIdentifier(isUser ? "chat.message.user" : "chat.message.assistant")
 
                 if !isUser { Spacer(minLength: 48) }
             }
@@ -249,6 +272,7 @@ struct MessageBubble: View {
             if !isUser {
                 OutputCardView(
                     message: message,
+                    usesCompactActions: usesCompactActions,
                     onSave: {
                         onSaveArtifact(ArtifactSuggestion(
                             kind: artifactKind(for: message.mode),
@@ -274,8 +298,7 @@ struct MessageBubble: View {
         }
         .padding(.vertical, 6)
         .frame(maxWidth: .infinity, alignment: isUser ? .trailing : .leading)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(isUser ? "You" : (preferences.ariEnabled ? "Ari" : "Assistant")): \(message.text)")
+        .accessibilityElement(children: .contain)
     }
 
     @ViewBuilder
@@ -309,6 +332,7 @@ struct MessageBubble: View {
 
 struct OutputCardView: View {
     let message: Message
+    let usesCompactActions: Bool
     let onSave: () -> Void
     let onCopy: () -> Void
     let onTransform: () -> Void
@@ -316,24 +340,56 @@ struct OutputCardView: View {
     @State private var copiedFeedback = false
 
     var body: some View {
-        ScrollView(.horizontal) {
-            HStack(spacing: 6) {
-                ActionPill(icon: "doc.on.doc", label: copiedFeedback ? "Copied" : "Copy") {
-                    onCopy()
-                    copiedFeedback = true
-                    Task {
-                        try? await Task.sleep(for: .seconds(1.2))
-                        copiedFeedback = false
+        Group {
+            if usesCompactActions {
+                Menu {
+                    Button(action: copy) {
+                        Label(copiedFeedback ? "Copied" : "Copy", systemImage: "doc.on.doc")
+                    }
+                    .accessibilityIdentifier("chat.messageActions.copy")
+
+                    Button(action: onSave) {
+                        Label("Save", systemImage: "square.and.arrow.down")
+                    }
+                    .accessibilityIdentifier("chat.messageActions.save")
+
+                    Button(action: onTransform) {
+                        Label("Transform", systemImage: "wand.and.stars")
+                    }
+                    .accessibilityIdentifier("chat.messageActions.transform")
+                } label: {
+                    Label("Message actions", systemImage: "ellipsis.circle")
+                        .font(.caption.weight(.medium))
+                        .padding(.horizontal, 10)
+                        .frame(height: 32)
+                        .background(AppTheme.surfaceFill, in: Capsule(style: .continuous))
+                        .overlay(Capsule(style: .continuous).stroke(AppTheme.surfaceStroke, lineWidth: 0.5))
+                        .foregroundStyle(AppTheme.accent)
+                }
+                .accessibilityIdentifier("chat.messageActions.menu")
+            } else {
+                ScrollView(.horizontal) {
+                    HStack(spacing: 6) {
+                        ActionPill(icon: "doc.on.doc", label: copiedFeedback ? "Copied" : "Copy", identifier: "chat.messageActions.copy", action: copy)
+
+                        ActionPill(icon: "square.and.arrow.down", label: "Save", identifier: "chat.messageActions.save", action: onSave)
+
+                        ActionPill(icon: "wand.and.stars", label: "Transform", identifier: "chat.messageActions.transform", action: onTransform)
                     }
                 }
-
-                ActionPill(icon: "square.and.arrow.down", label: "Save", action: onSave)
-
-                ActionPill(icon: "wand.and.stars", label: "Transform", action: onTransform)
+                .scrollIndicators(.hidden)
             }
         }
-        .scrollIndicators(.hidden)
         .sensoryFeedback(.impact(flexibility: .soft), trigger: copiedFeedback)
+    }
+
+    private func copy() {
+        onCopy()
+        copiedFeedback = true
+        Task {
+            try? await Task.sleep(for: .seconds(1.2))
+            copiedFeedback = false
+        }
     }
 }
 
@@ -341,6 +397,7 @@ struct OutputCardView: View {
 struct ActionPill: View {
     let icon: String
     let label: String
+    let identifier: String
     let action: () -> Void
 
     var body: some View {
@@ -360,6 +417,7 @@ struct ActionPill: View {
                 .foregroundStyle(AppTheme.accent)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier(identifier)
     }
 }
 

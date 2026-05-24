@@ -17,6 +17,14 @@ struct AIAssistantApp: App {
     @State private var dataModel = DataModel()
     @State private var subscriptionStore = SubscriptionStore()
     @State private var flexStore = StoreKitService<AppSubscriptionTier>()
+
+    private static var launchArguments: [String] {
+        ProcessInfo.processInfo.arguments
+    }
+
+    private static var isUITesting: Bool {
+        launchArguments.contains("-ui-testing")
+    }
     
     init() {
         let schema = Schema([
@@ -27,10 +35,20 @@ struct AIAssistantApp: App {
             UserPreferences.self
         ])
         do {
-            let config = ModelConfiguration(
-                "AIAssistant",
-                schema: schema
-            )
+            let config: ModelConfiguration
+            if Self.isUITesting {
+                config = ModelConfiguration(
+                    "AIAssistantUITests",
+                    schema: schema,
+                    isStoredInMemoryOnly: true,
+                    cloudKitDatabase: .none
+                )
+            } else {
+                config = ModelConfiguration(
+                    "AIAssistant",
+                    schema: schema
+                )
+            }
             modelContainer = try ModelContainer(for: schema, configurations: [config])
         } catch {
             do {
@@ -49,24 +67,25 @@ struct AIAssistantApp: App {
     
     var body: some Scene {
         WindowGroup {
-            OnboardingWrapper(
-                appName: "Ari",
-                currentVersion: currentVersion,
-                pages: onboardingPages,
-                features: whatsNewFeatures,
-                tint: AppTheme.accent
-            ) {
-                RootTabView()
-                    .environment(dataModel)
-                    .environment(subscriptionStore)
-                    .attachStoreKit(
-                        manager: flexStore,
-                        groupID: Monetization.subscriptionGroupID,
-                        ids: Monetization.productIDs
-                    )
+            Group {
+                if Self.isUITesting {
+                    appRoot
+                } else {
+                    OnboardingWrapper(
+                        appName: "Ari",
+                        currentVersion: currentVersion,
+                        pages: onboardingPages,
+                        features: whatsNewFeatures,
+                        tint: AppTheme.accent
+                    ) {
+                        appRoot
+                    }
+                }
             }
             .task {
-                await subscriptionStore.start()
+                if !Self.isUITesting {
+                    await subscriptionStore.start()
+                }
             }
         }
         #if os(macOS)
@@ -87,6 +106,18 @@ struct AIAssistantApp: App {
         }
         .modelContainer(modelContainer)
         #endif
+    }
+
+    @ViewBuilder
+    private var appRoot: some View {
+        RootTabView()
+            .environment(dataModel)
+            .environment(subscriptionStore)
+            .attachStoreKit(
+                manager: flexStore,
+                groupID: Monetization.subscriptionGroupID,
+                ids: Monetization.productIDs
+            )
     }
 
     private var currentVersion: String {

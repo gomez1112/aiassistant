@@ -8,63 +8,93 @@ import SwiftUI
 
 struct AriGuidanceBar: View {
     let ari: AriEngine
+    let usesCompactChrome: Bool
     let onAction: (AriActionType) -> Void
 
     var body: some View {
-        VStack(spacing: 6) {
-            // Guidance line
-            HStack(spacing: 8) {
-                Image(systemName: ari.currentMood.icon)
-                    .foregroundStyle(ari.currentMood.color)
-                    .font(.system(size: 14, weight: .semibold))
-                    .frame(width: 20)
-
-                Text(ari.guidanceLine)
-                    .font(.system(size: 13))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-
-                Spacer()
-            }
-            .padding(.horizontal, AppTheme.spacingLG)
-
-            // Coaching actions
-            if !ari.coachingActions.isEmpty {
-                ScrollView(.horizontal) {
-                    HStack(spacing: 6) {
-                        ForEach(ari.coachingActions) { action in
-                            Button {
-                                onAction(action.action)
-                            } label: {
-                                Label(action.label, systemImage: action.icon)
-                                    .font(.system(size: 11, weight: .medium))
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 5)
-                                    .background(
-                                        Capsule(style: .continuous)
-                                            .fill(AppTheme.surface)
-                                    )
-                                    .overlay(
-                                        Capsule(style: .continuous)
-                                            .stroke(AppTheme.surfaceStroke, lineWidth: 0.5)
-                                    )
-                                    .foregroundStyle(.secondary)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.horizontal, AppTheme.spacingLG)
-                }
-                .scrollIndicators(.hidden)
+        Group {
+            if usesCompactChrome {
+                compactActions
+            } else {
+                expandedActions
             }
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 6)
         .background(
             Rectangle()
                 .fill(AppTheme.groupedBackground.opacity(0.92))
                 .overlay(Divider().opacity(0.7), alignment: .top)
         )
         .transition(.move(edge: .bottom).combined(with: .opacity))
-        .animation(.easeInOut(duration: 0.3), value: ari.guidanceLine)
+        .animation(.easeInOut(duration: 0.3), value: ari.coachingActions.count)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Ari actions")
+        .accessibilityIdentifier("chat.ariActions")
+    }
+
+    private var expandedActions: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 6) {
+                ForEach(ari.coachingActions) { action in
+                    AriActionButton(action: action, onAction: onAction)
+                }
+            }
+            .padding(.horizontal, AppTheme.spacingLG)
+        }
+        .scrollIndicators(.hidden)
+    }
+
+    private var compactActions: some View {
+        HStack {
+            Menu {
+                ForEach(ari.coachingActions) { action in
+                    Button {
+                        onAction(action.action)
+                    } label: {
+                        Label(action.label, systemImage: action.icon)
+                    }
+                    .accessibilityIdentifier("chat.ariActions.\(action.label)")
+                }
+            } label: {
+                Label("Ari actions", systemImage: "sparkles")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(AppTheme.accent)
+                    .padding(.horizontal, 12)
+                    .frame(height: 36)
+                    .background(AppTheme.surfaceFill, in: Capsule(style: .continuous))
+                    .overlay(Capsule(style: .continuous).stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
+            }
+            .accessibilityIdentifier("chat.ariActions.menu")
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, AppTheme.spacingLG)
+    }
+}
+
+private struct AriActionButton: View {
+    let action: AriCoachingAction
+    let onAction: (AriActionType) -> Void
+
+    var body: some View {
+        Button {
+            onAction(action.action)
+        } label: {
+            Label(action.label, systemImage: action.icon)
+                .font(.caption.weight(.medium))
+                .padding(.horizontal, 12)
+                .frame(height: 32)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(AppTheme.surface)
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(AppTheme.surfaceStroke, lineWidth: 0.5)
+                )
+                .foregroundStyle(.secondary)
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("chat.ariActions.\(action.label)")
     }
 }

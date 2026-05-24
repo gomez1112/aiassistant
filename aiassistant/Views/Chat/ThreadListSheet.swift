@@ -61,13 +61,17 @@ struct ThreadListSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") { dismiss() }
+                        .accessibilityIdentifier("threadList.done")
                 }
                 ToolbarItem(placement: .primaryAction) {
                     Button("New chat", systemImage: "plus", action: onNew)
                         .labelStyle(.iconOnly)
+                        .accessibilityLabel("New chat")
+                        .accessibilityIdentifier("threadList.newChat")
                 }
             }
         }
+        .accessibilityIdentifier("threadList.sheet")
     }
 
     @ViewBuilder
@@ -106,6 +110,7 @@ struct ThreadListSheet: View {
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(thread.title), \(thread.lastMessagePreview)")
         .accessibilityHint("Opens conversation")
+        .accessibilityIdentifier("threadList.row.\(thread.id.uuidString)")
         .swipeActions(edge: .leading) {
             Button {
                 onTogglePin(thread)

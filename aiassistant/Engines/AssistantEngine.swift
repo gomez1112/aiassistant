@@ -83,6 +83,27 @@ final class AssistantEngine {
         preferences: UserPreferences,
         attachmentContext: String? = nil
     ) async -> GenerationResult {
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-fast-ai") {
+            state = .routing
+            streamingText = ""
+            state = .generating
+            let reply = """
+            UI test reply for \(mode.chipLabel): this deterministic answer keeps the chat and keyboard flow stable.
+
+            • First concise point
+            • Second concise point
+            • Final concise point
+            """
+            state = .complete
+            return GenerationResult(
+                text: reply,
+                mode: mode,
+                suggestedArtifact: suggestArtifact(from: reply, mode: mode),
+                ariGuidance: nil,
+                ariMood: nil
+            )
+        }
+
         if Task.isCancelled {
             state = .idle
             streamingText = ""

@@ -43,10 +43,14 @@ struct ChatView: View {
     @State private var generationTask: Task<Void, Never>?
     @State private var outputStudioSourceMessage: Message?
     @State private var ariGuidanceThreadID: UUID?
+    @FocusState private var isComposerFocused: Bool
 
     private var activeThread: Thread? { dataModel.activeThread }
     private var assistantName: String { preferences.ariEnabled ? "Ari" : "Assistant" }
     private var hasPremiumAccess: Bool { subscriptionStore.hasPremiumAccess }
+    private var hasActiveMessages: Bool {
+        activeThread?.sortedMessages.isEmpty == false
+    }
     private var navigationTitleText: String {
         #if os(macOS)
         "Chat"
@@ -89,7 +93,7 @@ struct ChatView: View {
     }
     private var shouldShowAriGuidance: Bool {
         preferences.ariEnabled &&
-        !dataModel.ari.guidanceLine.isEmpty &&
+        !dataModel.ari.coachingActions.isEmpty &&
         activeThread?.id == ariGuidanceThreadID
     }
     private var todaysUserMessageFetchDescriptor: FetchDescriptor<Message> {
@@ -103,136 +107,83 @@ struct ChatView: View {
         @Bindable var dataModel = dataModel
 
         NavigationStack {
-            VStack(spacing: 0) {
-                #if os(macOS)
-                MacPlainHeader(
-                    title: "Chat",
-                    subtitle: macNavigationSubtitle
-                ) {
-                    HStack(spacing: AppTheme.spacingSM) {
-                        Button(action: presentThreadList) {
-                            Label("Threads", systemImage: "line.3.horizontal")
-                        }
-                        .help("Show threads")
+            GeometryReader { geometry in
+                let isCompact = isCompactLayout(width: geometry.size.width)
+                let usesCompactChrome = shouldCollapseChrome(isCompact: isCompact)
 
-                        Button(action: createNewThread) {
-                            Label("New Chat", systemImage: "square.and.pencil")
-                        }
-                        .keyboardShortcut("n", modifiers: [.command])
-                        .help("New chat")
-                    }
-                    .buttonStyle(.bordered)
-                }
-                #endif
-
-                // Mode chips
-                ModeChipBar(selectedMode: $dataModel.selectedMode)
-                .frame(maxWidth: contentMaxWidth)
-                .frame(maxWidth: .infinity)
-
-                if !hasPremiumAccess {
-                    UpgradeTeaserBanner(
-                        remainingFreeMessages: remainingFreeMessages,
-                        action: {
-                            presentPaywall(context: remainingFreeMessages <= 2 ? .messageLimit : .general)
-                        }
-                    )
-                    .padding(.horizontal, AppTheme.spacingLG)
-                    .padding(.top, 0)
-                    .padding(.bottom, 6)
-                    .frame(maxWidth: contentMaxWidth)
-                    .frame(maxWidth: .infinity)
-                }
-
-                if let pendingAttachmentName {
-                    AppBanner(
-                        systemImage: "paperclip",
-                        message: "Attached: \(pendingAttachmentName)",
-                        tint: AppTheme.accentLight
+                VStack(spacing: 0) {
+                    #if os(macOS)
+                    MacPlainHeader(
+                        title: "Chat",
+                        subtitle: macNavigationSubtitle
                     ) {
-                        Button(role: .destructive, action: clearAttachment) {
-                            Label("Remove attachment", systemImage: "xmark.circle.fill")
+                        HStack(spacing: AppTheme.spacingSM) {
+                            Button(action: presentThreadList) {
+                                Label("Threads", systemImage: "line.3.horizontal")
+                            }
+                            .help("Show threads")
+                            .accessibilityIdentifier("chat.toolbar.threads")
+
+                            Button(action: createNewThread) {
+                                Label("New Chat", systemImage: "square.and.pencil")
+                            }
+                            .keyboardShortcut("n", modifiers: [.command])
+                            .help("New chat")
+                            .accessibilityIdentifier("chat.toolbar.newChat")
                         }
-                        .buttonStyle(.plain)
-                        .labelStyle(.iconOnly)
-                        .foregroundStyle(.secondary)
-                        .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                        .buttonStyle(.bordered)
                     }
-                    .padding(.horizontal, AppTheme.spacingLG)
-                    .padding(.bottom, 8)
+                    #endif
+
+                    ModeChipBar(
+                        selectedMode: $dataModel.selectedMode,
+                        displayStyle: modeDisplayStyle(usesCompactChrome: usesCompactChrome)
+                    )
                     .frame(maxWidth: contentMaxWidth)
                     .frame(maxWidth: .infinity)
-                }
 
-                // Messages
-                if let thread = activeThread {
-                    if thread.sortedMessages.isEmpty {
-                        ChatEmptyStateView(assistantName: assistantName)
-                            .frame(maxWidth: contentMaxWidth)
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        MessageListView(
-                            thread: thread,
-                            preferences: preferences,
-                            isGenerating: isGenerating,
-                            onSaveArtifact: { message, suggestion in
-                                let _ = dataModel.saveArtifact(
-                                    from: suggestion,
-                                    message: message,
-                                    in: modelContext
-                                )
-                                dataModel.ari.update(
-                                    messages: thread.sortedMessages,
-                                    lastMode: dataModel.selectedMode,
-                                    preferences: preferences,
-                                    justSavedArtifact: true
-                                )
-                                ariGuidanceThreadID = thread.id
-                            },
-                            onOpenOutputStudio: { message in
-                                if hasPremiumAccess {
-                                    outputStudioSourceMessage = message
-                                    showOutputStudio = true
-                                } else {
-                                    presentPaywall(context: .outputStudio)
-                                }
+                    if shouldShowUpgradeTeaser(usesCompactChrome: usesCompactChrome) {
+                        UpgradeTeaserBanner(
+                            remainingFreeMessages: remainingFreeMessages,
+                            action: {
+                                presentPaywall(context: remainingFreeMessages <= 2 ? .messageLimit : .general)
                             }
                         )
+                        .padding(.horizontal, AppTheme.spacingLG)
+                        .padding(.top, 0)
+                        .padding(.bottom, 6)
                         .frame(maxWidth: contentMaxWidth)
                         .frame(maxWidth: .infinity)
                     }
-                } else {
-                    ChatEmptyStateView(
-                        assistantName: assistantName,
-                        onNewChat: createNewThread
-                    )
+
+                    if let pendingAttachmentName {
+                        AppBanner(
+                            systemImage: "paperclip",
+                            message: "Attached: \(pendingAttachmentName)",
+                            tint: AppTheme.accentLight
+                        ) {
+                            Button(role: .destructive, action: clearAttachment) {
+                                Label("Remove attachment", systemImage: "xmark.circle.fill")
+                            }
+                            .buttonStyle(.plain)
+                            .labelStyle(.iconOnly)
+                            .foregroundStyle(.secondary)
+                            .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                            .accessibilityLabel("Remove attachment")
+                            .accessibilityIdentifier("chat.attachment.remove")
+                        }
+                        .padding(.horizontal, AppTheme.spacingLG)
+                        .padding(.bottom, 8)
                         .frame(maxWidth: contentMaxWidth)
                         .frame(maxWidth: .infinity)
-                }
+                    }
 
-                // Ari guidance
-                if shouldShowAriGuidance {
-                    AriGuidanceBar(
-                        ari: dataModel.ari,
-                        onAction: handleAriAction
-                    )
-                    .frame(maxWidth: contentMaxWidth)
-                    .frame(maxWidth: .infinity)
+                    chatContent(usesCompactChrome: usesCompactChrome)
                 }
-
-                // Composer
-                ComposerBar(
-                    text: $composerText,
-                    isGenerating: isGenerating,
-                    isImportingAttachment: isImportingAttachment,
-                    hasAttachment: pendingAttachmentText != nil,
-                    assistantName: assistantName,
-                    onSend: sendMessage,
-                    onCancel: cancelGeneration,
-                    onAttach: handleAttachAction
-                )
-                .frame(maxWidth: contentMaxWidth)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    bottomAccessory(usesCompactChrome: usesCompactChrome)
+                }
             }
             .padding(.horizontal, outerHorizontalPadding)
             .navigationTitle(navigationTitleText)
@@ -249,24 +200,31 @@ struct ChatView: View {
                     Button("Thread list", systemImage: "line.3.horizontal", action: presentThreadList)
                     .buttonStyle(.plain)
                     .labelStyle(.iconOnly)
+                    .accessibilityLabel("Thread list")
+                    .accessibilityIdentifier("chat.toolbar.threads")
                 }
                 ToolbarSpacer(.fixed)
                 ToolbarItem(placement: .automatic) {
                     Button("New chat", systemImage: "square.and.pencil", action: createNewThread)
                     .buttonStyle(.plain)
                     .labelStyle(.iconOnly)
+                    .accessibilityLabel("New chat")
+                    .accessibilityIdentifier("chat.toolbar.newChat")
                 }
                 ToolbarSpacer(.fixed)
                 ToolbarItem(placement: .automatic) {
                     Button("Settings", systemImage: "gearshape", action: openSettings)
                     .buttonStyle(.plain)
                     .labelStyle(.iconOnly)
+                    .accessibilityLabel("Settings")
+                    .accessibilityIdentifier("chat.toolbar.settings")
                 }
                 #endif
             }
             #if os(iOS)
             .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar(isComposerFocused ? .hidden : .visible, for: .tabBar)
             #endif
             .sheet(isPresented: $showThreadList) {
                 ThreadListSheet(
@@ -339,25 +297,143 @@ struct ChatView: View {
             }
         }
         .onAppear {
-            ensureActiveThreadSelection()
+            if !seedUITestChatIfNeeded() {
+                ensureActiveThreadSelection()
+            }
         }
         .onChange(of: threads.map(\.id)) { _, _ in
             ensureActiveThreadSelection()
         }
     }
 
+    @ViewBuilder
+    private func chatContent(usesCompactChrome: Bool) -> some View {
+        if let thread = activeThread {
+            if thread.sortedMessages.isEmpty {
+                ChatEmptyStateView(assistantName: assistantName)
+                    .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
+                    .frame(maxWidth: .infinity)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        isComposerFocused = false
+                    }
+                    .accessibilityIdentifier("chat.emptyState")
+            } else {
+                MessageListView(
+                    thread: thread,
+                    preferences: preferences,
+                    isGenerating: isGenerating,
+                    isComposerFocused: isComposerFocused,
+                    usesCompactChrome: usesCompactChrome,
+                    onSaveArtifact: { message, suggestion in
+                        let _ = dataModel.saveArtifact(
+                            from: suggestion,
+                            message: message,
+                            in: modelContext
+                        )
+                        dataModel.ari.update(
+                            messages: thread.sortedMessages,
+                            lastMode: dataModel.selectedMode,
+                            preferences: preferences,
+                            justSavedArtifact: true
+                        )
+                        ariGuidanceThreadID = thread.id
+                    },
+                    onOpenOutputStudio: { message in
+                        if hasPremiumAccess {
+                            outputStudioSourceMessage = message
+                            showOutputStudio = true
+                        } else {
+                            presentPaywall(context: .outputStudio)
+                        }
+                    }
+                )
+                .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
+                .frame(maxWidth: .infinity)
+            }
+        } else {
+            ChatEmptyStateView(
+                assistantName: assistantName,
+                onNewChat: createNewThread
+            )
+            .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
+            .frame(maxWidth: .infinity)
+            .contentShape(Rectangle())
+            .onTapGesture {
+                isComposerFocused = false
+            }
+            .accessibilityIdentifier("chat.emptyState")
+        }
+    }
+
+    @ViewBuilder
+    private func bottomAccessory(usesCompactChrome: Bool) -> some View {
+        VStack(spacing: 0) {
+            if shouldShowAriGuidance {
+                AriGuidanceBar(
+                    ari: dataModel.ari,
+                    usesCompactChrome: usesCompactChrome,
+                    onAction: handleAriAction
+                )
+                .frame(maxWidth: contentMaxWidth)
+                .frame(maxWidth: .infinity)
+            }
+
+            ComposerBar(
+                text: $composerText,
+                isFocused: $isComposerFocused,
+                isGenerating: isGenerating,
+                isImportingAttachment: isImportingAttachment,
+                hasAttachment: pendingAttachmentText != nil,
+                assistantName: assistantName,
+                onSend: sendMessage,
+                onCancel: cancelGeneration,
+                onAttach: handleAttachAction
+            )
+            .frame(maxWidth: contentMaxWidth)
+            .frame(maxWidth: .infinity)
+        }
+    }
+
+    private func isCompactLayout(width: CGFloat) -> Bool {
+        #if os(macOS)
+        false
+        #else
+        width < 620
+        #endif
+    }
+
+    private func shouldCollapseChrome(isCompact: Bool) -> Bool {
+        isCompact && (isComposerFocused || hasActiveMessages || isGenerating)
+    }
+
+    private func modeDisplayStyle(usesCompactChrome: Bool) -> ModeChipBar.DisplayStyle {
+        #if os(macOS)
+        .segmented
+        #else
+        usesCompactChrome ? .compactMenu : .expandedChips
+        #endif
+    }
+
+    private func shouldShowUpgradeTeaser(usesCompactChrome: Bool) -> Bool {
+        !hasPremiumAccess && !usesCompactChrome
+    }
+
     // MARK: - Actions
 
     private func presentThreadList() {
+        isComposerFocused = false
         showThreadList = true
     }
 
     private func createNewThread() {
+        isComposerFocused = false
         let thread = dataModel.createThread(in: modelContext)
         selectThread(thread)
     }
 
     private func selectThread(_ thread: Thread) {
+        isComposerFocused = false
         dataModel.activeThread = thread
         syncAriGuidance(to: thread)
     }
@@ -378,6 +454,7 @@ struct ChatView: View {
 
     #if !os(macOS)
     private func openSettings() {
+        isComposerFocused = false
         showSettings = true
     }
     #endif
@@ -420,6 +497,7 @@ struct ChatView: View {
         }
 
         composerText = ""
+        isComposerFocused = false
         pendingAttachmentText = nil
         pendingAttachmentName = nil
         isGenerating = true
@@ -446,6 +524,7 @@ struct ChatView: View {
     }
 
     private func cancelGeneration() {
+        isComposerFocused = false
         generationTask?.cancel()
         generationTask = nil
         dataModel.assistant.cancel()
@@ -453,6 +532,7 @@ struct ChatView: View {
     }
 
     private func handleAttachAction() {
+        isComposerFocused = false
         guard hasPremiumAccess else {
             presentPaywall(context: .fileUpload)
             return
@@ -461,6 +541,7 @@ struct ChatView: View {
     }
 
     private func presentPaywall(context: SubscriptionPaywallContext) {
+        isComposerFocused = false
         paywallContext = context
         showPaywall = true
     }
@@ -623,6 +704,51 @@ struct ChatView: View {
             ariGuidanceThreadID = nil
         }
     }
+
+    @discardableResult
+    private func seedUITestChatIfNeeded() -> Bool {
+        let arguments = ProcessInfo.processInfo.arguments
+        guard arguments.contains("-ui-testing-seed-chat"), threads.isEmpty else { return false }
+
+        let thread = Thread(title: "Keyboard QA thread")
+        let userMessage = Message(
+            thread: thread,
+            role: .user,
+            text: "Make a compact checklist for keyboard testing.",
+            createdAt: .now.addingTimeInterval(-60),
+            mode: .plan
+        )
+        let assistantMessage = Message(
+            thread: thread,
+            role: .assistant,
+            text: """
+            Here is a compact checklist for keyboard testing:
+
+            • Focus the composer
+            • Send a short message
+            • Scroll the latest answer
+            • Open message actions
+            """,
+            createdAt: .now.addingTimeInterval(-30),
+            mode: .plan,
+            ariGuidance: "Keep the chat focused while you type.",
+            ariMood: .focused
+        )
+        thread.messages = [userMessage, assistantMessage]
+        modelContext.insert(thread)
+        modelContext.insert(userMessage)
+        modelContext.insert(assistantMessage)
+        dataModel.activeThread = thread
+        dataModel.lastAssistantMessage = assistantMessage
+        dataModel.ari.update(
+            messages: thread.sortedMessages,
+            lastMode: .plan,
+            preferences: preferences
+        )
+        ariGuidanceThreadID = thread.id
+        dataModel.saveChanges(in: modelContext, source: "uiTestSeedChat")
+        return true
+    }
 }
 
 private enum ImportError: LocalizedError {
@@ -697,6 +823,7 @@ private struct UpgradeTeaserBanner: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Upgrade to Ari+. \(remainingFreeMessages) free messages left. Start a free trial for unlimited chats, files, and Output Studio.")
+        .accessibilityIdentifier("chat.upgradeTeaser")
     }
 }
 

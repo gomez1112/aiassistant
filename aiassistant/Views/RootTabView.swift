@@ -31,14 +31,17 @@ struct RootTabView: View {
                 TabView(selection: $selectedTab) {
                     Tab(AppTab.chat.title, systemImage: AppTab.chat.systemImage, value: AppTab.chat) {
                         ChatView(preferences: preferences)
+                            .accessibilityIdentifier("tab.chat.content")
                     }
 
                     Tab(AppTab.outputs.title, systemImage: AppTab.outputs.systemImage, value: AppTab.outputs) {
                         OutputsView(preferences: preferences)
+                            .accessibilityIdentifier("tab.outputs.content")
                     }
 
                     Tab(AppTab.library.title, systemImage: AppTab.library.systemImage, value: AppTab.library) {
                         LibraryView(preferences: preferences)
+                            .accessibilityIdentifier("tab.library.content")
                     }
                 }
                 .tint(AppTheme.accent)
@@ -130,6 +133,7 @@ private struct MacSidebarTabButton: View {
         }
         .buttonStyle(.plain)
         .contentShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
+        .accessibilityIdentifier("sidebar.tab.\(tab.title)")
     }
 }
 #endif
