@@ -1701,45 +1701,53 @@ body[data-site-classes~="dark-mode"] .changelog-badge-removed {
 }
 
 /* ==========================================
-   PRIVACY POLICY PAGE
+   LEGAL PAGES
    ========================================== */
 
-.privacy-page {
+.privacy-page,
+.terms-page {
     padding: var(--section-padding-y) 0;
     background: var(--bg-primary);
     min-height: 80vh;
 }
 
-.privacy-title {
+.privacy-title,
+.terms-title {
     font-weight: 700;
     margin-bottom: 2rem;
     color: var(--text-primary);
 }
 
-.privacy-content {
+.privacy-content,
+.terms-content {
     max-width: 800px;
     line-height: 1.8;
     color: var(--text-primary);
 }
 
 .privacy-content h2,
-.privacy-content h3 {
+.privacy-content h3,
+.terms-content h2,
+.terms-content h3 {
     margin-top: 2rem;
     margin-bottom: 1rem;
     color: var(--text-primary);
 }
 
-.privacy-content p {
+.privacy-content p,
+.terms-content p {
     margin-bottom: 1rem;
     color: var(--text-secondary);
 }
 
-.privacy-content ul {
+.privacy-content ul,
+.terms-content ul {
     margin-left: 1.5rem;
     margin-bottom: 1rem;
 }
 
-.privacy-content li {
+.privacy-content li,
+.terms-content li {
     margin-bottom: 0.5rem;
     color: var(--text-secondary);
 }
