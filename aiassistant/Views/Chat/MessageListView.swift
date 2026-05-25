@@ -30,30 +30,6 @@ func normalizedDisplayText(_ rawText: String) -> String {
         options: .regularExpression
     )
 
-    // Ensure punctuation is followed by a space when missing, but skip
-    // URL-like sequences (://), digits after colons (times like 2:30),
-    // and slash-separated paths.
-    text = text.replacingOccurrences(
-        of: #"([,:;!?])(?![/\d\s])([A-Za-z])"#,
-        with: "$1 $2",
-        options: .regularExpression
-    )
-
-    text = text.replacingOccurrences(
-        of: #"([.!?])([A-Z])"#,
-        with: "$1 $2",
-        options: .regularExpression
-    )
-
-    // Break numbered lists into separate lines only when preceded by a
-    // sentence-ending punctuation + space pattern (i.e. inline lists).
-    // Avoid breaking version numbers, dates, or mid-sentence numbers.
-    text = text.replacingOccurrences(
-        of: #"([.!?])\s+(\d+\.)\s+"#,
-        with: "$1\n\n$2 ",
-        options: .regularExpression
-    )
-
     return text
 }
 
@@ -68,6 +44,7 @@ struct MessageListView: View {
 
     @Environment(DataModel.self) private var dataModel
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var lastStreamingScrollDate = Date.distantPast
     private let bottomID = "bottom_anchor"
 
     /// Whether the engine is actively streaming a chat response.
@@ -151,7 +128,7 @@ struct MessageListView: View {
             }
             .onChange(of: dataModel.assistant.streamingText) { _, _ in
                 if isChatStreaming {
-                    scrollToBottom(proxy, animated: false)
+                    scrollToBottomForStreaming(proxy)
                 }
             }
             .onChange(of: isGenerating) { _, newValue in
@@ -188,6 +165,13 @@ struct MessageListView: View {
         } else {
             proxy.scrollTo(bottomID, anchor: .bottom)
         }
+    }
+
+    private func scrollToBottomForStreaming(_ proxy: ScrollViewProxy) {
+        let now = Date()
+        guard now.timeIntervalSince(lastStreamingScrollDate) > 0.45 else { return }
+        lastStreamingScrollDate = now
+        scrollToBottom(proxy, animated: false)
     }
 }
 
@@ -262,7 +246,8 @@ struct MessageBubble: View {
                             }
                         }
                     }
-                    .accessibilityLabel("\(roleName): \(message.text)")
+                    .accessibilityLabel("\(roleName) message")
+                    .accessibilityValue(accessibilitySummary(for: message.text))
                     .accessibilityIdentifier(isUser ? "chat.message.user" : "chat.message.assistant")
 
                 if !isUser { Spacer(minLength: 48) }
@@ -295,6 +280,14 @@ struct MessageBubble: View {
                 .foregroundStyle(.quaternary)
                 .padding(.horizontal, 6)
                 .padding(.top, 1)
+
+            if isUser, message.status != .completed {
+                Label(statusText, systemImage: statusIcon)
+                    .font(.caption)
+                    .foregroundStyle(statusTint)
+                    .padding(.horizontal, 6)
+                    .accessibilityIdentifier("chat.message.status")
+            }
         }
         .padding(.vertical, 6)
         .frame(maxWidth: .infinity, alignment: isUser ? .trailing : .leading)
@@ -318,6 +311,43 @@ struct MessageBubble: View {
         case .summarize: .summary
         case .plan: .plan
         default: .other
+        }
+    }
+
+    private func accessibilitySummary(for text: String) -> String {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let summary = trimmed.count > 180 ? String(trimmed.prefix(180)) + "..." : trimmed
+        switch message.status {
+        case .completed:
+            return summary
+        case .cancelled:
+            return "\(summary). Reply stopped."
+        case .failed:
+            return "\(summary). Reply failed."
+        }
+    }
+
+    private var statusText: String {
+        switch message.status {
+        case .completed: ""
+        case .cancelled: "Reply stopped"
+        case .failed: "Reply failed"
+        }
+    }
+
+    private var statusIcon: String {
+        switch message.status {
+        case .completed: "checkmark.circle"
+        case .cancelled: "stop.circle"
+        case .failed: "exclamationmark.triangle"
+        }
+    }
+
+    private var statusTint: Color {
+        switch message.status {
+        case .completed: .secondary
+        case .cancelled: .secondary
+        case .failed: AppTheme.warning
         }
     }
 
@@ -361,7 +391,7 @@ struct OutputCardView: View {
                     Label("Message actions", systemImage: "ellipsis.circle")
                         .font(.caption.weight(.medium))
                         .padding(.horizontal, 10)
-                        .frame(height: 32)
+                        .frame(minHeight: AppTheme.minimumTapTarget)
                         .background(AppTheme.surfaceFill, in: Capsule(style: .continuous))
                         .overlay(Capsule(style: .continuous).stroke(AppTheme.surfaceStroke, lineWidth: 0.5))
                         .foregroundStyle(AppTheme.accent)
@@ -406,6 +436,7 @@ struct ActionPill: View {
                 .font(.caption.weight(.medium))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
+                .frame(minHeight: AppTheme.minimumTapTarget)
                 .background(
                     Capsule(style: .continuous)
                         .fill(AppTheme.surfaceFill)
@@ -485,7 +516,8 @@ struct StreamingBubble: View {
         }
         .padding(.vertical, 6)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityLabel("\(assistantName) is responding: \(text)")
+        .accessibilityLabel("\(assistantName) is responding")
+        .accessibilityValue(text.isEmpty ? "Response in progress" : "Response in progress")
     }
 
     @ViewBuilder

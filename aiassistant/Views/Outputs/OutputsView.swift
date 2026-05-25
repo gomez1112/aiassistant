@@ -5,6 +5,7 @@
 
 import SwiftUI
 import SwiftData
+import FlexStore
 
 struct OutputsView: View {
     let preferences: UserPreferences
@@ -12,34 +13,21 @@ struct OutputsView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
 
-    @Query(sort: \Artifact.updatedAt, order: .reverse)
-    private var artifacts: [Artifact]
-
     @State private var searchText = ""
     @State private var filterKind: ArtifactKind?
+    @State private var artifacts: [Artifact] = []
+    @State private var totalArtifactCount = 0
     @State private var showPersistenceError = false
     #if !os(macOS)
     @State private var showSettings = false
     #endif
 
-    private var filtered: [Artifact] {
-        var result = artifacts
-        if let kind = filterKind {
-            result = result.filter { $0.kind == kind }
-        }
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        if !query.isEmpty {
-            result = result.filter {
-                $0.title.localizedStandardContains(query) ||
-                $0.content.localizedStandardContains(query) ||
-                $0.tags.contains(where: { $0.localizedStandardContains(query) })
-            }
-        }
-        return result
-    }
-
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var hasAnyArtifacts: Bool {
+        totalArtifactCount > 0
     }
 
     var body: some View {
@@ -57,7 +45,7 @@ struct OutputsView: View {
                 #endif
 
                 Group {
-                    if artifacts.isEmpty {
+                    if !hasAnyArtifacts {
                         OutputsEmptyStateView(assistantName: preferences.ariEnabled ? "Ari" : "the assistant")
                     } else {
                         VStack(spacing: 0) {
@@ -84,13 +72,13 @@ struct OutputsView: View {
                             }
 
                             Group {
-                                if filtered.isEmpty {
+                                if artifacts.isEmpty {
                                     unavailableFilteredState
                                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 } else {
                                     // Artifacts list
                                     List {
-                                        ForEach(filtered, id: \.id) { artifact in
+                                        ForEach(artifacts, id: \.id) { artifact in
                                             NavigationLink(value: artifact.id) {
                                                 ArtifactRow(artifact: artifact)
                                             }
@@ -116,6 +104,12 @@ struct OutputsView: View {
                         .navigationDestination(for: UUID.self) { id in
                             if let artifact = artifacts.first(where: { $0.id == id }) {
                                 ArtifactDetailView(artifact: artifact, preferences: preferences)
+                            } else {
+                                ContentUnavailableView(
+                                    "Output unavailable",
+                                    systemImage: "exclamationmark.triangle",
+                                    description: Text("The output may have been deleted or filtered out.")
+                                )
                             }
                         }
                     }
@@ -133,6 +127,8 @@ struct OutputsView: View {
                         showSettings = true
                     }
                     .labelStyle(.iconOnly)
+                    .accessibilityLabel("Settings")
+                    .accessibilityIdentifier("outputs.toolbar.settings")
                 }
             }
             #endif
@@ -155,15 +151,18 @@ struct OutputsView: View {
             .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
                 showPersistenceError = newValue != nil
             }
+            .onAppear(perform: refreshArtifacts)
+            .onChange(of: searchText) { _, _ in refreshArtifacts() }
+            .onChange(of: filterKind) { _, _ in refreshArtifacts() }
         }
     }
 
     private var outputsSubtitle: String {
-        if artifacts.isEmpty {
+        if !hasAnyArtifacts {
             return "No saved outputs yet"
         }
 
-        return "\(filtered.count) of \(artifacts.count) saved"
+        return "\(artifacts.count) of \(totalArtifactCount) saved"
     }
 
     @ViewBuilder
@@ -181,9 +180,57 @@ struct OutputsView: View {
 
     private func deleteArtifacts(at offsets: IndexSet) {
         for index in offsets {
-            modelContext.delete(filtered[index])
+            modelContext.delete(artifacts[index])
         }
         dataModel.saveChanges(in: modelContext, source: "deleteOutput")
+        refreshArtifacts()
+    }
+
+    private func refreshArtifacts() {
+        do {
+            totalArtifactCount = try modelContext.fetchCount(FetchDescriptor<Artifact>())
+            artifacts = try modelContext.fetch(artifactFetchDescriptor())
+        } catch {
+            dataModel.persistenceErrorMessage = "Could not load outputs. \(error.localizedDescription)"
+        }
+    }
+
+    private func artifactFetchDescriptor() -> FetchDescriptor<Artifact> {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let sort = [SortDescriptor(\Artifact.updatedAt, order: .reverse)]
+
+        switch (filterKind?.rawValue, query.isEmpty) {
+        case (.some(let kindRaw), false):
+            return FetchDescriptor<Artifact>(
+                predicate: #Predicate<Artifact> { artifact in
+                    artifact.kindRaw == kindRaw &&
+                    (
+                        artifact.title.localizedStandardContains(query) ||
+                        artifact.content.localizedStandardContains(query) ||
+                        artifact.tagsRaw.localizedStandardContains(query)
+                    )
+                },
+                sortBy: sort
+            )
+        case (.some(let kindRaw), true):
+            return FetchDescriptor<Artifact>(
+                predicate: #Predicate<Artifact> { artifact in
+                    artifact.kindRaw == kindRaw
+                },
+                sortBy: sort
+            )
+        case (.none, false):
+            return FetchDescriptor<Artifact>(
+                predicate: #Predicate<Artifact> { artifact in
+                    artifact.title.localizedStandardContains(query) ||
+                    artifact.content.localizedStandardContains(query) ||
+                    artifact.tagsRaw.localizedStandardContains(query)
+                },
+                sortBy: sort
+            )
+        case (.none, true):
+            return FetchDescriptor<Artifact>(sortBy: sort)
+        }
     }
 }
 
@@ -227,6 +274,8 @@ struct ArtifactRow: View {
         }
         .padding(.vertical, AppTheme.spacingSM)
         .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(artifact.kind.rawValue): \(artifact.title)")
+        .accessibilityValue(accessibilityPreview)
         #else
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
@@ -262,7 +311,20 @@ struct ArtifactRow: View {
         .padding(AppTheme.spacingMD)
         .appSurface()
         .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(artifact.kind.rawValue): \(artifact.title)")
+        .accessibilityValue(accessibilityPreview)
         #endif
+    }
+
+    private var accessibilityPreview: String {
+        var parts = [
+            normalizedDisplayText(artifact.content).prefix(180).description,
+            "Updated \(artifact.updatedAt.formatted(date: .abbreviated, time: .shortened))"
+        ]
+        if !artifact.tags.isEmpty {
+            parts.append("Tags: \(artifact.tags.prefix(3).joined(separator: ", "))")
+        }
+        return parts.joined(separator: ". ")
     }
 }
 
@@ -289,9 +351,10 @@ struct FilterChip: View {
     var body: some View {
         Button(action: action) {
             Label(label, systemImage: icon)
-                .font(.system(size: 12, weight: isSelected ? .semibold : .medium))
+                .font(.caption.weight(isSelected ? .semibold : .medium))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
+                .frame(minHeight: AppTheme.minimumTapTarget)
                 .background(
                     Capsule(style: .continuous)
                         .fill(isSelected
@@ -316,7 +379,7 @@ struct FilterChip: View {
 #Preview {
     OutputsView(preferences: .defaults)
         .environment(DataModel())
-        .environment(SubscriptionStore())
+        .environment(StoreKitService<AppSubscriptionTier>())
         .modelContainer(for: [
             Thread.self, Message.self, Artifact.self,
             LibraryItem.self, UserPreferences.self

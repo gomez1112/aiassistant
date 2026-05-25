@@ -11,6 +11,8 @@ struct AriGuidanceBar: View {
     let usesCompactChrome: Bool
     let onAction: (AriActionType) -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         Group {
             if usesCompactChrome {
@@ -25,8 +27,8 @@ struct AriGuidanceBar: View {
                 .fill(AppTheme.groupedBackground.opacity(0.92))
                 .overlay(Divider().opacity(0.7), alignment: .top)
         )
-        .transition(.move(edge: .bottom).combined(with: .opacity))
-        .animation(.easeInOut(duration: 0.3), value: ari.coachingActions.count)
+        .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: ari.coachingActions.count)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Ari actions")
         .accessibilityIdentifier("chat.ariActions")
@@ -53,14 +55,14 @@ struct AriGuidanceBar: View {
                     } label: {
                         Label(action.label, systemImage: action.icon)
                     }
-                    .accessibilityIdentifier("chat.ariActions.\(action.label)")
+                    .accessibilityIdentifier("chat.ariActions.\(action.action.accessibilityIdentifier)")
                 }
             } label: {
                 Label("Ari actions", systemImage: "sparkles")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(AppTheme.accent)
                     .padding(.horizontal, 12)
-                    .frame(height: 36)
+                    .frame(minHeight: AppTheme.minimumTapTarget)
                     .background(AppTheme.surfaceFill, in: Capsule(style: .continuous))
                     .overlay(Capsule(style: .continuous).stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
             }
@@ -80,10 +82,10 @@ private struct AriActionButton: View {
         Button {
             onAction(action.action)
         } label: {
-            Label(action.label, systemImage: action.icon)
-                .font(.caption.weight(.medium))
-                .padding(.horizontal, 12)
-                .frame(height: 32)
+                Label(action.label, systemImage: action.icon)
+                    .font(.caption.weight(.medium))
+                    .padding(.horizontal, 12)
+                    .frame(minHeight: AppTheme.minimumTapTarget)
                 .background(
                     Capsule(style: .continuous)
                         .fill(AppTheme.surface)
@@ -95,6 +97,6 @@ private struct AriActionButton: View {
                 .foregroundStyle(.secondary)
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier("chat.ariActions.\(action.label)")
+        .accessibilityIdentifier("chat.ariActions.\(action.action.accessibilityIdentifier)")
     }
 }

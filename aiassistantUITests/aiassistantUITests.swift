@@ -26,17 +26,24 @@ final class aiassistantUITests: XCTestCase {
         XCTAssertTrue(input.waitForExistence(timeout: 5))
 
         input.tap()
+        let composerFrameAfterFocus = input.frame
+        let keyboard = app.keyboards.firstMatch
+        if keyboard.waitForExistence(timeout: 2) {
+            XCTAssertLessThanOrEqual(composerFrameAfterFocus.maxY, keyboard.frame.minY + 1)
+        }
         input.typeText("Please make this a short keyboard QA checklist.")
 
         let sendButton = element("chat.composer.send")
         XCTAssertTrue(sendButton.waitForExistence(timeout: 2))
         sendButton.tap()
 
-        let replyPredicate = NSPredicate(format: "label CONTAINS %@", "UI test reply")
-        let reply = app.staticTexts.containing(replyPredicate).firstMatch
+        let reply = element("chat.message.assistant")
         XCTAssertTrue(reply.waitForExistence(timeout: 5))
+        let replyValue = reply.value as? String ?? ""
+        XCTAssertTrue(replyValue.contains("UI test reply"))
         XCTAssertTrue(element("chat.composer.input").exists)
         XCTAssertTrue(element("chat.messageList").exists)
+        XCTAssertLessThanOrEqual(reply.frame.maxY, element("chat.composer.input").frame.minY + 24)
     }
 
     @MainActor
@@ -49,16 +56,12 @@ final class aiassistantUITests: XCTestCase {
         let input = element("chat.composer.input")
         input.tap()
 
-        if element("chat.mode.compactMenu").waitForExistence(timeout: 1) {
-            XCTAssertFalse(element("chat.upgradeTeaser").exists)
+        XCTAssertTrue(element("chat.mode.compactMenu").waitForExistence(timeout: 2))
+        XCTAssertFalse(element("chat.upgradeTeaser").exists)
 
-            element("chat.emptyState").tap()
+        element("chat.emptyState").tap()
 
-            XCTAssertTrue(element("chat.upgradeTeaser").waitForExistence(timeout: 3))
-        } else {
-            XCTAssertTrue(element("chat.mode.selector").exists)
-            XCTAssertTrue(element("chat.upgradeTeaser").exists)
-        }
+        XCTAssertTrue(element("chat.upgradeTeaser").waitForExistence(timeout: 3))
     }
 
     @MainActor
@@ -82,28 +85,32 @@ final class aiassistantUITests: XCTestCase {
         launchApp(arguments: ["-ui-testing-seed-chat"])
 
         let modeMenu = element("chat.mode.compactMenu")
-        if modeMenu.waitForExistence(timeout: 2) {
-            modeMenu.tap()
-            XCTAssertTrue(app.buttons["Write"].waitForExistence(timeout: 2))
-            app.buttons["Write"].tap()
-        } else {
-            let writeChip = element("chat.mode.option.Write")
-            XCTAssertTrue(writeChip.waitForExistence(timeout: 3))
-            writeChip.tap()
-        }
+        XCTAssertTrue(modeMenu.waitForExistence(timeout: 2))
+        modeMenu.tap()
+        XCTAssertTrue(app.buttons["Write"].waitForExistence(timeout: 2))
+        app.buttons["Write"].tap()
 
         let actionsMenu = element("chat.messageActions.menu")
-        if actionsMenu.waitForExistence(timeout: 2) {
-            actionsMenu.tap()
+        XCTAssertTrue(actionsMenu.waitForExistence(timeout: 2))
+        actionsMenu.tap()
 
-            XCTAssertTrue(app.buttons["Copy"].waitForExistence(timeout: 2))
-            XCTAssertTrue(app.buttons["Save"].exists)
-            XCTAssertTrue(app.buttons["Transform"].exists)
-        } else {
-            XCTAssertTrue(element("chat.messageActions.copy").waitForExistence(timeout: 3))
-            XCTAssertTrue(element("chat.messageActions.save").exists)
-            XCTAssertTrue(element("chat.messageActions.transform").exists)
-        }
+        XCTAssertTrue(app.buttons["Copy"].waitForExistence(timeout: 2))
+        XCTAssertTrue(app.buttons["Save"].exists)
+        XCTAssertTrue(app.buttons["Transform"].exists)
+    }
+
+    @MainActor
+    func testPaywallProductStateIsReachableUnderUITesting() throws {
+        launchApp()
+
+        let upgrade = element("chat.upgradeTeaser")
+        XCTAssertTrue(upgrade.waitForExistence(timeout: 5))
+        upgrade.tap()
+
+        XCTAssertTrue(app.navigationBars["Upgrade"].waitForExistence(timeout: 5))
+        let yearlyPlan = element("paywall.plan.com.transfinite.aiassistant.premium.yearly")
+        let retry = element("paywall.plans.retry")
+        XCTAssertTrue(yearlyPlan.waitForExistence(timeout: 5) || retry.waitForExistence(timeout: 1))
     }
 
     @MainActor

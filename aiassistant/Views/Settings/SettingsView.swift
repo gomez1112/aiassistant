@@ -6,14 +6,19 @@
 
 import SwiftUI
 import CloudKit
+import SwiftData
+import FlexStore
 
 struct SettingsView: View {
     @Bindable var preferences: UserPreferences
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.persistenceMode) private var persistenceMode
     @State private var showPaywall = false
 
     #if DEBUG
     @State private var showDebugSeed = false
+    @State private var debugSeedResult: SampleSeedResult?
     @State private var cloudKitStatus: CloudKitHealthStatus = .checking
     @State private var isCheckingCloudKit = false
     #endif
@@ -51,11 +56,21 @@ struct SettingsView: View {
             #if DEBUG
             .alert("Seed Sample Data?", isPresented: $showDebugSeed) {
                 Button("Seed") {
-                    // Sample data seeding would go here
+                    debugSeedResult = SampleData.seed(in: modelContext)
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("This will create sample threads, artifacts, and library items for testing.")
+            }
+            .alert(
+                debugSeedResult?.title ?? "Sample Data",
+                isPresented: debugSeedResultBinding
+            ) {
+                Button("OK", role: .cancel) {
+                    debugSeedResult = nil
+                }
+            } message: {
+                Text(debugSeedResult?.message ?? "")
             }
             .task {
                 refreshCloudKitHealth()
@@ -63,6 +78,19 @@ struct SettingsView: View {
             #endif
         }
     }
+
+    #if DEBUG
+    private var debugSeedResultBinding: Binding<Bool> {
+        Binding(
+            get: { debugSeedResult != nil },
+            set: { isPresented in
+                if !isPresented {
+                    debugSeedResult = nil
+                }
+            }
+        )
+    }
+    #endif
 
     private var formContent: some View {
         Form {
@@ -73,6 +101,14 @@ struct SettingsView: View {
                     message: "Tune Ari’s personality, defaults, privacy notes, and subscription access from one place.",
                     tint: AppTheme.accent
                 )
+
+                if let message = persistenceWarningMessage {
+                    AppBanner(
+                        systemImage: "icloud.slash",
+                        message: message,
+                        tint: AppTheme.warning
+                    )
+                }
 
                 Toggle("AI Character", isOn: $preferences.ariEnabled)
                     .tint(AppTheme.accent)
@@ -142,7 +178,7 @@ struct SettingsView: View {
             // MARK: - Privacy
             Section {
                 PrivacyRow(icon: "lock.shield", text: "Chat generation runs on-device when supported.")
-                PrivacyRow(icon: "icloud", text: "Your data can sync across devices through your iCloud account via CloudKit.")
+                PrivacyRow(icon: persistenceMode.isLocalOnly ? "icloud.slash" : "icloud", text: persistencePrivacyText)
                 PrivacyRow(icon: "cart", text: "Subscriptions and purchases use Apple's StoreKit services.")
             } header: {
                 Text("Privacy")
@@ -176,7 +212,13 @@ struct SettingsView: View {
 
             Section {
                 HStack {
-                    Text("CloudKit")
+                    Text("Storage")
+                    Spacer()
+                    Text(persistenceMode.statusLabel)
+                        .foregroundStyle(persistenceMode.isLocalOnly ? .orange : .green)
+                }
+                HStack {
+                    Text("iCloud Account")
                     Spacer()
                     Text(cloudKitStatus.label)
                         .foregroundStyle(cloudKitStatus.color)
@@ -204,6 +246,23 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showPaywall) {
             SubscriptionPaywallView(context: .settings)
+        }
+    }
+
+    private var persistenceWarningMessage: String? {
+        switch persistenceMode {
+        case .localFallback, .recovery:
+            persistenceMode.userMessage
+        case .cloudKit, .uiTesting:
+            nil
+        }
+    }
+
+    private var persistencePrivacyText: String {
+        if persistenceMode.isLocalOnly {
+            "CloudKit sync is currently unavailable, so data is saved locally on this device."
+        } else {
+            "Your data can sync across devices through your iCloud account via CloudKit."
         }
     }
 
@@ -348,5 +407,5 @@ private struct PrivacyRow: View {
 #Preview {
     SettingsView(preferences: .defaults)
         .environment(DataModel())
-        .environment(SubscriptionStore())
+        .environment(StoreKitService<AppSubscriptionTier>())
 }

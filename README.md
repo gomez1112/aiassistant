@@ -31,7 +31,7 @@ A cross-platform AI assistant app built with SwiftUI, SwiftData, CloudKit, Onboa
 - `aiassistant/` app source
 - `aiassistantTests/` unit tests
 - `aiassistantUITests/` UI tests
-- `aiassistant.storekit` local StoreKit configuration
+- `ai.storekit` local StoreKit configuration
 - `StoreKitSchemaNotes.md` StoreKit notes
 
 ## Monetization Setup
@@ -42,7 +42,7 @@ Defined in `aiassistant/Models/Monetization.swift`:
 - Monthly subscription
 - Yearly subscription
 - Lifetime unlock: 
-- Free tier daily limit: `10` messages/day
+- Free tier daily limit: `3` messages/day
 
 Policy links:
 
@@ -59,7 +59,7 @@ Policy links:
 
 1. In Xcode, choose your run scheme.
 2. Edit Scheme > Run > Options.
-3. Set **StoreKit Configuration** to `aiassistant.storekit`.
+3. Set **StoreKit Configuration** to `ai.storekit`.
 4. Run and test weekly/monthly/yearly/lifetime purchases locally.
 
 ## Notes

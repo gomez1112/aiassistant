@@ -21,7 +21,6 @@ final class DataModel {
 
     var activeThread: Thread?
     var selectedMode: AssistantMode = .general
-    var isOutputStudioPresented = false
     var lastAssistantMessage: Message?
     var persistenceErrorMessage: String?
 
@@ -44,6 +43,7 @@ final class DataModel {
            lastMsg.thread?.id == thread.id {
             lastAssistantMessage = nil
         }
+        clearArtifactSources(for: thread, in: context)
         context.delete(thread)
         saveContext(context, source: "deleteThread")
     }
@@ -56,7 +56,7 @@ final class DataModel {
         in thread: Thread,
         context: ModelContext,
         preferences: UserPreferences
-    ) async {
+    ) async -> AssistantOperationOutcome {
         // 1. Classify intent and snapshot history before inserting the new message
         let mode = selectedMode == .general
             ? assistant.classifyIntent(text)
@@ -75,8 +75,9 @@ final class DataModel {
         thread.updatedAt = .now
 
         // 3. Update Ari before generation
+        let messagesAfterUserInsert = thread.sortedMessages
         ari.update(
-            messages: thread.sortedMessages,
+            messages: messagesAfterUserInsert,
             lastMode: mode,
             preferences: preferences
         )
@@ -92,15 +93,23 @@ final class DataModel {
         )
 
         if Task.isCancelled {
+            userMessage.status = .cancelled
             saveContext(context, source: "sendMessage.cancelled")
-            return
+            return .cancelled
+        }
+
+        if let errorMessage = result.errorMessage {
+            userMessage.status = .failed
+            saveContext(context, source: "sendMessage.failed")
+            return .failed(errorMessage)
         }
 
         // 5. Create assistant message
         let replyText = result.text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !replyText.isEmpty else {
+            userMessage.status = .cancelled
             saveContext(context, source: "sendMessage.emptyResult")
-            return
+            return .cancelled
         }
         let assistantMessage = Message(
             thread: thread,
@@ -120,13 +129,15 @@ final class DataModel {
         thread.updatedAt = .now
 
         // 7. Update Ari after generation
+        let messagesAfterAssistantInsert = thread.sortedMessages
         ari.update(
-            messages: thread.sortedMessages,
+            messages: messagesAfterAssistantInsert,
             lastMode: mode,
             preferences: preferences
         )
 
         saveContext(context, source: "sendMessage")
+        return .completed
     }
 
     // MARK: - Artifact Management
@@ -136,6 +147,12 @@ final class DataModel {
         message: Message?,
         in context: ModelContext
     ) -> Artifact {
+        if let existing = existingArtifact(for: suggestion, message: message, in: context) {
+            link(existing, to: message)
+            saveContext(context, source: "saveArtifact.suggestion.existing")
+            return existing
+        }
+
         let artifact = Artifact(
             kind: suggestion.kind,
             title: suggestion.title,
@@ -146,11 +163,7 @@ final class DataModel {
         )
         context.insert(artifact)
 
-        if let message {
-            var ids = message.artifactIDs
-            ids.append(artifact.id)
-            message.artifactIDs = ids
-        }
+        link(artifact, to: message)
 
         saveContext(context, source: "saveArtifact.suggestion")
         return artifact
@@ -180,12 +193,26 @@ final class DataModel {
         type: TransformType,
         preferences: UserPreferences,
         in context: ModelContext
-    ) async -> Artifact {
+    ) async -> ArtifactTransformOutcome {
         let transformed = await assistant.transform(
             content: artifact.content,
             type: type,
             preferences: preferences
         )
+
+        let transformedText: String
+        switch transformed {
+        case .success(let text):
+            transformedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        case .cancelled:
+            return .cancelled
+        case .failed(let message):
+            return .failed(message)
+        }
+
+        guard !transformedText.isEmpty else {
+            return .failed("The transform did not return any content.")
+        }
 
         let newKind: ArtifactKind
         switch type {
@@ -198,14 +225,15 @@ final class DataModel {
         let newArtifact = Artifact(
             kind: newKind,
             title: "\(artifact.title) (\(type.rawValue))",
-            content: transformed,
+            content: transformedText,
             tags: artifact.tags + [type.rawValue.lowercased()],
             sourceThreadID: artifact.sourceThreadID,
             sourceMessageID: artifact.sourceMessageID
         )
         context.insert(newArtifact)
-        saveContext(context, source: "transformArtifact")
-        return newArtifact
+        return saveContext(context, source: "transformArtifact")
+            ? .completed(newArtifact)
+            : .failed(persistenceErrorMessage ?? "Could not save the transformed output.")
     }
 
     // MARK: - Library
@@ -213,11 +241,28 @@ final class DataModel {
     func summarizeItem(
         _ item: LibraryItem,
         in context: ModelContext
-    ) async {
+    ) async -> AssistantOperationOutcome {
         let summary = await assistant.summarizeLibraryItem(text: item.rawText)
-        item.aiSummary = summary
+
+        let summaryText: String
+        switch summary {
+        case .success(let text):
+            summaryText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        case .cancelled:
+            return .cancelled
+        case .failed(let message):
+            return .failed(message)
+        }
+
+        guard !summaryText.isEmpty else {
+            return .failed("The summary did not return any content.")
+        }
+
+        item.aiSummary = summaryText
         item.updatedAt = .now
-        saveContext(context, source: "summarizeItem")
+        return saveContext(context, source: "summarizeItem")
+            ? .completed
+            : .failed(persistenceErrorMessage ?? "Could not save the summary.")
     }
 
     // MARK: - Preferences
@@ -250,6 +295,55 @@ final class DataModel {
         return String(trimmed.prefix(40)) + "…"
     }
 
+    private func clearArtifactSources(for thread: Thread, in context: ModelContext) {
+        let threadID = thread.id
+        let descriptor = FetchDescriptor<Artifact>(
+            predicate: #Predicate<Artifact> { artifact in
+                artifact.sourceThreadID == threadID
+            }
+        )
+
+        do {
+            let artifacts = try context.fetch(descriptor)
+            for artifact in artifacts {
+                artifact.sourceThreadID = nil
+                artifact.sourceMessageID = nil
+                artifact.updatedAt = .now
+            }
+        } catch {
+            persistenceErrorMessage = "Could not clear output source links: \(error.localizedDescription)"
+        }
+    }
+
+    private func existingArtifact(
+        for suggestion: ArtifactSuggestion,
+        message: Message?,
+        in context: ModelContext
+    ) -> Artifact? {
+        guard let messageID = message?.id else { return nil }
+        let kindRaw = suggestion.kind.rawValue
+        let content = suggestion.content
+        let descriptor = FetchDescriptor<Artifact>(
+            predicate: #Predicate<Artifact> { artifact in
+                artifact.sourceMessageID == messageID &&
+                artifact.kindRaw == kindRaw &&
+                artifact.content == content
+            },
+            sortBy: [SortDescriptor(\.updatedAt, order: .reverse)]
+        )
+
+        return try? context.fetch(descriptor).first
+    }
+
+    private func link(_ artifact: Artifact, to message: Message?) {
+        guard let message else { return }
+        var ids = message.artifactIDs
+        if !ids.contains(artifact.id) {
+            ids.append(artifact.id)
+            message.artifactIDs = ids
+        }
+    }
+
     @discardableResult
     private func saveContext(_ context: ModelContext, source: String) -> Bool {
         do {
@@ -262,4 +356,16 @@ final class DataModel {
             return false
         }
     }
+}
+
+enum AssistantOperationOutcome: Equatable, Sendable {
+    case completed
+    case cancelled
+    case failed(String)
+}
+
+enum ArtifactTransformOutcome {
+    case completed(Artifact)
+    case cancelled
+    case failed(String)
 }

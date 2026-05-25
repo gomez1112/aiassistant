@@ -28,9 +28,15 @@ enum EngineState: Sendable {
 struct GenerationResult: Sendable {
     let text: String
     let mode: AssistantMode
-    let suggestedArtifact: ArtifactSuggestion?
     let ariGuidance: String?
     let ariMood: AriMood?
+    let errorMessage: String?
+}
+
+enum AssistantTextResult: Sendable, Equatable {
+    case success(String)
+    case cancelled
+    case failed(String)
 }
 
 struct ArtifactSuggestion: Sendable {
@@ -48,6 +54,7 @@ final class AssistantEngine {
 
     var state: EngineState = .idle
     var streamingText: String = ""
+    private var activeGenerationID: UUID?
 
     private static let intentKeywords: [(mode: AssistantMode, keywords: [String])] = [
         (.write, ["write", "draft", "compose", "create", "letter", "email", "essay", "blog"]),
@@ -83,6 +90,26 @@ final class AssistantEngine {
         preferences: UserPreferences,
         attachmentContext: String? = nil
     ) async -> GenerationResult {
+        let generationID = UUID()
+        activeGenerationID = generationID
+
+        func failure(_ message: String) -> GenerationResult {
+            GenerationResult(
+                text: "",
+                mode: mode,
+                ariGuidance: nil,
+                ariMood: nil,
+                errorMessage: message
+            )
+        }
+
+        defer {
+            if activeGenerationID == generationID {
+                activeGenerationID = nil
+            }
+        }
+
+        #if DEBUG
         if ProcessInfo.processInfo.arguments.contains("-ui-testing-fast-ai") {
             state = .routing
             streamingText = ""
@@ -98,11 +125,12 @@ final class AssistantEngine {
             return GenerationResult(
                 text: reply,
                 mode: mode,
-                suggestedArtifact: suggestArtifact(from: reply, mode: mode),
                 ariGuidance: nil,
-                ariMood: nil
+                ariMood: nil,
+                errorMessage: nil
             )
         }
+        #endif
 
         if Task.isCancelled {
             state = .idle
@@ -110,9 +138,9 @@ final class AssistantEngine {
             return GenerationResult(
                 text: "",
                 mode: mode,
-                suggestedArtifact: nil,
                 ariGuidance: nil,
-                ariMood: nil
+                ariMood: nil,
+                errorMessage: nil
             )
         }
 
@@ -132,43 +160,38 @@ final class AssistantEngine {
                 input: input,
                 mode: mode,
                 preferences: preferences,
-                attachmentContext: attachmentContext
+                attachmentContext: attachmentContext,
+                generationID: generationID
             )
-            state = .complete
-            streamingText = ""
+            if isGenerationCurrent(generationID) {
+                state = .complete
+                streamingText = ""
+            }
             return result
         } catch is CancellationError {
-            state = .idle
-            streamingText = ""
+            if activeGenerationID == generationID {
+                state = .idle
+                streamingText = ""
+            }
             return GenerationResult(
                 text: "",
                 mode: mode,
-                suggestedArtifact: nil,
                 ariGuidance: nil,
-                ariMood: nil
+                ariMood: nil,
+                errorMessage: nil
             )
         } catch {
             let errorMessage = error.localizedDescription
-            state = .idle
-            streamingText = ""
-            return GenerationResult(
-                text: "Generation failed: \(errorMessage)",
-                mode: mode,
-                suggestedArtifact: nil,
-                ariGuidance: nil,
-                ariMood: nil
-            )
+            if activeGenerationID == generationID {
+                state = .idle
+                streamingText = ""
+            }
+            return failure("Generation failed. \(errorMessage)")
         }
         #else
         state = .complete
         streamingText = ""
-        return GenerationResult(
-            text: "On-device AI is unavailable on this device right now.",
-            mode: mode,
-            suggestedArtifact: nil,
-            ariGuidance: nil,
-            ariMood: nil
-        )
+        return failure("On-device AI is unavailable on this device right now.")
         #endif
     }
 
@@ -177,59 +200,87 @@ final class AssistantEngine {
     /// Transform existing content (rewrite, summarize, bullets, table, quiz, flashcards).
     /// Uses a separate state flag so it doesn't trigger chat UI indicators.
     private(set) var isTransforming = false
+    private(set) var isSummarizing = false
+    private var activeTransformOperationCount = 0
+    private var activeSummaryOperationCount = 0
 
     func transform(
         content: String,
         type: TransformType,
         preferences: UserPreferences
-    ) async -> String {
-        isTransforming = true
-        defer { isTransforming = false }
+    ) async -> AssistantTextResult {
+        beginTransformOperation()
+        defer { endTransformOperation() }
 
         #if canImport(FoundationModels)
         do {
-            return try await transformWithFoundationModels(
+            let text = try await transformWithFoundationModels(
                 content: content,
                 type: type,
                 preferences: preferences
             )
+            return .success(text)
         } catch is CancellationError {
-            return ""
+            return .cancelled
         } catch {
-            return "Transform failed: \(error.localizedDescription)"
+            return .failed("Transform failed. \(error.localizedDescription)")
         }
         #else
-        return "On-device AI is unavailable on this device right now."
+        return .failed("On-device AI is unavailable on this device right now.")
         #endif
     }
 
     // MARK: - Summarize Library Item
 
-    func summarizeLibraryItem(text: String) async -> String {
-        isTransforming = true
-        defer { isTransforming = false }
+    func summarizeLibraryItem(text: String) async -> AssistantTextResult {
+        beginSummaryOperation()
+        defer { endSummaryOperation() }
 
         #if canImport(FoundationModels)
         do {
             let session = LanguageModelSession()
             let prompt = "Summarize the following text in 2-3 concise sentences:\n\n\(text)"
             let response = try await session.respond(to: prompt)
-            return response.content
+            return .success(response.content)
         } catch is CancellationError {
-            return ""
+            return .cancelled
         } catch {
-            return "Summary failed: \(error.localizedDescription)"
+            return .failed("Summary failed. \(error.localizedDescription)")
         }
         #else
-        return "On-device AI is unavailable on this device right now."
+        return .failed("On-device AI is unavailable on this device right now.")
         #endif
     }
 
     // MARK: - Cancel
 
     func cancel() {
+        activeGenerationID = nil
         state = .idle
         streamingText = ""
+        #if canImport(FoundationModels)
+        session = nil
+        #endif
+    }
+
+    private func beginTransformOperation() {
+        activeTransformOperationCount += 1
+        isTransforming = true
+    }
+
+    private func endTransformOperation() {
+        activeTransformOperationCount = max(0, activeTransformOperationCount - 1)
+        isTransforming = activeTransformOperationCount > 0
+    }
+
+    private func beginSummaryOperation() {
+        activeSummaryOperationCount += 1
+        isSummarizing = true
+    }
+
+    private func endSummaryOperation() {
+        activeSummaryOperationCount = max(0, activeSummaryOperationCount - 1)
+        isSummarizing = activeSummaryOperationCount > 0
     }
 
     // MARK: - Foundation Models Integration
@@ -241,7 +292,8 @@ final class AssistantEngine {
         input: String,
         mode: AssistantMode,
         preferences: UserPreferences,
-        attachmentContext: String?
+        attachmentContext: String?,
+        generationID: UUID
     ) async throws -> GenerationResult {
         let session = LanguageModelSession(
             instructions: systemPrompt
@@ -263,19 +315,20 @@ final class AssistantEngine {
         let stream = session.streamResponse(to: fullPrompt)
 
         for try await partial in stream {
+            guard isGenerationCurrent(generationID) else {
+                throw CancellationError()
+            }
             accumulated = partial.content
             streamingText = accumulated
             state = .streaming(partial: accumulated)
         }
 
-        let artifact = suggestArtifact(from: accumulated, mode: mode)
-
         return GenerationResult(
             text: accumulated,
             mode: mode,
-            suggestedArtifact: artifact,
             ariGuidance: nil, // AriEngine handles this separately
-            ariMood: nil
+            ariMood: nil,
+            errorMessage: nil
         )
     }
 
@@ -348,34 +401,8 @@ final class AssistantEngine {
     }
     #endif
 
-    // MARK: - Artifact Suggestion
-
-    private func suggestArtifact(from response: String, mode: AssistantMode) -> ArtifactSuggestion? {
-        switch mode {
-        case .write:
-            return ArtifactSuggestion(
-                kind: .draft,
-                title: "Draft",
-                content: response,
-                tags: ["draft", "writing"]
-            )
-        case .summarize:
-            return ArtifactSuggestion(
-                kind: .summary,
-                title: "Summary",
-                content: response,
-                tags: ["summary"]
-            )
-        case .plan:
-            return ArtifactSuggestion(
-                kind: .plan,
-                title: "Plan",
-                content: response,
-                tags: ["plan", "tasks"]
-            )
-        case .explain, .brainstorm, .general:
-            return nil
-        }
+    private func isGenerationCurrent(_ id: UUID) -> Bool {
+        activeGenerationID == id && !Task.isCancelled
     }
 
     // MARK: - System Prompt Builder
@@ -423,10 +450,25 @@ final class AssistantEngine {
 
     private func buildConversationContext(history: [Message]) -> String {
         let recent = history.suffix(10)
-        return recent.map { msg in
-            let role = msg.role == .user ? "User" : "Assistant"
-            return "\(role): \(msg.text)"
-        }.joined(separator: "\n\n")
+        return recent.compactMap { msg in
+            let role: String
+            switch msg.role {
+            case .user:
+                role = "User"
+            case .assistant:
+                role = "Assistant"
+            case .system, .tool, .unknown:
+                return nil
+            }
+            return "\(role): \(Self.promptSnippet(from: msg.text))"
+        }
+        .joined(separator: "\n\n")
+    }
+
+    private static func promptSnippet(from text: String) -> String {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count > 4_000 else { return trimmed }
+        return String(trimmed.prefix(4_000)) + "\n[Earlier message truncated.]"
     }
 
 }

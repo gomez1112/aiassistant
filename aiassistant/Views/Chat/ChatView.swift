@@ -10,19 +10,18 @@ import UniformTypeIdentifiers
 import PDFKit
 import Vision
 import ImageIO
+import FlexStore
 
 struct ChatView: View {
     let preferences: UserPreferences
 
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
-    @Environment(SubscriptionStore.self) private var subscriptionStore
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
 
     @Query(sort: \Thread.updatedAt, order: .reverse)
     private var threads: [Thread]
-
-    @Query(filter: #Predicate<Message> { $0.roleRaw == "user" })
-    private var allUserMessages: [Message]
 
     @State private var showThreadList = false
     @State private var showOutputStudio = false
@@ -36,18 +35,25 @@ struct ChatView: View {
     @State private var pendingAttachmentText: String?
     @State private var pendingAttachmentName: String?
     @State private var importErrorMessage: String?
+    @State private var generationErrorMessage: String?
     @State private var showImportError = false
+    @State private var showGenerationError = false
     @State private var showPaywall = false
     @State private var paywallContext: SubscriptionPaywallContext = .general
     @State private var showPersistenceError = false
     @State private var generationTask: Task<Void, Never>?
+    @State private var importTask: Task<Void, Never>?
+    @State private var activeImportID: UUID?
     @State private var outputStudioSourceMessage: Message?
     @State private var ariGuidanceThreadID: UUID?
+    @State private var todaysUserMessageCount = 0
     @FocusState private var isComposerFocused: Bool
 
     private var activeThread: Thread? { dataModel.activeThread }
     private var assistantName: String { preferences.ariEnabled ? "Ari" : "Assistant" }
-    private var hasPremiumAccess: Bool { subscriptionStore.hasPremiumAccess }
+    private var hasPremiumAccess: Bool {
+        flexStore.isSubscribed || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID)
+    }
     private var hasActiveMessages: Bool {
         activeThread?.sortedMessages.isEmpty == false
     }
@@ -83,10 +89,7 @@ struct ChatView: View {
         #endif
     }
     private var todayUserMessageCount: Int {
-        let calendar = Calendar.current
-        return allUserMessages
-            .filter { calendar.isDateInToday($0.createdAt) }
-            .count
+        todaysUserMessageCount
     }
     private var remainingFreeMessages: Int {
         max(0, Monetization.freeDailyMessageLimit - todayUserMessageCount)
@@ -98,134 +101,31 @@ struct ChatView: View {
     }
     private var todaysUserMessageFetchDescriptor: FetchDescriptor<Message> {
         let startOfDay = Calendar.current.startOfDay(for: .now)
+        let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? .now
         return FetchDescriptor<Message>(predicate: #Predicate {
-            $0.roleRaw == "user" && $0.createdAt >= startOfDay
+            $0.roleRaw == "user" && $0.createdAt >= startOfDay && $0.createdAt < endOfDay
         })
     }
 
+    @ViewBuilder
+    private var outputStudioSheetContent: some View {
+        if let message = outputStudioSourceMessage ?? dataModel.lastAssistantMessage {
+            OutputStudioSheet(
+                sourceText: message.text,
+                preferences: preferences
+            )
+        }
+    }
+
     var body: some View {
-        @Bindable var dataModel = dataModel
+        navigationRoot
+    }
 
-        NavigationStack {
-            GeometryReader { geometry in
-                let isCompact = isCompactLayout(width: geometry.size.width)
-                let usesCompactChrome = shouldCollapseChrome(isCompact: isCompact)
+    private var navigationRoot: AnyView {
+        let chatLayout = mainChatLayout(isCompact: isCompactLayout)
 
-                VStack(spacing: 0) {
-                    #if os(macOS)
-                    MacPlainHeader(
-                        title: "Chat",
-                        subtitle: macNavigationSubtitle
-                    ) {
-                        HStack(spacing: AppTheme.spacingSM) {
-                            Button(action: presentThreadList) {
-                                Label("Threads", systemImage: "line.3.horizontal")
-                            }
-                            .help("Show threads")
-                            .accessibilityIdentifier("chat.toolbar.threads")
-
-                            Button(action: createNewThread) {
-                                Label("New Chat", systemImage: "square.and.pencil")
-                            }
-                            .keyboardShortcut("n", modifiers: [.command])
-                            .help("New chat")
-                            .accessibilityIdentifier("chat.toolbar.newChat")
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                    #endif
-
-                    ModeChipBar(
-                        selectedMode: $dataModel.selectedMode,
-                        displayStyle: modeDisplayStyle(usesCompactChrome: usesCompactChrome)
-                    )
-                    .frame(maxWidth: contentMaxWidth)
-                    .frame(maxWidth: .infinity)
-
-                    if shouldShowUpgradeTeaser(usesCompactChrome: usesCompactChrome) {
-                        UpgradeTeaserBanner(
-                            remainingFreeMessages: remainingFreeMessages,
-                            action: {
-                                presentPaywall(context: remainingFreeMessages <= 2 ? .messageLimit : .general)
-                            }
-                        )
-                        .padding(.horizontal, AppTheme.spacingLG)
-                        .padding(.top, 0)
-                        .padding(.bottom, 6)
-                        .frame(maxWidth: contentMaxWidth)
-                        .frame(maxWidth: .infinity)
-                    }
-
-                    if let pendingAttachmentName {
-                        AppBanner(
-                            systemImage: "paperclip",
-                            message: "Attached: \(pendingAttachmentName)",
-                            tint: AppTheme.accentLight
-                        ) {
-                            Button(role: .destructive, action: clearAttachment) {
-                                Label("Remove attachment", systemImage: "xmark.circle.fill")
-                            }
-                            .buttonStyle(.plain)
-                            .labelStyle(.iconOnly)
-                            .foregroundStyle(.secondary)
-                            .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
-                            .accessibilityLabel("Remove attachment")
-                            .accessibilityIdentifier("chat.attachment.remove")
-                        }
-                        .padding(.horizontal, AppTheme.spacingLG)
-                        .padding(.bottom, 8)
-                        .frame(maxWidth: contentMaxWidth)
-                        .frame(maxWidth: .infinity)
-                    }
-
-                    chatContent(usesCompactChrome: usesCompactChrome)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .safeAreaInset(edge: .bottom, spacing: 0) {
-                    bottomAccessory(usesCompactChrome: usesCompactChrome)
-                }
-            }
-            .padding(.horizontal, outerHorizontalPadding)
-            .navigationTitle(navigationTitleText)
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
-            #if os(macOS)
-            .navigationSubtitle(macNavigationSubtitle)
-            .toolbarTitleDisplayMode(.inline)
-            #endif
-            .toolbar {
-                #if !os(macOS)
-                ToolbarItem(placement: .automatic) {
-                    Button("Thread list", systemImage: "line.3.horizontal", action: presentThreadList)
-                    .buttonStyle(.plain)
-                    .labelStyle(.iconOnly)
-                    .accessibilityLabel("Thread list")
-                    .accessibilityIdentifier("chat.toolbar.threads")
-                }
-                ToolbarSpacer(.fixed)
-                ToolbarItem(placement: .automatic) {
-                    Button("New chat", systemImage: "square.and.pencil", action: createNewThread)
-                    .buttonStyle(.plain)
-                    .labelStyle(.iconOnly)
-                    .accessibilityLabel("New chat")
-                    .accessibilityIdentifier("chat.toolbar.newChat")
-                }
-                ToolbarSpacer(.fixed)
-                ToolbarItem(placement: .automatic) {
-                    Button("Settings", systemImage: "gearshape", action: openSettings)
-                    .buttonStyle(.plain)
-                    .labelStyle(.iconOnly)
-                    .accessibilityLabel("Settings")
-                    .accessibilityIdentifier("chat.toolbar.settings")
-                }
-                #endif
-            }
-            #if os(iOS)
-            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbar(isComposerFocused ? .hidden : .visible, for: .tabBar)
-            #endif
+        return AnyView(NavigationStack {
+            decoratedNavigationContent(chatLayout)
             .sheet(isPresented: $showThreadList) {
                 ThreadListSheet(
                     threads: threads,
@@ -247,18 +147,8 @@ struct ChatView: View {
                     }
                 )
             }
-            .sheet(isPresented: $showOutputStudio) {
-                if let message = outputStudioSourceMessage ?? dataModel.lastAssistantMessage {
-                    OutputStudioSheet(
-                        sourceText: message.text,
-                        preferences: preferences
-                    )
-                }
-            }
-            .onChange(of: showOutputStudio) { _, isPresented in
-                if !isPresented {
-                    outputStudioSourceMessage = nil
-                }
+            .sheet(isPresented: $showOutputStudio, onDismiss: clearOutputStudioSource) {
+                outputStudioSheetContent
             }
             #if !os(macOS)
             .sheet(isPresented: $showSettings) {
@@ -282,6 +172,13 @@ struct ChatView: View {
             } message: {
                 Text(importErrorMessage ?? "Please try another file.")
             }
+            .alert("Couldn’t generate response", isPresented: $showGenerationError) {
+                Button("OK", role: .cancel) {
+                    generationErrorMessage = nil
+                }
+            } message: {
+                Text(generationErrorMessage ?? "Please try again.")
+            }
             .alert("Couldn’t save changes", isPresented: $showPersistenceError) {
                 Button("OK", role: .cancel) {
                     dataModel.persistenceErrorMessage = nil
@@ -292,11 +189,15 @@ struct ChatView: View {
             .onChange(of: importErrorMessage) { _, newValue in
                 showImportError = newValue != nil
             }
+            .onChange(of: generationErrorMessage) { _, newValue in
+                showGenerationError = newValue != nil
+            }
             .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
                 showPersistenceError = newValue != nil
             }
         }
         .onAppear {
+            refreshTodayMessageCount()
             if !seedUITestChatIfNeeded() {
                 ensureActiveThreadSelection()
             }
@@ -304,6 +205,166 @@ struct ChatView: View {
         .onChange(of: threads.map(\.id)) { _, _ in
             ensureActiveThreadSelection()
         }
+        )
+    }
+
+    private func decoratedNavigationContent(_ content: AnyView) -> AnyView {
+        #if os(iOS)
+        return AnyView(content
+            .padding(.horizontal, outerHorizontalPadding)
+            .navigationTitle(navigationTitleText)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                iosChatToolbar
+            }
+            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar(isComposerFocused ? .hidden : .visible, for: .tabBar))
+        #elseif os(macOS)
+        return AnyView(content
+            .padding(.horizontal, outerHorizontalPadding)
+            .navigationTitle(navigationTitleText)
+            .navigationSubtitle(macNavigationSubtitle)
+            .toolbarTitleDisplayMode(.inline))
+        #else
+        return AnyView(content
+            .padding(.horizontal, outerHorizontalPadding)
+            .navigationTitle(navigationTitleText))
+        #endif
+    }
+
+    #if !os(macOS)
+    @ToolbarContentBuilder
+    private var iosChatToolbar: some ToolbarContent {
+        ToolbarItem(placement: .automatic) {
+            Button("Thread list", systemImage: "line.3.horizontal", action: presentThreadList)
+                .buttonStyle(.plain)
+                .labelStyle(.iconOnly)
+                .accessibilityLabel("Thread list")
+                .accessibilityIdentifier("chat.toolbar.threads")
+        }
+        ToolbarSpacer(.fixed)
+        ToolbarItem(placement: .automatic) {
+            Button("New chat", systemImage: "square.and.pencil", action: createNewThread)
+                .buttonStyle(.plain)
+                .labelStyle(.iconOnly)
+                .accessibilityLabel("New chat")
+                .accessibilityIdentifier("chat.toolbar.newChat")
+        }
+        ToolbarSpacer(.fixed)
+        ToolbarItem(placement: .automatic) {
+            Button("Settings", systemImage: "gearshape", action: openSettings)
+                .buttonStyle(.plain)
+                .labelStyle(.iconOnly)
+                .accessibilityLabel("Settings")
+                .accessibilityIdentifier("chat.toolbar.settings")
+        }
+    }
+    #endif
+
+    private func mainChatLayout(isCompact: Bool) -> AnyView {
+        let usesCompactChrome = shouldCollapseChrome(isCompact: isCompact)
+
+        return AnyView(VStack(spacing: 0) {
+            macChatHeaderView
+            modeSelectorView(usesCompactChrome: usesCompactChrome)
+            upgradeTeaserView(usesCompactChrome: usesCompactChrome)
+            attachmentBannerView
+            chatContentView(usesCompactChrome: usesCompactChrome)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            bottomAccessory(usesCompactChrome: usesCompactChrome)
+        })
+    }
+
+    private var selectedModeBinding: Binding<AssistantMode> {
+        Binding(
+            get: { dataModel.selectedMode },
+            set: { dataModel.selectedMode = $0 }
+        )
+    }
+
+    private var macChatHeaderView: AnyView {
+        #if os(macOS)
+        return AnyView(MacPlainHeader(
+            title: "Chat",
+            subtitle: macNavigationSubtitle
+        ) {
+            HStack(spacing: AppTheme.spacingSM) {
+                Button(action: presentThreadList) {
+                    Label("Threads", systemImage: "line.3.horizontal")
+                }
+                .help("Show threads")
+                .accessibilityIdentifier("chat.toolbar.threads")
+
+                Button(action: createNewThread) {
+                    Label("New Chat", systemImage: "square.and.pencil")
+                }
+                .keyboardShortcut("n", modifiers: [.command])
+                .help("New chat")
+                .accessibilityIdentifier("chat.toolbar.newChat")
+            }
+            .buttonStyle(.bordered)
+        })
+        #else
+        return AnyView(EmptyView())
+        #endif
+    }
+
+    private func modeSelectorView(usesCompactChrome: Bool) -> AnyView {
+        AnyView(ModeChipBar(
+            selectedMode: selectedModeBinding,
+            displayStyle: modeDisplayStyle(usesCompactChrome: usesCompactChrome)
+        )
+        .frame(maxWidth: contentMaxWidth)
+        .frame(maxWidth: .infinity))
+    }
+
+    private func upgradeTeaserView(usesCompactChrome: Bool) -> AnyView {
+        if shouldShowUpgradeTeaser(usesCompactChrome: usesCompactChrome) {
+            return AnyView(UpgradeTeaserBanner(
+                remainingFreeMessages: remainingFreeMessages,
+                action: {
+                    presentPaywall(context: remainingFreeMessages <= 2 ? .messageLimit : .general)
+                }
+            )
+            .padding(.horizontal, AppTheme.spacingLG)
+            .padding(.top, 0)
+            .padding(.bottom, 6)
+            .frame(maxWidth: contentMaxWidth)
+            .frame(maxWidth: .infinity))
+        }
+        return AnyView(EmptyView())
+    }
+
+    private var attachmentBannerView: AnyView {
+        if let pendingAttachmentName {
+            return AnyView(AppBanner(
+                systemImage: "paperclip",
+                message: "Attached: \(pendingAttachmentName)",
+                tint: AppTheme.accentLight
+            ) {
+                Button(role: .destructive, action: clearAttachment) {
+                    Label("Remove attachment", systemImage: "xmark.circle.fill")
+                }
+                .buttonStyle(.plain)
+                .labelStyle(.iconOnly)
+                .foregroundStyle(.secondary)
+                .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                .accessibilityLabel("Remove attachment")
+                .accessibilityIdentifier("chat.attachment.remove")
+            }
+            .padding(.horizontal, AppTheme.spacingLG)
+            .padding(.bottom, 8)
+            .frame(maxWidth: contentMaxWidth)
+            .frame(maxWidth: .infinity))
+        }
+        return AnyView(EmptyView())
+    }
+
+    private func chatContentView(usesCompactChrome: Bool) -> AnyView {
+        AnyView(chatContent(usesCompactChrome: usesCompactChrome))
     }
 
     @ViewBuilder
@@ -395,11 +456,11 @@ struct ChatView: View {
         }
     }
 
-    private func isCompactLayout(width: CGFloat) -> Bool {
+    private var isCompactLayout: Bool {
         #if os(macOS)
         false
         #else
-        width < 620
+        horizontalSizeClass == .compact
         #endif
     }
 
@@ -439,14 +500,19 @@ struct ChatView: View {
     }
 
     private func syncAriGuidance(to thread: Thread?) {
-        guard let thread, !thread.sortedMessages.isEmpty else {
+        guard let thread else {
+            ariGuidanceThreadID = nil
+            return
+        }
+        let messages = thread.sortedMessages
+        guard !messages.isEmpty else {
             ariGuidanceThreadID = nil
             return
         }
 
         dataModel.ari.update(
-            messages: thread.sortedMessages,
-            lastMode: thread.sortedMessages.last?.mode ?? dataModel.selectedMode,
+            messages: messages,
+            lastMode: messages.last?.mode ?? dataModel.selectedMode,
             preferences: preferences
         )
         ariGuidanceThreadID = thread.id
@@ -460,6 +526,10 @@ struct ChatView: View {
     #endif
 
     private func clearAttachment() {
+        importTask?.cancel()
+        importTask = nil
+        activeImportID = nil
+        isImportingAttachment = false
         pendingAttachmentText = nil
         pendingAttachmentName = nil
     }
@@ -503,14 +573,10 @@ struct ChatView: View {
         isGenerating = true
         ariGuidanceThreadID = thread.id
 
-        if shouldPresentLimitPaywallAfterSend {
-            presentPaywall(context: .messageLimit)
-        }
-
         generationTask = Task {
             defer { isGenerating = false }
             defer { generationTask = nil }
-            await dataModel.sendMessage(
+            let outcome = await dataModel.sendMessage(
                 text: userMessageText,
                 attachmentContext: attachmentContext,
                 in: thread,
@@ -519,6 +585,18 @@ struct ChatView: View {
             )
             if dataModel.activeThread?.id == thread.id {
                 ariGuidanceThreadID = thread.id
+            }
+            refreshTodayMessageCount()
+
+            switch outcome {
+            case .completed:
+                if shouldPresentLimitPaywallAfterSend {
+                    presentPaywall(context: .messageLimit)
+                }
+            case .failed(let message):
+                generationErrorMessage = message
+            case .cancelled:
+                break
             }
         }
     }
@@ -540,6 +618,10 @@ struct ChatView: View {
         showFileImporter = true
     }
 
+    private func clearOutputStudioSource() {
+        outputStudioSourceMessage = nil
+    }
+
     private func presentPaywall(context: SubscriptionPaywallContext) {
         isComposerFocused = false
         paywallContext = context
@@ -547,7 +629,13 @@ struct ChatView: View {
     }
 
     private func todaysFreeMessageCount() -> Int {
-        (try? modelContext.fetchCount(todaysUserMessageFetchDescriptor)) ?? todayUserMessageCount
+        let count = (try? modelContext.fetchCount(todaysUserMessageFetchDescriptor)) ?? todaysUserMessageCount
+        todaysUserMessageCount = count
+        return count
+    }
+
+    private func refreshTodayMessageCount() {
+        todaysUserMessageCount = (try? modelContext.fetchCount(todaysUserMessageFetchDescriptor)) ?? todaysUserMessageCount
     }
 
     private func handleAriAction(_ action: AriActionType) {
@@ -604,22 +692,37 @@ struct ChatView: View {
     }
 
     private func importAttachment(from fileURL: URL) {
+        importTask?.cancel()
+        let importID = UUID()
+        activeImportID = importID
         isImportingAttachment = true
-        Task {
-            defer { isImportingAttachment = false }
+        importTask = Task {
+            defer {
+                if activeImportID == importID {
+                    isImportingAttachment = false
+                    importTask = nil
+                    activeImportID = nil
+                }
+            }
             do {
-                let extracted = try await Task.detached(priority: .userInitiated) {
-                    try Self.extractText(from: fileURL)
-                }.value
+                let extractionTask: Task<String, Error> = Task.detached(priority: .userInitiated) {
+                    try Task.checkCancellation()
+                    return try Self.extractText(from: fileURL)
+                }
+                let extracted = try await extractionTask.value
+                guard !Task.isCancelled, activeImportID == importID else { return }
 
-                let trimmed = extracted.trimmingCharacters(in: .whitespacesAndNewlines)
+                let trimmed = Self.preparedAttachmentText(from: extracted)
                 guard !trimmed.isEmpty else {
                     throw ImportError.noTextFound
                 }
                 pendingAttachmentText = trimmed
                 pendingAttachmentName = fileURL.lastPathComponent
+            } catch is CancellationError {
             } catch {
-                importErrorMessage = error.localizedDescription
+                if activeImportID == importID {
+                    importErrorMessage = error.localizedDescription
+                }
             }
         }
     }
@@ -631,6 +734,12 @@ struct ChatView: View {
                 fileURL.stopAccessingSecurityScopedResource()
             }
         }
+
+        guard hasAccess || FileManager.default.isReadableFile(atPath: fileURL.path) else {
+            throw ImportError.permissionDenied
+        }
+
+        try validateAttachmentSize(fileURL)
 
         guard let type = UTType(filenameExtension: fileURL.pathExtension.lowercased()) else {
             throw ImportError.unsupportedFile
@@ -644,6 +753,25 @@ struct ChatView: View {
         }
 
         throw ImportError.unsupportedFile
+    }
+
+    nonisolated private static func validateAttachmentSize(_ fileURL: URL) throws {
+        let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey])
+        if let fileSize = values?.fileSize, fileSize > ImportLimits.maxFileBytes {
+            throw ImportError.fileTooLarge
+        }
+    }
+
+    nonisolated private static func preparedAttachmentText(from extracted: String) -> String {
+        let trimmed = extracted.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard trimmed.count > ImportLimits.maxTextCharacters else { return trimmed }
+
+        let prefix = String(trimmed.prefix(ImportLimits.maxTextCharacters))
+        return """
+        \(prefix)
+
+        [Attachment text was truncated to fit Ari's prompt limit.]
+        """
     }
 
     nonisolated private static func extractTextFromPDF(at fileURL: URL) throws -> String {
@@ -675,7 +803,9 @@ struct ChatView: View {
         request.usesLanguageCorrection = true
 
         let handler = VNImageRequestHandler(cgImage: image, options: [:])
+        try Task.checkCancellation()
         try handler.perform([request])
+        try Task.checkCancellation()
 
         let observations = request.results ?? []
         let sorted = observations.sorted { lhs, rhs in
@@ -707,6 +837,7 @@ struct ChatView: View {
 
     @discardableResult
     private func seedUITestChatIfNeeded() -> Bool {
+        #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         guard arguments.contains("-ui-testing-seed-chat"), threads.isEmpty else { return false }
 
@@ -748,7 +879,15 @@ struct ChatView: View {
         ariGuidanceThreadID = thread.id
         dataModel.saveChanges(in: modelContext, source: "uiTestSeedChat")
         return true
+        #else
+        return false
+        #endif
     }
+}
+
+private enum ImportLimits {
+    nonisolated static let maxFileBytes = 20 * 1024 * 1024
+    nonisolated static let maxTextCharacters = 60_000
 }
 
 private enum ImportError: LocalizedError {
@@ -756,6 +895,8 @@ private enum ImportError: LocalizedError {
     case unreadableFile
     case noTextFound
     case pdfTooLong(pageCount: Int)
+    case permissionDenied
+    case fileTooLarge
 
     var errorDescription: String? {
         switch self {
@@ -767,6 +908,10 @@ private enum ImportError: LocalizedError {
             "No readable text was found in that file."
         case .pdfTooLong(let pageCount):
             "This PDF has \(pageCount) pages. The maximum allowed is 50 pages."
+        case .permissionDenied:
+            "Ari could not get permission to read that file."
+        case .fileTooLarge:
+            "That file is too large. Choose a PDF or image under 20 MB."
         }
     }
 }
@@ -782,6 +927,7 @@ private struct ChatEmptyStateView: View {
             description: "Ask \(assistantName) to draft, explain, plan, or turn a file into clear next steps.",
             actionTitle: onNewChat == nil ? nil : "Start Chat",
             actionSystemImage: onNewChat == nil ? nil : "square.and.pencil",
+            actionAccessibilityIdentifier: onNewChat == nil ? nil : "chat.emptyState.startChat",
             action: onNewChat
         )
     }
@@ -806,8 +952,7 @@ private struct UpgradeTeaserBanner: View {
                 Text(isLimitClose ? "\(remainingFreeMessages) free messages left today" : "Start trial for unlimited chat")
                     .font(.footnote.weight(.medium))
                     .foregroundStyle(.secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.82)
+                    .lineLimit(2)
 
                 Spacer(minLength: AppTheme.spacingSM)
 
@@ -818,6 +963,7 @@ private struct UpgradeTeaserBanner: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 7)
+            .frame(minHeight: AppTheme.minimumTapTarget)
             .background(AppTheme.surfaceFill, in: Capsule())
             .overlay(Capsule().stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
         }
@@ -830,9 +976,9 @@ private struct UpgradeTeaserBanner: View {
 // MARK: - Preview
 
 #Preview {
-    ChatView(preferences: .defaults)
-        .environment(DataModel())
-        .environment(SubscriptionStore())
+        ChatView(preferences: .defaults)
+            .environment(DataModel())
+        .environment(StoreKitService<AppSubscriptionTier>())
         .modelContainer(for: [
             Thread.self, Message.self, Artifact.self,
             LibraryItem.self, UserPreferences.self

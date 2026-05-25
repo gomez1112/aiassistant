@@ -6,6 +6,7 @@
 
 import SwiftUI
 import SwiftData
+import FlexStore
 
 struct ArtifactDetailView: View {
     @Bindable var artifact: Artifact
@@ -14,7 +15,11 @@ struct ArtifactDetailView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @Environment(SubscriptionStore.self) private var subscriptionStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
+
+    @Query(sort: \Artifact.updatedAt, order: .reverse)
+    private var artifacts: [Artifact]
 
     @State private var isTransforming = false
     @State private var showTagEditor = false
@@ -22,6 +27,9 @@ struct ArtifactDetailView: View {
     @State private var copiedFeedback = false
     @State private var showPaywall = false
     @State private var showPersistenceError = false
+    @State private var transformErrorMessage: String?
+    @State private var transformTask: Task<Void, Never>?
+    @State private var navigationTarget: ArtifactNavigationTarget?
 
     var body: some View {
         ScrollView {
@@ -90,6 +98,7 @@ struct ArtifactDetailView: View {
                 } label: {
                     Label(copiedFeedback ? "Copied!" : "Copy", systemImage: "doc.on.doc")
                 }
+                .accessibilityIdentifier("output.detail.copy")
             }
             
             ToolbarItem(placement: .automatic) {
@@ -98,6 +107,7 @@ struct ArtifactDetailView: View {
                 } label: {
                     Label("Tags", systemImage: "tag")
                 }
+                .accessibilityIdentifier("output.detail.tags")
             }
             ToolbarSpacer(.fixed)
             ToolbarItem(placement: .automatic) {
@@ -113,6 +123,7 @@ struct ArtifactDetailView: View {
                     Label("Transform", systemImage: "wand.and.stars")
                 }
                 .disabled(isTransforming)
+                .accessibilityIdentifier("output.detail.transform")
             }
             ToolbarSpacer(.fixed)
             ToolbarItem(placement: .automatic) {
@@ -121,6 +132,7 @@ struct ArtifactDetailView: View {
                 } label: {
                     Label("Delete", systemImage: "trash")
                 }
+                .accessibilityIdentifier("output.detail.delete")
             }
         }
         .overlay {
@@ -170,25 +182,80 @@ struct ArtifactDetailView: View {
         .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
             showPersistenceError = newValue != nil
         }
+        .alert("Couldn’t transform output", isPresented: transformErrorBinding) {
+            Button("OK", role: .cancel) {
+                transformErrorMessage = nil
+            }
+        } message: {
+            Text(transformErrorMessage ?? "Please try again.")
+        }
+        .navigationDestination(item: $navigationTarget) { target in
+            if let transformed = artifacts.first(where: { $0.id == target.id }) {
+                ArtifactDetailView(artifact: transformed, preferences: preferences)
+            } else {
+                ContentUnavailableView(
+                    "Output unavailable",
+                    systemImage: "doc.badge.exclamationmark",
+                    description: Text("The transformed output could not be opened.")
+                )
+            }
+        }
+        .onDisappear {
+            transformTask?.cancel()
+        }
     }
 
     private func transformArtifact(type: TransformType) {
-        guard subscriptionStore.hasPremiumAccess else {
+        guard hasPremiumAccess else {
             showPaywall = true
             return
         }
 
+        transformTask?.cancel()
         isTransforming = true
-        Task {
-            let _ = await dataModel.transformArtifact(
+        transformTask = Task {
+            defer {
+                isTransforming = false
+                transformTask = nil
+            }
+
+            let outcome = await dataModel.transformArtifact(
                 artifact,
                 type: type,
                 preferences: preferences,
                 in: modelContext
             )
-            isTransforming = false
+            guard !Task.isCancelled else { return }
+
+            switch outcome {
+            case .completed(let newArtifact):
+                navigationTarget = ArtifactNavigationTarget(id: newArtifact.id)
+            case .cancelled:
+                break
+            case .failed(let message):
+                transformErrorMessage = message
+            }
         }
     }
+
+    private var hasPremiumAccess: Bool {
+        flexStore.isSubscribed || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID)
+    }
+
+    private var transformErrorBinding: Binding<Bool> {
+        Binding(
+            get: { transformErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    transformErrorMessage = nil
+                }
+            }
+        )
+    }
+}
+
+private struct ArtifactNavigationTarget: Identifiable, Hashable {
+    let id: UUID
 }
 
 // MARK: - Tag Editor
@@ -238,7 +305,12 @@ struct TagEditorSheet: View {
 
     private func addTag() {
         let trimmed = newTag.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty, !artifact.tags.contains(trimmed) else { return }
+        let normalized = trimmed.localizedLowercase
+        guard !trimmed.isEmpty,
+              !artifact.tags.contains(where: { $0.localizedLowercase == normalized }) else {
+            newTag = ""
+            return
+        }
         var tags = artifact.tags
         tags.append(trimmed)
         artifact.tags = tags
@@ -299,6 +371,7 @@ struct FlowLayout: Layout {
 struct FlashcardDeckView: View {
     let content: String
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var currentIndex = 0
 
     private var cards: [(front: String, back: String)] {
@@ -321,7 +394,7 @@ struct FlashcardDeckView: View {
             VStack(spacing: 16) {
                 // Card counter
                 Text("\(currentIndex + 1) of \(cards.count)")
-                    .font(.system(size: 13, weight: .semibold))
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(.secondary)
 
                 // Flashcard
@@ -334,14 +407,15 @@ struct FlashcardDeckView: View {
                 // Navigation
                 HStack(spacing: 20) {
                     Button {
-                        withAnimation(.spring(duration: 0.35)) {
+                        withAnimation(reduceMotion ? nil : .spring(duration: 0.35)) {
                             currentIndex = max(0, currentIndex - 1)
                         }
                     } label: {
                         Image(systemName: "chevron.left.circle.fill")
-                            .font(.system(size: 36))
+                            .font(.largeTitle)
                             .foregroundStyle(currentIndex > 0 ? AppTheme.accent : Color.secondary.opacity(0.3))
                     }
+                    .accessibilityLabel("Previous card")
                     .disabled(currentIndex == 0)
 
                     // Progress dots
@@ -350,19 +424,21 @@ struct FlashcardDeckView: View {
                             Circle()
                                 .fill(index == currentIndex ? AppTheme.accent : AppTheme.surface)
                                 .frame(width: index == currentIndex ? 8 : 6, height: index == currentIndex ? 8 : 6)
-                                .animation(.easeOut(duration: 0.2), value: currentIndex)
+                                .animation(reduceMotion ? nil : .easeOut(duration: 0.2), value: currentIndex)
                         }
                     }
+                    .accessibilityHidden(true)
 
                     Button {
-                        withAnimation(.spring(duration: 0.35)) {
+                        withAnimation(reduceMotion ? nil : .spring(duration: 0.35)) {
                             currentIndex = min(cards.count - 1, currentIndex + 1)
                         }
                     } label: {
                         Image(systemName: "chevron.right.circle.fill")
-                            .font(.system(size: 36))
+                            .font(.largeTitle)
                             .foregroundStyle(currentIndex < cards.count - 1 ? AppTheme.accent : Color.secondary.opacity(0.3))
                     }
+                    .accessibilityLabel("Next card")
                     .disabled(currentIndex >= cards.count - 1)
                 }
                 .buttonStyle(.plain)
@@ -448,11 +524,12 @@ struct FlashcardView: View {
     let front: String
     let back: String
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var isFlipped = false
 
     var body: some View {
         Button {
-            withAnimation(.spring(duration: 0.5, bounce: 0.15)) {
+            withAnimation(reduceMotion ? nil : .spring(duration: 0.5, bounce: 0.15)) {
                 isFlipped.toggle()
             }
         }
@@ -481,12 +558,12 @@ struct FlashcardView: View {
             // Label
             HStack {
                 Text(isBack ? "ANSWER" : "QUESTION")
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .font(.caption2.weight(.bold))
                     .tracking(1.2)
                     .foregroundStyle(isBack ? AppTheme.highlight : AppTheme.accent)
                 Spacer()
                 Image(systemName: isBack ? "lightbulb.fill" : "questionmark")
-                    .font(.system(size: 12, weight: .semibold))
+                    .font(.caption.weight(.semibold))
                     .foregroundStyle(isBack ? AppTheme.highlight.opacity(0.6) : AppTheme.accent.opacity(0.6))
             }
 
@@ -494,7 +571,7 @@ struct FlashcardView: View {
 
             // Content
             Text(text)
-                .font(.system(size: 17, weight: .medium))
+                .font(.body.weight(.medium))
                 .multilineTextAlignment(.center)
                 .lineSpacing(4)
                 .foregroundStyle(.primary)
@@ -540,6 +617,7 @@ struct ArtifactContentView: View {
 struct QuizView: View {
     let content: String
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var currentIndex = 0
     @State private var selectedAnswers: [Int: String] = [:]
     @State private var revealedAnswers: [Int: Bool] = [:]
@@ -559,7 +637,7 @@ struct QuizView: View {
                 VStack(spacing: 8) {
                     HStack {
                         Text("Question \(currentIndex + 1) of \(questions.count)")
-                            .font(.system(size: 13, weight: .semibold))
+                            .font(.caption.weight(.semibold))
                             .foregroundStyle(.secondary)
                         Spacer()
                         let answered = revealedAnswers.keys.count
@@ -568,7 +646,7 @@ struct QuizView: View {
                         }.count
                         if answered > 0 {
                             Text("\(correct)/\(answered) correct")
-                                .font(.system(size: 13, weight: .semibold))
+                                .font(.caption.weight(.semibold))
                                 .foregroundStyle(AppTheme.success)
                         }
                     }
@@ -584,14 +662,16 @@ struct QuizView: View {
                         }
                     }
                     .frame(height: 4)
+                    .accessibilityLabel("Quiz progress")
+                    .accessibilityValue("Question \(currentIndex + 1) of \(questions.count)")
                 }
 
                 // Question card
                 let q = questions[currentIndex]
                 VStack(alignment: .leading, spacing: 16) {
                     // Question text
-                    Text(q.question)
-                        .font(.system(size: 18, weight: .semibold))
+                        Text(q.question)
+                        .font(.headline)
                         .lineSpacing(4)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -606,7 +686,7 @@ struct QuizView: View {
                                 isRevealed: revealedAnswers[currentIndex] == true
                             ) {
                                 guard revealedAnswers[currentIndex] != true else { return }
-                                withAnimation(.easeOut(duration: 0.2)) {
+                                withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) {
                                     selectedAnswers[currentIndex] = option.letter
                                 }
                             }
@@ -616,13 +696,13 @@ struct QuizView: View {
                     // Check button
                     if selectedAnswers[currentIndex] != nil && revealedAnswers[currentIndex] != true {
                         Button {
-                            withAnimation(.spring(duration: 0.4, bounce: 0.2)) {
+                            withAnimation(reduceMotion ? nil : .spring(duration: 0.4, bounce: 0.2)) {
                                 revealedAnswers[currentIndex] = true
                                 revealCount += 1
                             }
                         } label: {
                             Text("Check Answer")
-                                .font(.system(size: 15, weight: .semibold))
+                                .font(.subheadline.weight(.semibold))
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
                                 .background(AppTheme.accent, in: RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
@@ -636,13 +716,13 @@ struct QuizView: View {
                         let isCorrect = selectedAnswers[currentIndex] == q.correctLetter
                         HStack(spacing: 8) {
                             Image(systemName: isCorrect ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                .font(.system(size: 20))
+                                .font(.title3)
                             Text(isCorrect ? "Correct!" : "Incorrect — the answer is \(q.correctLetter)")
-                                .font(.system(size: 15, weight: .medium))
+                                .font(.subheadline.weight(.medium))
                         }
                         .foregroundStyle(isCorrect ? AppTheme.success : AppTheme.highlight)
                         .padding(.top, 4)
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
                     }
                 }
                 .padding(AppTheme.spacingXL)
@@ -651,27 +731,29 @@ struct QuizView: View {
                 // Navigation
                 HStack(spacing: 20) {
                     Button {
-                        withAnimation(.spring(duration: 0.35)) {
+                        withAnimation(reduceMotion ? nil : .spring(duration: 0.35)) {
                             currentIndex = max(0, currentIndex - 1)
                         }
                     } label: {
                         Image(systemName: "chevron.left.circle.fill")
-                            .font(.system(size: 36))
+                            .font(.largeTitle)
                             .foregroundStyle(currentIndex > 0 ? AppTheme.accent : Color.secondary.opacity(0.3))
                     }
+                    .accessibilityLabel("Previous question")
                     .disabled(currentIndex == 0)
 
                     Spacer()
 
                     Button {
-                        withAnimation(.spring(duration: 0.35)) {
+                        withAnimation(reduceMotion ? nil : .spring(duration: 0.35)) {
                             currentIndex = min(questions.count - 1, currentIndex + 1)
                         }
                     } label: {
                         Image(systemName: "chevron.right.circle.fill")
-                            .font(.system(size: 36))
+                            .font(.largeTitle)
                             .foregroundStyle(currentIndex < questions.count - 1 ? AppTheme.accent : Color.secondary.opacity(0.3))
                     }
+                    .accessibilityLabel("Next question")
                     .disabled(currentIndex >= questions.count - 1)
                 }
                 .buttonStyle(.plain)
@@ -683,9 +765,9 @@ struct QuizView: View {
                     }.count
                     VStack(spacing: 8) {
                         Text("Quiz Complete")
-                            .font(.system(size: 15, weight: .bold))
+                            .font(.subheadline.bold())
                         Text("\(correct) out of \(questions.count)")
-                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .font(.title.bold())
                             .foregroundStyle(AppTheme.accent)
                         Text(scoreMessage(correct: correct, total: questions.count))
                             .font(.subheadline)
@@ -694,7 +776,7 @@ struct QuizView: View {
                     .frame(maxWidth: .infinity)
                     .padding(AppTheme.spacingXL)
                     .appSurface(cornerRadius: AppTheme.radiusCard)
-                    .transition(.scale.combined(with: .opacity))
+                    .transition(reduceMotion ? .opacity : .scale.combined(with: .opacity))
                 }
             }
             .sensoryFeedback(.impact(flexibility: .soft), trigger: revealCount)
@@ -834,7 +916,7 @@ struct QuizOptionRow: View {
                     .foregroundStyle(AppTheme.highlight)
             } else {
                 Text(letter)
-                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                    .font(.caption.weight(.bold))
                     .foregroundStyle(isSelected ? AppTheme.accent : .secondary)
             }
         }
@@ -849,10 +931,9 @@ struct QuizOptionRow: View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 letterIcon
-                Text(text)
-                    .font(.system(size: 15))
+            Text(text)
+                    .font(.body)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(3)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 12)
@@ -867,6 +948,17 @@ struct QuizOptionRow: View {
         }
         .buttonStyle(.plain)
         .disabled(isRevealed)
+        .accessibilityLabel("\(letter). \(text)")
+        .accessibilityValue(accessibilityValue)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private var accessibilityValue: String {
+        if isRevealed {
+            if isCorrect { return "Correct answer" }
+            if isSelected { return "Selected incorrect answer" }
+        }
+        return isSelected ? "Selected" : "Not selected"
     }
 }
 
@@ -889,7 +981,7 @@ struct BulletListView: View {
                         // Section header
                         if let header = section.header {
                             Text(header)
-                                .font(.system(size: 15, weight: .bold))
+                                .font(.subheadline.bold())
                                 .foregroundStyle(AppTheme.accent)
                         }
 
@@ -972,18 +1064,19 @@ struct BulletRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Button {
-                withAnimation(.spring(duration: 0.3, bounce: 0.3)) {
-                    isChecked.toggle()
-                }
+                isChecked.toggle()
             } label: {
                 Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
-                    .font(.system(size: 18))
+                    .font(.title3)
                     .foregroundStyle(isChecked ? AppTheme.success : accentColor.opacity(0.6))
             }
             .buttonStyle(.plain)
+            .frame(minWidth: AppTheme.minimumTapTarget, minHeight: AppTheme.minimumTapTarget)
+            .accessibilityLabel(text)
+            .accessibilityValue(isChecked ? "Checked" : "Unchecked")
 
             Text(text)
-                .font(.system(size: 15))
+                .font(.body)
                 .lineSpacing(3)
                 .strikethrough(isChecked, color: .secondary.opacity(0.5))
                 .foregroundStyle(isChecked ? .secondary : .primary)
@@ -1028,14 +1121,14 @@ struct StyledTextView: View {
             if paragraphs.count > 1 {
                 ForEach(Array(paragraphs.enumerated()), id: \.offset) { idx, paragraph in
                     Text(verbatim: paragraph.trimmingCharacters(in: .whitespacesAndNewlines))
-                        .font(idx == 0 ? .system(size: 17, weight: .medium) : .system(size: 16))
+                        .font(idx == 0 ? .body.weight(.medium) : .body)
                         .lineSpacing(6)
                         .foregroundStyle(Color.primary.opacity(idx == 0 ? 1.0 : 0.85))
                         .textSelection(.enabled)
                 }
             } else {
                 Text(verbatim: displayContent.trimmingCharacters(in: .whitespacesAndNewlines))
-                    .font(.system(size: 16))
+                    .font(.body)
                     .lineSpacing(6)
                     .textSelection(.enabled)
             }
@@ -1064,7 +1157,7 @@ struct StyledTextView: View {
         )
     }
     .environment(DataModel())
-    .environment(SubscriptionStore())
+    .environment(StoreKitService<AppSubscriptionTier>())
     .modelContainer(for: [
         Thread.self, Message.self, Artifact.self,
         LibraryItem.self, UserPreferences.self

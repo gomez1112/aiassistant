@@ -6,6 +6,7 @@
 
 import SwiftUI
 import SwiftData
+import FlexStore
 
 struct LibraryView: View {
     let preferences: UserPreferences
@@ -13,27 +14,21 @@ struct LibraryView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
 
-    @Query(sort: \LibraryItem.updatedAt, order: .reverse)
-    private var items: [LibraryItem]
-
     @State private var showAddSheet = false
     @State private var searchText = ""
+    @State private var items: [LibraryItem] = []
+    @State private var totalItemCount = 0
     @State private var showPersistenceError = false
     #if !os(macOS)
     @State private var showSettings = false
     #endif
 
-    private var filtered: [LibraryItem] {
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else { return items }
-        return items.filter {
-            $0.title.localizedStandardContains(query) ||
-            $0.rawText.localizedStandardContains(query)
-        }
-    }
-
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var hasAnyItems: Bool {
+        totalItemCount > 0
     }
 
     var body: some View {
@@ -56,16 +51,16 @@ struct LibraryView: View {
                 #endif
 
                 Group {
-                    if items.isEmpty {
+                    if !hasAnyItems {
                         LibraryEmptyStateView(onAdd: presentAddSheet)
                     } else {
                         Group {
-                            if filtered.isEmpty {
+                            if items.isEmpty {
                                 unavailableFilteredState
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                             } else {
                                 List {
-                                    ForEach(filtered, id: \.id) { item in
+                                    ForEach(items, id: \.id) { item in
                                         NavigationLink(value: item.id) {
                                             LibraryItemRow(item: item)
                                         }
@@ -90,6 +85,12 @@ struct LibraryView: View {
                         .navigationDestination(for: UUID.self) { id in
                             if let item = items.first(where: { $0.id == id }) {
                                 LibraryItemDetailView(item: item, preferences: preferences)
+                            } else {
+                                ContentUnavailableView(
+                                    "Library item unavailable",
+                                    systemImage: "exclamationmark.triangle",
+                                    description: Text("The item may have been deleted or filtered out.")
+                                )
                             }
                         }
                     }
@@ -104,6 +105,8 @@ struct LibraryView: View {
                 ToolbarItem(placement: .automatic) {
                     Button("Add library item", systemImage: "plus", action: presentAddSheet)
                         .labelStyle(.iconOnly)
+                        .accessibilityLabel("Add library item")
+                        .accessibilityIdentifier("library.toolbar.add")
                 }
                 ToolbarSpacer(.fixed)
                 #if !os(macOS)
@@ -112,6 +115,8 @@ struct LibraryView: View {
                         showSettings = true
                     }
                     .labelStyle(.iconOnly)
+                    .accessibilityLabel("Settings")
+                    .accessibilityIdentifier("library.toolbar.settings")
                 }
                 #endif
             }
@@ -119,7 +124,7 @@ struct LibraryView: View {
             .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             #endif
-            .sheet(isPresented: $showAddSheet) {
+            .sheet(isPresented: $showAddSheet, onDismiss: refreshItems) {
                 AddLibraryItemSheet()
             }
             #if !os(macOS)
@@ -137,15 +142,17 @@ struct LibraryView: View {
             .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
                 showPersistenceError = newValue != nil
             }
+            .onAppear(perform: refreshItems)
+            .onChange(of: searchText) { _, _ in refreshItems() }
         }
     }
 
     private var librarySubtitle: String {
-        if items.isEmpty {
+        if !hasAnyItems {
             return "No source items yet"
         }
 
-        return "\(filtered.count) of \(items.count) source items"
+        return "\(items.count) of \(totalItemCount) source items"
     }
 
     @ViewBuilder
@@ -167,9 +174,37 @@ struct LibraryView: View {
 
     private func deleteItems(at offsets: IndexSet) {
         for index in offsets {
-            modelContext.delete(filtered[index])
+            modelContext.delete(items[index])
         }
         dataModel.saveChanges(in: modelContext, source: "deleteLibraryItem")
+        refreshItems()
+    }
+
+    private func refreshItems() {
+        do {
+            totalItemCount = try modelContext.fetchCount(FetchDescriptor<LibraryItem>())
+            items = try modelContext.fetch(libraryFetchDescriptor())
+        } catch {
+            dataModel.persistenceErrorMessage = "Could not load library items. \(error.localizedDescription)"
+        }
+    }
+
+    private func libraryFetchDescriptor() -> FetchDescriptor<LibraryItem> {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        let sort = [SortDescriptor(\LibraryItem.updatedAt, order: .reverse)]
+
+        guard !query.isEmpty else {
+            return FetchDescriptor<LibraryItem>(sortBy: sort)
+        }
+
+        return FetchDescriptor<LibraryItem>(
+            predicate: #Predicate<LibraryItem> { item in
+                item.title.localizedStandardContains(query) ||
+                item.rawText.localizedStandardContains(query) ||
+                (item.aiSummary?.localizedStandardContains(query) ?? false)
+            },
+            sortBy: sort
+        )
     }
 }
 
@@ -206,6 +241,8 @@ struct LibraryItemRow: View {
         }
         .padding(.vertical, AppTheme.spacingSM)
         .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(item.kind.rawValue): \(item.title)")
+        .accessibilityValue(accessibilityPreview)
         #else
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 8) {
@@ -233,7 +270,21 @@ struct LibraryItemRow: View {
         }
         .padding(AppTheme.spacingMD)
         .appSurface()
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(item.kind.rawValue): \(item.title)")
+        .accessibilityValue(accessibilityPreview)
         #endif
+    }
+
+    private var accessibilityPreview: String {
+        var parts = [
+            item.rawText.prefix(180).description,
+            "Updated \(item.updatedAt.formatted(date: .abbreviated, time: .shortened))"
+        ]
+        if let summary = item.aiSummary, !summary.isEmpty {
+            parts.append("Summary available")
+        }
+        return parts.joined(separator: ". ")
     }
 }
 
@@ -247,6 +298,7 @@ private struct LibraryEmptyStateView: View {
             description: "Add notes, snippets, or pasted text to use as source material in your chats.",
             actionTitle: "Add Item",
             actionSystemImage: "plus",
+            actionAccessibilityIdentifier: "library.emptyState.add",
             action: onAdd
         )
     }
@@ -338,10 +390,12 @@ struct LibraryItemDetailView: View {
 
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
-    @Environment(SubscriptionStore.self) private var subscriptionStore
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
 
     @State private var isSummarizing = false
     @State private var showPaywall = false
+    @State private var summaryErrorMessage: String?
+    @State private var summaryTask: Task<Void, Never>?
 
     var body: some View {
         ScrollView {
@@ -423,28 +477,65 @@ struct LibraryItemDetailView: View {
         .sheet(isPresented: $showPaywall) {
             SubscriptionPaywallView(context: .librarySummary)
         }
+        .alert("Couldn’t summarize item", isPresented: summaryErrorBinding) {
+            Button("OK", role: .cancel) {
+                summaryErrorMessage = nil
+            }
+        } message: {
+            Text(summaryErrorMessage ?? "Please try again.")
+        }
+        .onDisappear {
+            summaryTask?.cancel()
+        }
     }
 
     private func summarize() {
-        guard subscriptionStore.hasPremiumAccess else {
+        guard hasPremiumAccess else {
             showPaywall = true
             return
         }
 
+        summaryTask?.cancel()
         isSummarizing = true
-        Task {
-            await dataModel.summarizeItem(item, in: modelContext)
-            isSummarizing = false
+        summaryTask = Task {
+            defer {
+                isSummarizing = false
+                summaryTask = nil
+            }
+            let outcome = await dataModel.summarizeItem(item, in: modelContext)
+            guard !Task.isCancelled else { return }
+
+            switch outcome {
+            case .completed, .cancelled:
+                break
+            case .failed(let message):
+                summaryErrorMessage = message
+            }
         }
+    }
+
+    private var hasPremiumAccess: Bool {
+        flexStore.isSubscribed || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID)
+    }
+
+    private var summaryErrorBinding: Binding<Bool> {
+        Binding(
+            get: { summaryErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    summaryErrorMessage = nil
+                }
+            }
+        )
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    LibraryView(preferences: .defaults)
-        .environment(DataModel())
-        .environment(SubscriptionStore())
+        LibraryView(preferences: .defaults)
+            .environment(DataModel())
+        .environment(StoreKitService<AppSubscriptionTier>())
         .modelContainer(for: [
             Thread.self, Message.self, Artifact.self,
             LibraryItem.self, UserPreferences.self

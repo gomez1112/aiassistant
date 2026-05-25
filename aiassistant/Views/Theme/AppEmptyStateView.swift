@@ -6,6 +6,7 @@ struct AppEmptyStateView: View {
     let description: String
     let actionTitle: String?
     let actionSystemImage: String?
+    let actionAccessibilityIdentifier: String?
     let action: (() -> Void)?
 
     init(
@@ -14,6 +15,7 @@ struct AppEmptyStateView: View {
         description: String,
         actionTitle: String? = nil,
         actionSystemImage: String? = nil,
+        actionAccessibilityIdentifier: String? = nil,
         action: (() -> Void)? = nil
     ) {
         self.title = title
@@ -21,6 +23,7 @@ struct AppEmptyStateView: View {
         self.description = description
         self.actionTitle = actionTitle
         self.actionSystemImage = actionSystemImage
+        self.actionAccessibilityIdentifier = actionAccessibilityIdentifier
         self.action = action
     }
 
@@ -55,14 +58,25 @@ struct AppEmptyStateView: View {
             }
 
             if let actionTitle, let action {
-                AppPrimaryButton(
-                    actionTitle,
-                    systemImage: actionSystemImage,
-                    action: action
-                )
+                actionButton(title: actionTitle, action: action)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(AppTheme.spacingXL)
+    }
+
+    @ViewBuilder
+    private func actionButton(title: String, action: @escaping () -> Void) -> some View {
+        let button = AppPrimaryButton(
+            title,
+            systemImage: actionSystemImage,
+            action: action
+        )
+
+        if let actionAccessibilityIdentifier {
+            button.accessibilityIdentifier(actionAccessibilityIdentifier)
+        } else {
+            button
+        }
     }
 }

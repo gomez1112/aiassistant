@@ -1,11 +1,11 @@
 {
   "appPolicies" : {
-    "eula" : "",
+    "eula" : "https://gomez1112.github.io/Legal/terms/",
     "policies" : [
       {
         "locale" : "en_US",
-        "policyText" : "",
-        "policyURL" : ""
+          "policyText" : "Privacy Policy",
+          "policyURL" : "https://gomez1112.github.io/Legal/privacy/"
       }
     ]
   },

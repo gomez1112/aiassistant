@@ -20,6 +20,9 @@ struct OutputStudioSheet: View {
     @State private var title = ""
     @State private var isProcessing = false
     @State private var result: String?
+    @State private var errorMessage: String?
+    @State private var processingTask: Task<Void, Never>?
+    @State private var isSourceExpanded = false
     private let transformColumns = [GridItem(.adaptive(minimum: 96, maximum: 170), spacing: 12)]
 
     var body: some View {
@@ -29,7 +32,11 @@ struct OutputStudioSheet: View {
                     Text(sourceText)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                        .lineLimit(5)
+                        .lineLimit(isSourceExpanded ? nil : 5)
+                    Button(isSourceExpanded ? "Show Less" : "Show More") {
+                        isSourceExpanded.toggle()
+                    }
+                    .font(.caption.weight(.semibold))
                 }
 
                 Section("Output Type") {
@@ -74,7 +81,10 @@ struct OutputStudioSheet: View {
             #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { dismiss() }
+                    Button("Cancel") {
+                        processingTask?.cancel()
+                        dismiss()
+                    }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     if result != nil {
@@ -83,6 +93,12 @@ struct OutputStudioSheet: View {
                     } else {
                         Button("Generate") { generate() }
                             .bold()
+                            .disabled(isProcessing || selectedTransform == nil)
+                    }
+                }
+                if result != nil {
+                    ToolbarItem(placement: .automatic) {
+                        Button("Regenerate") { generate() }
                             .disabled(isProcessing || selectedTransform == nil)
                     }
                 }
@@ -98,23 +114,69 @@ struct OutputStudioSheet: View {
                         )
                 }
             }
+            .alert("Couldn’t generate output", isPresented: errorBinding) {
+                Button("OK", role: .cancel) {
+                    errorMessage = nil
+                }
+            } message: {
+                Text(errorMessage ?? "Please try again.")
+            }
+            .onChange(of: selectedKind) { _, _ in
+                result = nil
+            }
+            .onChange(of: selectedTransform) { _, _ in
+                result = nil
+            }
+            .onDisappear {
+                processingTask?.cancel()
+            }
         }
+    }
+
+    private var errorBinding: Binding<Bool> {
+        Binding(
+            get: { errorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    errorMessage = nil
+                }
+            }
+        )
     }
 
     private func generate() {
         guard let transform = selectedTransform else { return }
+        processingTask?.cancel()
+        result = nil
         isProcessing = true
-        Task {
-            let output = await dataModel.assistant.transform(
+        processingTask = Task {
+            defer {
+                isProcessing = false
+                processingTask = nil
+            }
+            let outcome = await dataModel.assistant.transform(
                 content: sourceText,
                 type: transform,
                 preferences: preferences
             )
-            result = output
-            if title.isEmpty {
-                title = "\(selectedKind.rawValue) — \(transform.rawValue)"
+            guard !Task.isCancelled else { return }
+
+            switch outcome {
+            case .success(let output):
+                let trimmed = output.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty else {
+                    errorMessage = "The output was empty. Try a different transform."
+                    return
+                }
+                result = trimmed
+                if title.isEmpty {
+                    title = "\(selectedKind.rawValue) - \(transform.rawValue)"
+                }
+            case .cancelled:
+                break
+            case .failed(let message):
+                errorMessage = message
             }
-            isProcessing = false
         }
     }
 

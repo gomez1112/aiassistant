@@ -65,4 +65,14 @@ enum AriActionType: Sendable {
     case saveArtifact
     case askFollowUp
     case simplify
+
+    var accessibilityIdentifier: String {
+        switch self {
+        case .createChecklist: "createChecklist"
+        case .refineTone: "refineTone"
+        case .saveArtifact: "saveArtifact"
+        case .askFollowUp: "askFollowUp"
+        case .simplify: "simplify"
+        }
+    }
 }

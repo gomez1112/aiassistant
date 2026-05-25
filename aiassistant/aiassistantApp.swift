@@ -12,10 +12,11 @@ import FlexStore
 
 @main
 struct AIAssistantApp: App {
-    let modelContainer: ModelContainer
+    let modelContainer: ModelContainer?
+    let persistenceMode: PersistenceMode
+    let startupIssueMessage: String?
     
     @State private var dataModel = DataModel()
-    @State private var subscriptionStore = SubscriptionStore()
     @State private var flexStore = StoreKitService<AppSubscriptionTier>()
 
     private static var launchArguments: [String] {
@@ -23,7 +24,11 @@ struct AIAssistantApp: App {
     }
 
     private static var isUITesting: Bool {
+        #if DEBUG
         launchArguments.contains("-ui-testing")
+        #else
+        false
+        #endif
     }
     
     init() {
@@ -34,6 +39,11 @@ struct AIAssistantApp: App {
             LibraryItem.self,
             UserPreferences.self
         ])
+
+        var resolvedContainer: ModelContainer?
+        var resolvedMode: PersistenceMode = .cloudKit
+        var resolvedIssue: String?
+
         do {
             let config: ModelConfiguration
             if Self.isUITesting {
@@ -43,30 +53,57 @@ struct AIAssistantApp: App {
                     isStoredInMemoryOnly: true,
                     cloudKitDatabase: .none
                 )
+                resolvedMode = .uiTesting
             } else {
                 config = ModelConfiguration(
                     "AIAssistant",
                     schema: schema
                 )
             }
-            modelContainer = try ModelContainer(for: schema, configurations: [config])
+            resolvedContainer = try ModelContainer(for: schema, configurations: [config])
         } catch {
+            let primaryError = error
             do {
                 let fallbackConfig = ModelConfiguration(
                     "AIAssistantLocalFallback",
                     schema: schema,
                     cloudKitDatabase: .none
                 )
-                modelContainer = try ModelContainer(for: schema, configurations: [fallbackConfig])
-                assertionFailure("CloudKit container load failed. Falling back to local store. Error: \(error)")
+                resolvedContainer = try ModelContainer(for: schema, configurations: [fallbackConfig])
+                resolvedMode = .localFallback(primaryError.localizedDescription)
+                resolvedIssue = "CloudKit container load failed. Falling back to local store. Error: \(primaryError.localizedDescription)"
+                assertionFailure(resolvedIssue ?? "CloudKit container load failed.")
             } catch {
-                fatalError("Failed to create ModelContainer: \(error)")
+                resolvedContainer = nil
+                resolvedMode = .recovery(error.localizedDescription)
+                resolvedIssue = "Failed to create any ModelContainer. CloudKit error: \(primaryError.localizedDescription). Local fallback error: \(error.localizedDescription)"
+                assertionFailure(resolvedIssue ?? "Failed to create any ModelContainer.")
             }
         }
+
+        modelContainer = resolvedContainer
+        persistenceMode = resolvedMode
+        startupIssueMessage = resolvedIssue
     }
     
     var body: some Scene {
         WindowGroup {
+            mainWindowContent
+        }
+        #if os(macOS)
+        .defaultSize(width: 1360, height: 900)
+        #endif
+
+        #if os(macOS)
+        Settings {
+            settingsContent
+        }
+        #endif
+    }
+
+    @ViewBuilder
+    private var mainWindowContent: some View {
+        if let modelContainer {
             Group {
                 if Self.isUITesting {
                     appRoot
@@ -82,43 +119,42 @@ struct AIAssistantApp: App {
                     }
                 }
             }
-            .task {
-                if !Self.isUITesting {
-                    await subscriptionStore.start()
-                }
-            }
+            .modelContainer(modelContainer)
+        } else {
+            PersistenceRecoveryView(message: startupIssueMessage)
         }
-        #if os(macOS)
-        .defaultSize(width: 1360, height: 900)
-        #endif
-        .modelContainer(modelContainer)
-
-        #if os(macOS)
-        Settings {
-            AppSettingsSceneView()
-                .environment(dataModel)
-                .environment(subscriptionStore)
-                .attachStoreKit(
-                    manager: flexStore,
-                    groupID: Monetization.subscriptionGroupID,
-                    ids: Monetization.productIDs
-                )
-        }
-        .modelContainer(modelContainer)
-        #endif
     }
 
     @ViewBuilder
     private var appRoot: some View {
         RootTabView()
             .environment(dataModel)
-            .environment(subscriptionStore)
+            .environment(\.persistenceMode, persistenceMode)
             .attachStoreKit(
                 manager: flexStore,
                 groupID: Monetization.subscriptionGroupID,
                 ids: Monetization.productIDs
             )
     }
+
+    #if os(macOS)
+    @ViewBuilder
+    private var settingsContent: some View {
+        if let modelContainer {
+            AppSettingsSceneView()
+                .environment(dataModel)
+                .environment(\.persistenceMode, persistenceMode)
+                .attachStoreKit(
+                    manager: flexStore,
+                    groupID: Monetization.subscriptionGroupID,
+                    ids: Monetization.productIDs
+                )
+                .modelContainer(modelContainer)
+        } else {
+            PersistenceRecoveryView(message: startupIssueMessage)
+        }
+    }
+    #endif
 
     private var currentVersion: String {
         let shortVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
@@ -169,6 +205,30 @@ struct AIAssistantApp: App {
                 iconColor: AppTheme.highlight
             )
         ]
+    }
+}
+
+private struct PersistenceRecoveryView: View {
+    let message: String?
+
+    var body: some View {
+        VStack(spacing: AppTheme.spacingLG) {
+            Image(systemName: "externaldrive.badge.exclamationmark")
+                .font(.largeTitle)
+                .foregroundStyle(AppTheme.destructive)
+
+            Text("Ari could not open its data store")
+                .font(.title3.weight(.semibold))
+
+            Text(message ?? "Restart the app. If this keeps happening, check available storage and iCloud status.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 520)
+        }
+        .padding(AppTheme.spacingXL)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(AppTheme.appBackground)
     }
 }
 #if os(macOS)

@@ -5,6 +5,7 @@
 
 import SwiftUI
 import SwiftData
+import FlexStore
 
 struct RootTabView: View {
     @Environment(DataModel.self) private var dataModel
@@ -124,7 +125,7 @@ private struct MacSidebarTabButton: View {
                 .labelStyle(.titleAndIcon)
                 .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.accent) : AnyShapeStyle(.primary))
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(height: 34)
+                .frame(minHeight: AppTheme.minimumTapTarget)
                 .padding(.horizontal, AppTheme.spacingSM)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
@@ -143,7 +144,7 @@ private struct MacSidebarTabButton: View {
 #Preview {
     RootTabView()
         .environment(DataModel())
-        .environment(SubscriptionStore())
+        .environment(StoreKitService<AppSubscriptionTier>())
         .modelContainer(for: [
             Thread.self, Message.self, Artifact.self,
             LibraryItem.self, UserPreferences.self

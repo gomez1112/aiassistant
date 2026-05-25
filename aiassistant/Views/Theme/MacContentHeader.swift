@@ -93,14 +93,14 @@ private struct MacSearchField: View {
                 .frame(width: 220)
 
             if !text.isEmpty {
-                Button {
+                Button("Clear search", systemImage: "xmark.circle.fill") {
                     text = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.tertiary)
                 }
+                .labelStyle(.iconOnly)
+                .foregroundStyle(.tertiary)
                 .buttonStyle(.plain)
                 .help("Clear search")
+                .accessibilityIdentifier("search.clear")
             }
         }
         .padding(.horizontal, AppTheme.spacingMD)

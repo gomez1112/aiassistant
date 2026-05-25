@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		CC1692D12F5CE6C600495695 /* ai.storekit in Resources */ = {isa = PBXBuildFile; fileRef = CC1692D02F5CE6C500495695 /* ai.storekit */; };
 		CC7F11262F4ABC1600504B6D /* OnboardingKit in Frameworks */ = {isa = PBXBuildFile; productRef = CC7F11252F4ABC1600504B6D /* OnboardingKit */; };
-		CC7F11312F4ABFDD00504B6D /* StoreKitSchemaNotes.md in Resources */ = {isa = PBXBuildFile; fileRef = CC7F11302F4ABFDD00504B6D /* StoreKitSchemaNotes.md */; };
 		CC7F11342F4AD01D00504B6D /* FlexStore in Frameworks */ = {isa = PBXBuildFile; productRef = CC7F11332F4AD01D00504B6D /* FlexStore */; };
 /* End PBXBuildFile section */
 
@@ -245,7 +244,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CC1692D12F5CE6C600495695 /* ai.storekit in Resources */,
-				CC7F11312F4ABFDD00504B6D /* StoreKitSchemaNotes.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

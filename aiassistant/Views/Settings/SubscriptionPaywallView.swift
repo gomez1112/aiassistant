@@ -5,7 +5,7 @@ import FlexStore
 struct SubscriptionPaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.openURL) private var openURL
-    @Environment(SubscriptionStore.self) private var entitlementStore
+    @Environment(\.persistenceMode) private var persistenceMode
     @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
 
     let context: SubscriptionPaywallContext
@@ -14,7 +14,7 @@ struct SubscriptionPaywallView: View {
     @State private var purchasingProductID: String?
     @State private var errorMessage: String?
 
-    private let subscriptionsURL = URL(string: "https://apps.apple.com/account/subscriptions")!
+    private let subscriptionsURL = URL(string: "https://apps.apple.com/account/subscriptions") ?? URL(fileURLWithPath: "/")
     private let productOrder = [
         Monetization.subscriptionYearlyID,
         Monetization.subscriptionMonthlyID,
@@ -32,7 +32,9 @@ struct SubscriptionPaywallView: View {
                     includedFeatures
                     subscriptionPlans
                     subscribeButton
-                    lifetimeSection
+                    if shouldShowLifetimeSection {
+                        lifetimeSection
+                    }
                     policySection
                 }
                 .padding(.horizontal, AppTheme.spacingXL)
@@ -55,7 +57,7 @@ struct SubscriptionPaywallView: View {
         }
         .tint(AppTheme.paywallTint)
         .task {
-            await entitlementStore.refresh()
+            await refreshProductsAndEntitlements()
             syncSelection()
         }
         .onChange(of: flexStore.products.map(\.id)) { _, _ in
@@ -87,7 +89,7 @@ struct SubscriptionPaywallView: View {
     }
 
     private var hasPremiumAccess: Bool {
-        entitlementStore.hasPremiumAccess || flexStore.isSubscribed || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID)
+        flexStore.isSubscribed || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID)
     }
 
     private var subscriptionProducts: [Product] {
@@ -102,14 +104,34 @@ struct SubscriptionPaywallView: View {
         flexStore.product(for: Monetization.lifetimeID)
     }
 
+    private var shouldShowLifetimeSection: Bool {
+        flexStore.isLoading || lifetimeProduct != nil || !flexStore.products.isEmpty
+    }
+
+    private var displayedFeatures: [PaywallFeature] {
+        if persistenceMode.isLocalOnly {
+            Monetization.paywallFeatures.filter { $0.title != "Priority sync" }
+        } else {
+            Monetization.paywallFeatures
+        }
+    }
+
     private var includedFeatures: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
             Text("What's included")
                 .font(.headline.weight(.semibold))
                 .foregroundStyle(.secondary)
 
+            if persistenceMode.isLocalOnly, let message = persistenceMode.userMessage {
+                AppBanner(
+                    systemImage: "icloud.slash",
+                    message: message,
+                    tint: AppTheme.warning
+                )
+            }
+
             VStack(spacing: AppTheme.spacingSM) {
-                ForEach(Monetization.paywallFeatures) { feature in
+                ForEach(displayedFeatures) { feature in
                     PaywallFeatureRow(feature: feature)
                 }
             }
@@ -122,6 +144,23 @@ struct SubscriptionPaywallView: View {
                 ProgressView("Loading plans...")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, AppTheme.spacingXL)
+            } else if subscriptionProducts.isEmpty {
+                ContentUnavailableView {
+                    Label("Plans unavailable", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text("Ari could not load subscription plans. Check your connection and try again.")
+                } actions: {
+                    Button("Retry") {
+                        Task {
+                            await refreshProductsAndEntitlements()
+                            syncSelection()
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .accessibilityIdentifier("paywall.plans.retry")
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, AppTheme.spacingXL)
             } else {
                 ForEach(subscriptionProducts, id: \.id) { product in
                     SubscriptionPlanCard(
@@ -212,7 +251,6 @@ struct SubscriptionPaywallView: View {
                 Button("Restore Purchases") {
                     Task {
                         await flexStore.restorePurchases()
-                        await entitlementStore.restorePurchases()
                     }
                 }
 
@@ -244,7 +282,7 @@ struct SubscriptionPaywallView: View {
 
             do {
                 let outcome = try await flexStore.purchase(product)
-                await entitlementStore.refresh()
+                await refreshProductsAndEntitlements()
                 switch outcome {
                 case .success:
                     dismiss()
@@ -264,6 +302,13 @@ struct SubscriptionPaywallView: View {
            let firstProduct = subscriptionProducts.first {
             selectedProductID = firstProduct.id
         }
+    }
+
+    private func refreshProductsAndEntitlements() async {
+        if flexStore.products.isEmpty {
+            await flexStore.loadProducts(Monetization.productIDs)
+        }
+        await flexStore.refreshSubscriptionStatus(groupID: Monetization.subscriptionGroupID)
     }
 
     private func renewalDisclosure(for product: Product) -> String {
@@ -348,15 +393,16 @@ private struct SubscriptionPlanCard: View {
             }
             .padding(AppTheme.spacingLG)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .background(AppTheme.surfaceFill, in: RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous))
             .overlay(
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
                     .stroke(isSelected ? AppTheme.paywallTint : AppTheme.surfaceStrokeStrong, lineWidth: isSelected ? 2 : 1)
             )
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(product.displayName), \(priceLine(for: product)), \(descriptionLine(for: product))")
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
+        .accessibilityIdentifier("paywall.plan.\(product.id)")
     }
 
     private func priceLine(for product: Product) -> String {
@@ -424,6 +470,5 @@ private struct SelectionIndicator: View {
 
 #Preview {
     SubscriptionPaywallView()
-        .environment(SubscriptionStore())
         .environment(StoreKitService<AppSubscriptionTier>())
 }

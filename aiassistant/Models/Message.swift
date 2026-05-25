@@ -12,6 +12,13 @@ enum MessageRole: String, Codable, CaseIterable {
     case assistant
     case system
     case tool
+    case unknown
+}
+
+enum MessageStatus: String, Codable, CaseIterable {
+    case completed
+    case cancelled
+    case failed
 }
 
 /// The detected intent/mode of a user message.
@@ -49,12 +56,13 @@ final class Message {
     var modeRaw: String?
     var ariGuidance: String?
     var ariMoodRaw: String?
+    var statusRaw = MessageStatus.completed.rawValue
 
     // References to artifacts produced by this message
     var artifactIDsRaw = ""
 
     var role: MessageRole {
-        get { MessageRole(rawValue: roleRaw) ?? .user }
+        get { MessageRole(rawValue: roleRaw) ?? .unknown }
         set { roleRaw = newValue.rawValue }
     }
 
@@ -66,6 +74,11 @@ final class Message {
     var ariMood: AriMood? {
         get { ariMoodRaw.flatMap { AriMood(rawValue: $0) } }
         set { ariMoodRaw = newValue?.rawValue }
+    }
+
+    var status: MessageStatus {
+        get { MessageStatus(rawValue: statusRaw) ?? .completed }
+        set { statusRaw = newValue.rawValue }
     }
 
     var artifactIDs: [UUID] {
@@ -91,6 +104,7 @@ final class Message {
         mode: AssistantMode? = nil,
         ariGuidance: String? = nil,
         ariMood: AriMood? = nil,
+        status: MessageStatus = .completed,
         artifactIDs: [UUID] = []
     ) {
         self.id = id
@@ -101,6 +115,7 @@ final class Message {
         self.modeRaw = mode?.rawValue
         self.ariGuidance = ariGuidance
         self.ariMoodRaw = ariMood?.rawValue
+        self.statusRaw = status.rawValue
         self.artifactIDsRaw = artifactIDs.map(\.uuidString).joined(separator: "\n")
     }
 }

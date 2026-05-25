@@ -108,9 +108,12 @@ struct ThreadListSheet: View {
             .padding(.vertical, 2)
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(thread.title), \(thread.lastMessagePreview)")
+        .accessibilityLabel("\(thread.title), \(thread.lastMessagePreview), \(thread.pinned ? "Pinned" : "Not pinned")")
         .accessibilityHint("Opens conversation")
         .accessibilityIdentifier("threadList.row.\(thread.id.uuidString)")
+        .accessibilityAction(named: thread.pinned ? "Unpin" : "Pin") {
+            onTogglePin(thread)
+        }
         .swipeActions(edge: .leading) {
             Button {
                 onTogglePin(thread)

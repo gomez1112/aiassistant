@@ -40,18 +40,20 @@ struct AIAssistantTests {
         #expect(thread.lastMessagePreview == "Second")
     }
 
-    @Test func displayTextNormalizesMarkdownAndMissingSpacing() {
+    @Test func displayTextKeepsGeneratedTextExactOutsideSimpleMarkdownCleanup() {
         let raw = """
         Here are some tips.Use headings:
         * **Use headings:** Headings help.
         * **Use shorter sentences:** Shorter is clearer.
+        URL: https://example.com/a:b
         """
 
         let displayText = normalizedDisplayText(raw)
 
-        #expect(displayText.contains("tips. Use headings"))
+        #expect(displayText.contains("tips.Use headings"))
         #expect(displayText.contains("• Use headings: Headings help."))
         #expect(displayText.contains("• Use shorter sentences: Shorter is clearer."))
+        #expect(displayText.contains("https://example.com/a:b"))
         #expect(!displayText.contains("**"))
     }
 

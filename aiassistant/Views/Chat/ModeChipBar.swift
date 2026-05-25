@@ -129,6 +129,7 @@ struct ModeChip: View {
                 .font(.footnote.weight(isSelected ? .semibold : .medium))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 7)
+                .frame(minHeight: AppTheme.minimumTapTarget)
                 .background(
                     Capsule()
                         .fill(isSelected

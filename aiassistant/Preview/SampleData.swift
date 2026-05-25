@@ -9,7 +9,11 @@ import SwiftData
 enum SampleData {
     /// Seed sample threads, messages, artifacts, and library items into the given context.
     @MainActor
-    static func seed(in context: ModelContext) {
+    static func seed(in context: ModelContext) -> SampleSeedResult {
+        if existingSampleCount(in: context) > 0 {
+            return .alreadySeeded
+        }
+
         // Thread 1: Writing session
         let thread1 = Thread(title: "Blog post about productivity", pinned: true)
         context.insert(thread1)
@@ -97,6 +101,48 @@ enum SampleData {
         )
         context.insert(lib2)
 
-        try? context.save()
+        do {
+            try context.save()
+            return .seeded
+        } catch {
+            assertionFailure("Sample data seed failed: \(error)")
+            return .failed(error.localizedDescription)
+        }
+    }
+
+    @MainActor
+    private static func existingSampleCount(in context: ModelContext) -> Int {
+        let sampleTitles = [
+            "Blog post about productivity",
+            "Vacation planning"
+        ]
+        let descriptor = FetchDescriptor<Thread>()
+        let threads = (try? context.fetch(descriptor)) ?? []
+        return threads.filter { sampleTitles.contains($0.title) }.count
+    }
+}
+
+enum SampleSeedResult: Equatable {
+    case seeded
+    case alreadySeeded
+    case failed(String)
+
+    var title: String {
+        switch self {
+        case .seeded: "Sample Data Added"
+        case .alreadySeeded: "Sample Data Already Exists"
+        case .failed: "Could Not Seed Sample Data"
+        }
+    }
+
+    var message: String {
+        switch self {
+        case .seeded:
+            "Sample threads, outputs, and library items were added."
+        case .alreadySeeded:
+            "This store already contains the sample conversations."
+        case .failed(let reason):
+            reason
+        }
     }
 }
