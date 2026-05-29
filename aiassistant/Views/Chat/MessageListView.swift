@@ -298,7 +298,8 @@ struct MessageBubble: View {
     private var bubbleShape: some View {
         let shape = RoundedRectangle(cornerRadius: AppTheme.radiusBubble, style: .continuous)
         if isUser {
-            shape.fill(AppTheme.accent)
+            shape.fill(AppTheme.brandGradient)
+                .shadow(color: AppTheme.accent.opacity(0.22), radius: 8, y: 3)
         } else {
             shape.fill(AppTheme.surfaceFill)
                 .overlay(shape.stroke(AppTheme.surfaceStroke, lineWidth: 0.6))

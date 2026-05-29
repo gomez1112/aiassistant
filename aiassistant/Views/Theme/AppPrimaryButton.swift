@@ -22,20 +22,22 @@ struct AppPrimaryButton: View {
     }
 
     var body: some View {
-        button
-            .buttonStyle(.borderedProminent)
-            .buttonBorderShape(.capsule)
-            .controlSize(.large)
-            .tint(AppTheme.accent)
-    }
-
-    private var button: some View {
         Button(action: action) {
             label
                 .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, AppTheme.spacingXL)
                 .frame(maxWidth: fillsWidth ? .infinity : nil)
-                .frame(minHeight: 44)
+                .frame(minHeight: 50)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(AppTheme.brandGradient)
+                        .opacity(isDisabled ? 0.5 : 1)
+                )
+                .shadow(color: AppTheme.accent.opacity(isDisabled ? 0 : 0.28), radius: 12, y: 5)
         }
+        .buttonStyle(.plain)
+        .contentShape(Capsule(style: .continuous))
         .disabled(isDisabled)
     }
 
@@ -47,4 +49,13 @@ struct AppPrimaryButton: View {
             Text(title)
         }
     }
+}
+
+#Preview {
+    VStack(spacing: 20) {
+        AppPrimaryButton("Start Chat", systemImage: "square.and.pencil") {}
+        AppPrimaryButton("Disabled", isDisabled: true) {}
+        AppPrimaryButton("Full Width", systemImage: "wand.and.stars", fillsWidth: true) {}
+    }
+    .padding()
 }

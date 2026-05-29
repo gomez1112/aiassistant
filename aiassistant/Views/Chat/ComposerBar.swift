@@ -62,9 +62,9 @@ struct ComposerBar: View {
                             RoundedRectangle(cornerRadius: 20, style: .continuous)
                                 .stroke(
                                     isFocused
-                                        ? AppTheme.highlight.opacity(0.65)
+                                        ? AppTheme.accent.opacity(0.7)
                                         : AppTheme.surfaceStroke,
-                                    lineWidth: isFocused ? 1 : 0.5
+                                    lineWidth: isFocused ? 1.2 : 0.5
                                 )
                         )
                 )
@@ -113,12 +113,21 @@ struct ComposerBar: View {
                                 Circle()
                                     .fill(
                                         hasText || hasAttachment
-                                            ? AnyShapeStyle(AppTheme.accent)
+                                            ? AnyShapeStyle(AppTheme.brandGradient)
                                             : AnyShapeStyle(AppTheme.surfaceFill)
                                     )
                                     .overlay(
                                         Circle()
-                                            .stroke(AppTheme.surfaceStrokeStrong, lineWidth: 0.7)
+                                            .stroke(
+                                                hasText || hasAttachment
+                                                    ? Color.clear
+                                                    : AppTheme.surfaceStrokeStrong,
+                                                lineWidth: 0.7
+                                            )
+                                    )
+                                    .shadow(
+                                        color: (hasText || hasAttachment) ? AppTheme.accent.opacity(0.3) : .clear,
+                                        radius: 7, y: 3
                                     )
                             )
                     }

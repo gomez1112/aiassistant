@@ -11,21 +11,46 @@ import AppKit
 #endif
 
 enum AppTheme {
-    // MARK: - Colors
+    // MARK: - Brand Colors
+    //
+    // A single cohesive indigo→violet brand family. Everything tinted in the
+    // app derives from these, so accents read as one consistent identity.
 
-    static let accent = Color(red: 0.10, green: 0.36, blue: 0.72)
-    static let accentLight = Color(red: 0.32, green: 0.58, blue: 0.86)
-    static let highlight = Color(red: 0.12, green: 0.56, blue: 0.48)
-    static let highlightSoft = Color(red: 0.68, green: 0.86, blue: 0.82)
-    static let paywallTint = Color(red: 0.10, green: 0.36, blue: 0.72)
-    static let deep = Color(red: 0.08, green: 0.10, blue: 0.14)
-    static let midground = Color(red: 0.17, green: 0.20, blue: 0.25)
-    static let petal = Color(red: 0.97, green: 0.98, blue: 1.0)
+    static let accent = Color(red: 0.39, green: 0.34, blue: 0.92)        // indigo-violet
+    static let accentLight = Color(red: 0.56, green: 0.51, blue: 0.97)   // lighter violet
+    static let accentDeep = Color(red: 0.26, green: 0.21, blue: 0.62)    // deep violet for gradient depth
+    static let highlight = Color(red: 0.78, green: 0.36, blue: 0.86)     // violet-magenta companion
+    static let highlightSoft = Color(red: 0.93, green: 0.82, blue: 0.98) // soft violet wash
+    static let paywallTint = accent
+    static let deep = Color(red: 0.07, green: 0.06, blue: 0.15)
+    static let midground = Color(red: 0.17, green: 0.16, blue: 0.27)
+    static let petal = Color(red: 0.97, green: 0.97, blue: 1.0)
     static let surface = Color.primary.opacity(0.045)
     static let surfaceElevated = Color.primary.opacity(0.065)
-    static let surfaceStroke = Color.primary.opacity(0.095)
+    static let surfaceStroke = Color.primary.opacity(0.09)
     static let surfaceStrokeStrong = Color.primary.opacity(0.14)
-    static let destructive = Color(red: 0.72, green: 0.16, blue: 0.14)
+    static let destructive = Color(red: 0.89, green: 0.26, blue: 0.33)
+
+    // MARK: - Gradients
+
+    /// Primary brand gradient (indigo → violet-magenta). Used for primary
+    /// actions, the send button, selected chips, and user message bubbles.
+    static var brandGradient: LinearGradient {
+        LinearGradient(
+            colors: [accent, highlight],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+
+    /// Soft tinted wash used behind hero icons and feature art.
+    static var brandWash: LinearGradient {
+        LinearGradient(
+            colors: [accent.opacity(0.16), highlight.opacity(0.12)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
 
     static var appBackground: Color {
         #if canImport(UIKit)
@@ -66,14 +91,14 @@ enum AppTheme {
     }
 
     // Semantic colors
-    static let success = Color(red: 0.30, green: 0.85, blue: 0.55)
-    static let warning = Color(red: 1.0, green: 0.76, blue: 0.30)
+    static let success = Color(red: 0.20, green: 0.78, blue: 0.55)
+    static let warning = Color(red: 0.98, green: 0.68, blue: 0.22)
 
     // MARK: - Corner Radii
 
-    static let radiusBubble: CGFloat = 16
-    static let radiusCard: CGFloat = 8
-    static let radiusSmall: CGFloat = 8
+    static let radiusBubble: CGFloat = 20
+    static let radiusCard: CGFloat = 14
+    static let radiusSmall: CGFloat = 10
     static let radiusChip: CGFloat = 18
 
     // MARK: - Layout

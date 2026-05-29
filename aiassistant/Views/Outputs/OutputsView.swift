@@ -352,13 +352,13 @@ struct FilterChip: View {
         Button(action: action) {
             Label(label, systemImage: icon)
                 .font(.caption.weight(isSelected ? .semibold : .medium))
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 14)
                 .padding(.vertical, 6)
                 .frame(minHeight: AppTheme.minimumTapTarget)
                 .background(
                     Capsule(style: .continuous)
                         .fill(isSelected
-                            ? AnyShapeStyle(AppTheme.accent)
+                            ? AnyShapeStyle(AppTheme.brandGradient)
                             : AnyShapeStyle(AppTheme.surface)
                         )
                 )
@@ -367,6 +367,7 @@ struct FilterChip: View {
                         .stroke(isSelected ? Color.clear : AppTheme.surfaceStroke, lineWidth: 0.5)
                 )
                 .foregroundStyle(isSelected ? .white : .secondary)
+                .shadow(color: isSelected ? AppTheme.accent.opacity(0.22) : .clear, radius: 5, y: 2)
         }
         .buttonStyle(.plain)
         .accessibilityValue(isSelected ? "Selected" : "Not selected")

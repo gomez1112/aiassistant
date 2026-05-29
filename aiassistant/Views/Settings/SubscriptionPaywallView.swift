@@ -29,6 +29,7 @@ struct SubscriptionPaywallView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: AppTheme.spacingXL) {
+                    paywallHero
                     includedFeatures
                     subscriptionPlans
                     subscribeButton
@@ -116,6 +117,41 @@ struct SubscriptionPaywallView: View {
         }
     }
 
+    private var paywallHero: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
+            Image(systemName: context.icon)
+                .font(.system(size: 30, weight: .semibold))
+                .foregroundStyle(AppTheme.brandGradient)
+                .frame(width: 72, height: 72)
+                .background(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .fill(AppTheme.brandWash)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(AppTheme.accent.opacity(0.18), lineWidth: 1)
+                )
+
+            Text(context.eyebrow.uppercased())
+                .font(.caption.weight(.bold))
+                .foregroundStyle(AppTheme.accent)
+                .tracking(0.8)
+
+            Text(context.title)
+                .font(.largeTitle.weight(.bold))
+                .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(context.subtitle)
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .lineSpacing(3)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityElement(children: .combine)
+    }
+
     private var includedFeatures: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
             Text("What's included")
@@ -199,7 +235,8 @@ struct SubscriptionPaywallView: View {
                 .frame(minHeight: 58)
             }
             .buttonStyle(.plain)
-            .background(AppTheme.paywallTint, in: Capsule())
+            .background(AppTheme.brandGradient, in: Capsule())
+            .shadow(color: AppTheme.accent.opacity(0.3), radius: 12, y: 5)
             .disabled(purchasingProductID != nil)
             .accessibilityLabel("Subscribe. \(renewalDisclosure(for: selectedProduct))")
         }

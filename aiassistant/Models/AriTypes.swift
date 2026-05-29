@@ -40,12 +40,12 @@ enum AriMood: String, Codable, CaseIterable, Identifiable {
 
     var color: Color {
         switch self {
-        case .calm: .teal
-        case .encouraging: .green
-        case .focused: .indigo
-        case .celebratory: .orange
-        case .curious: .purple
-        case .supportive: .pink
+        case .calm: AppTheme.accentLight
+        case .encouraging: AppTheme.success
+        case .focused: AppTheme.accent
+        case .celebratory: AppTheme.warning
+        case .curious: AppTheme.highlight
+        case .supportive: AppTheme.accentLight
         }
     }
 }

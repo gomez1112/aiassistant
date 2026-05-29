@@ -127,13 +127,13 @@ struct ModeChip: View {
         Button(action: action) {
             Label(mode.chipLabel, systemImage: mode.icon)
                 .font(.footnote.weight(isSelected ? .semibold : .medium))
-                .padding(.horizontal, 12)
+                .padding(.horizontal, 14)
                 .padding(.vertical, 7)
                 .frame(minHeight: AppTheme.minimumTapTarget)
                 .background(
                     Capsule()
                         .fill(isSelected
-                            ? AnyShapeStyle(AppTheme.accent)
+                            ? AnyShapeStyle(AppTheme.brandGradient)
                             : AnyShapeStyle(AppTheme.surfaceFill)
                         )
                 )
@@ -145,6 +145,7 @@ struct ModeChip: View {
                         )
                 )
                 .foregroundStyle(isSelected ? .white : .secondary)
+                .shadow(color: isSelected ? AppTheme.accent.opacity(0.25) : .clear, radius: 6, y: 2)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(mode.chipLabel)
