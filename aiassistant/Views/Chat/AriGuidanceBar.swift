@@ -24,8 +24,8 @@ struct AriGuidanceBar: View {
         .padding(.vertical, 6)
         .background(
             Rectangle()
-                .fill(AppTheme.groupedBackground.opacity(0.92))
-                .overlay(Divider().opacity(0.7), alignment: .top)
+                .fill(AppTheme.appBackground.opacity(0.94))
+                .overlay(Divider().opacity(0.5), alignment: .top)
         )
         .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: ari.coachingActions.count)

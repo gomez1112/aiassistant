@@ -42,7 +42,7 @@ struct SubscriptionPaywallView: View {
                 .padding(.top, AppTheme.spacingLG)
                 .padding(.bottom, AppTheme.spacingXL)
             }
-            .background(AppTheme.appBackground)
+            .background(AppBackground())
             .navigationTitle("Upgrade")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)

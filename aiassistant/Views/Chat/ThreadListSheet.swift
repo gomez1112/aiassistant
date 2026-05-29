@@ -54,6 +54,8 @@ struct ThreadListSheet: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(AppBackground())
             .navigationTitle("Chats")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
@@ -92,7 +94,7 @@ struct ThreadListSheet: View {
                     if thread.pinned {
                         Image(systemName: "pin.fill")
                             .font(.system(size: 10))
-                            .foregroundStyle(AppTheme.highlight)
+                            .foregroundStyle(AppTheme.accent)
                     }
                 }
 
@@ -123,7 +125,7 @@ struct ThreadListSheet: View {
                     systemImage: thread.pinned ? "pin.slash" : "pin"
                 )
             }
-            .tint(AppTheme.highlight)
+            .tint(AppTheme.accent)
         }
     }
 }

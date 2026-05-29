@@ -97,6 +97,7 @@ struct LibraryView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .background(AppBackground())
             .navigationTitle("Library")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
@@ -121,7 +122,7 @@ struct LibraryView: View {
                 #endif
             }
             #if os(iOS)
-            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
+            .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             #endif
             .sheet(isPresented: $showAddSheet, onDismiss: refreshItems) {
@@ -269,7 +270,14 @@ struct LibraryItemRow: View {
                 .lineSpacing(2)
         }
         .padding(AppTheme.spacingMD)
-        .appSurface()
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                .fill(AppTheme.surfaceFill)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                .stroke(AppTheme.surfaceStroke, lineWidth: 0.7)
+        )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(item.kind.rawValue): \(item.title)")
         .accessibilityValue(accessibilityPreview)

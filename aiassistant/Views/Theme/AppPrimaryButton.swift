@@ -34,7 +34,11 @@ struct AppPrimaryButton: View {
                         .fill(AppTheme.brandGradient)
                         .opacity(isDisabled ? 0.5 : 1)
                 )
-                .shadow(color: AppTheme.accent.opacity(isDisabled ? 0 : 0.28), radius: 12, y: 5)
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(.white.opacity(isDisabled ? 0 : 0.16), lineWidth: 0.8)
+                )
+                .shadow(color: AppTheme.accentDeep.opacity(isDisabled ? 0 : 0.22), radius: 12, y: 5)
         }
         .buttonStyle(.plain)
         .contentShape(Capsule(style: .continuous))

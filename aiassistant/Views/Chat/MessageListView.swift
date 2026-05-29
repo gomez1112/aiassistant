@@ -202,9 +202,9 @@ struct MessageBubble: View {
 
             // Role label
             if !isUser {
-                Text(preferences.ariEnabled ? "Ari" : "Assistant")
+                Label(preferences.ariEnabled ? "Ari" : "Assistant", systemImage: "sparkle")
                     .font(.caption.bold())
-                    .foregroundStyle(AppTheme.accent.opacity(0.8))
+                    .foregroundStyle(AppTheme.accent)
                     .padding(.leading, 4)
             }
 
@@ -299,10 +299,11 @@ struct MessageBubble: View {
         let shape = RoundedRectangle(cornerRadius: AppTheme.radiusBubble, style: .continuous)
         if isUser {
             shape.fill(AppTheme.brandGradient)
-                .shadow(color: AppTheme.accent.opacity(0.22), radius: 8, y: 3)
+                .overlay(shape.stroke(.white.opacity(0.14), lineWidth: 0.8))
+                .shadow(color: AppTheme.accentDeep.opacity(0.18), radius: 10, y: 4)
         } else {
             shape.fill(AppTheme.surfaceFill)
-                .overlay(shape.stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
+                .overlay(shape.stroke(AppTheme.surfaceStrokeStrong, lineWidth: 0.6))
         }
     }
 
@@ -490,7 +491,7 @@ struct StreamingBubble: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(assistantName)
                 .font(.caption.bold())
-                .foregroundStyle(AppTheme.accent.opacity(0.8))
+                .foregroundStyle(AppTheme.accent)
                 .padding(.leading, 4)
 
             HStack(alignment: .bottom) {

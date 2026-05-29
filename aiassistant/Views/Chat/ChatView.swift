@@ -217,7 +217,7 @@ struct ChatView: View {
             .toolbar {
                 iosChatToolbar
             }
-            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
+            .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar(isComposerFocused ? .hidden : .visible, for: .tabBar))
         #elseif os(macOS)
@@ -275,7 +275,8 @@ struct ChatView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .safeAreaInset(edge: .bottom, spacing: 0) {
             bottomAccessory(usesCompactChrome: usesCompactChrome)
-        })
+        }
+        .background(AppBackground()))
     }
 
     private var selectedModeBinding: Binding<AssistantMode> {
@@ -374,10 +375,6 @@ struct ChatView: View {
                 ChatEmptyStateView(assistantName: assistantName)
                     .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
                     .frame(maxWidth: .infinity)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        isComposerFocused = false
-                    }
                     .accessibilityIdentifier("chat.emptyState")
             } else {
                 MessageListView(
@@ -419,10 +416,6 @@ struct ChatView: View {
             )
             .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
             .frame(maxWidth: .infinity)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                isComposerFocused = false
-            }
             .accessibilityIdentifier("chat.emptyState")
         }
     }
@@ -946,7 +939,7 @@ private struct UpgradeTeaserBanner: View {
             HStack(spacing: AppTheme.spacingSM) {
                 Image(systemName: isLimitClose ? "message.badge" : "sparkles")
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(AppTheme.highlight)
+                    .foregroundStyle(AppTheme.accent)
                     .frame(width: 20)
 
                 Text(isLimitClose ? "\(remainingFreeMessages) free messages left today" : "Start trial for unlimited chat")

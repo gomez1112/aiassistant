@@ -78,7 +78,7 @@ struct ModeChipBar: View {
                     .padding(.horizontal, 12)
                     .frame(height: AppTheme.minimumTapTarget)
                     .background(AppTheme.surfaceFill, in: Capsule())
-                    .overlay(Capsule().stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
+                    .overlay(Capsule().stroke(AppTheme.accent.opacity(0.22), lineWidth: 0.7))
             }
             .accessibilityLabel("Mode")
             .accessibilityValue(selectedMode.chipLabel)
@@ -133,19 +133,19 @@ struct ModeChip: View {
                 .background(
                     Capsule()
                         .fill(isSelected
-                            ? AnyShapeStyle(AppTheme.brandGradient)
+                            ? AnyShapeStyle(AppTheme.accent)
                             : AnyShapeStyle(AppTheme.surfaceFill)
                         )
                 )
                 .overlay(
                     Capsule()
                         .stroke(
-                            isSelected ? Color.clear : AppTheme.surfaceStroke,
-                            lineWidth: 0.5
+                            isSelected ? .white.opacity(0.18) : AppTheme.surfaceStroke,
+                            lineWidth: 0.7
                         )
                 )
                 .foregroundStyle(isSelected ? .white : .secondary)
-                .shadow(color: isSelected ? AppTheme.accent.opacity(0.25) : .clear, radius: 6, y: 2)
+                .shadow(color: isSelected ? AppTheme.accentDeep.opacity(0.18) : .clear, radius: 8, y: 3)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(mode.chipLabel)

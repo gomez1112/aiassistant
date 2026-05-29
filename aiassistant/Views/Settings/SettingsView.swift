@@ -38,10 +38,12 @@ struct SettingsView: View {
         NavigationStack {
             formContent
             .formStyle(.grouped)
+            .scrollContentBackground(.hidden)
+            .background(AppBackground())
             .navigationTitle("Settings")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
+            .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

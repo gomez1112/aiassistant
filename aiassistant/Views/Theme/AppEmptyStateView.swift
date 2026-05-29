@@ -30,16 +30,16 @@ struct AppEmptyStateView: View {
     var body: some View {
         VStack(spacing: AppTheme.spacingLG) {
             Image(systemName: systemImage)
-                .font(.system(size: 36, weight: .semibold))
+                .font(.system(size: 34, weight: .semibold))
                 .foregroundStyle(AppTheme.brandGradient)
-                .frame(width: 84, height: 84)
+                .frame(width: 82, height: 82)
                 .background(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
                         .fill(AppTheme.brandWash)
                 )
                 .overlay(
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .stroke(AppTheme.accent.opacity(0.18), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(AppTheme.accent.opacity(0.22), lineWidth: 1)
                 )
                 .accessibilityHidden(true)
 

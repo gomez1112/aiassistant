@@ -116,6 +116,7 @@ struct OutputsView: View {
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .background(AppBackground())
             .navigationTitle("Outputs")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
@@ -133,7 +134,7 @@ struct OutputsView: View {
             }
             #endif
             #if os(iOS)
-            .toolbarBackground(AppTheme.groupedBackground, for: .navigationBar)
+            .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             #endif
             #if !os(macOS)
@@ -309,7 +310,14 @@ struct ArtifactRow: View {
             }
         }
         .padding(AppTheme.spacingMD)
-        .appSurface()
+        .background(
+            RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                .fill(AppTheme.surfaceFill)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: AppTheme.radiusCard, style: .continuous)
+                .stroke(AppTheme.surfaceStroke, lineWidth: 0.7)
+        )
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(artifact.kind.rawValue): \(artifact.title)")
         .accessibilityValue(accessibilityPreview)
@@ -358,16 +366,16 @@ struct FilterChip: View {
                 .background(
                     Capsule(style: .continuous)
                         .fill(isSelected
-                            ? AnyShapeStyle(AppTheme.brandGradient)
+                            ? AnyShapeStyle(AppTheme.accent)
                             : AnyShapeStyle(AppTheme.surface)
                         )
                 )
                 .overlay(
                     Capsule(style: .continuous)
-                        .stroke(isSelected ? Color.clear : AppTheme.surfaceStroke, lineWidth: 0.5)
+                        .stroke(isSelected ? .white.opacity(0.18) : AppTheme.surfaceStroke, lineWidth: 0.7)
                 )
                 .foregroundStyle(isSelected ? .white : .secondary)
-                .shadow(color: isSelected ? AppTheme.accent.opacity(0.22) : .clear, radius: 5, y: 2)
+                .shadow(color: isSelected ? AppTheme.accentDeep.opacity(0.16) : .clear, radius: 8, y: 3)
         }
         .buttonStyle(.plain)
         .accessibilityValue(isSelected ? "Selected" : "Not selected")

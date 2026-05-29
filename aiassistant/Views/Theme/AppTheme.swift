@@ -12,41 +12,47 @@ import AppKit
 
 enum AppTheme {
     // MARK: - Brand Colors
-    //
-    // A single cohesive indigo→violet brand family. Everything tinted in the
-    // app derives from these, so accents read as one consistent identity.
 
-    static let accent = Color(red: 0.39, green: 0.34, blue: 0.92)        // indigo-violet
-    static let accentLight = Color(red: 0.56, green: 0.51, blue: 0.97)   // lighter violet
-    static let accentDeep = Color(red: 0.26, green: 0.21, blue: 0.62)    // deep violet for gradient depth
-    static let highlight = Color(red: 0.78, green: 0.36, blue: 0.86)     // violet-magenta companion
-    static let highlightSoft = Color(red: 0.93, green: 0.82, blue: 0.98) // soft violet wash
+    static let accent = Color(red: 0.06, green: 0.48, blue: 0.43)
+    static let accentLight = Color(red: 0.16, green: 0.66, blue: 0.59)
+    static let accentDeep = Color(red: 0.03, green: 0.25, blue: 0.24)
+    static let highlight = Color(red: 0.72, green: 0.39, blue: 0.20)
+    static let highlightSoft = Color(red: 0.96, green: 0.88, blue: 0.79)
     static let paywallTint = accent
-    static let deep = Color(red: 0.07, green: 0.06, blue: 0.15)
-    static let midground = Color(red: 0.17, green: 0.16, blue: 0.27)
-    static let petal = Color(red: 0.97, green: 0.97, blue: 1.0)
-    static let surface = Color.primary.opacity(0.045)
-    static let surfaceElevated = Color.primary.opacity(0.065)
-    static let surfaceStroke = Color.primary.opacity(0.09)
-    static let surfaceStrokeStrong = Color.primary.opacity(0.14)
+    static let deep = Color(red: 0.08, green: 0.09, blue: 0.09)
+    static let midground = Color(red: 0.19, green: 0.22, blue: 0.22)
+    static let petal = Color(red: 0.98, green: 0.98, blue: 0.96)
+    static let surface = Color.primary.opacity(0.035)
+    static let surfaceElevated = Color.primary.opacity(0.055)
+    static let surfaceStroke = Color.primary.opacity(0.10)
+    static let surfaceStrokeStrong = Color.primary.opacity(0.16)
     static let destructive = Color(red: 0.89, green: 0.26, blue: 0.33)
 
     // MARK: - Gradients
 
-    /// Primary brand gradient (indigo → violet-magenta). Used for primary
-    /// actions, the send button, selected chips, and user message bubbles.
     static var brandGradient: LinearGradient {
         LinearGradient(
-            colors: [accent, highlight],
+            colors: [accentDeep, accent],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
     }
 
-    /// Soft tinted wash used behind hero icons and feature art.
     static var brandWash: LinearGradient {
         LinearGradient(
-            colors: [accent.opacity(0.16), highlight.opacity(0.12)],
+            colors: [accent.opacity(0.14), highlight.opacity(0.10)],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+
+    static var backgroundWash: LinearGradient {
+        LinearGradient(
+            colors: [
+                groupedBackground,
+                accent.opacity(0.045),
+                highlight.opacity(0.035)
+            ],
             startPoint: .topLeading,
             endPoint: .bottomTrailing
         )
@@ -120,7 +126,7 @@ enum AppTheme {
 struct AppBackground: View {
     var body: some View {
         Rectangle()
-            .fill(AppTheme.groupedBackground)
+            .fill(AppTheme.backgroundWash)
             .ignoresSafeArea()
     }
 }
@@ -138,6 +144,7 @@ struct AppSurface: ViewModifier {
                     .fill(AppTheme.surfaceFill)
             )
             .overlay(surfaceStroke)
+            .shadow(color: Color.primary.opacity(0.035), radius: 14, y: 6)
     }
 
     private var surfaceStroke: some View {

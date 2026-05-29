@@ -39,7 +39,7 @@ struct ComposerBar: View {
                             .fill(AppTheme.surfaceFill)
                             .overlay(
                                 Circle()
-                                    .stroke(AppTheme.surfaceStrokeStrong, lineWidth: 0.7)
+                                    .stroke(AppTheme.surfaceStrokeStrong, lineWidth: 0.8)
                             )
                     )
             }
@@ -62,11 +62,12 @@ struct ComposerBar: View {
                             RoundedRectangle(cornerRadius: 20, style: .continuous)
                                 .stroke(
                                     isFocused
-                                        ? AppTheme.accent.opacity(0.7)
+                                        ? AppTheme.accent.opacity(0.8)
                                         : AppTheme.surfaceStroke,
                                     lineWidth: isFocused ? 1.2 : 0.5
                                 )
                         )
+                        .shadow(color: Color.primary.opacity(isFocused ? 0.06 : 0.025), radius: 10, y: 4)
                 )
                 .focused($isFocused)
                 .submitLabel(.send)
@@ -126,8 +127,8 @@ struct ComposerBar: View {
                                             )
                                     )
                                     .shadow(
-                                        color: (hasText || hasAttachment) ? AppTheme.accent.opacity(0.3) : .clear,
-                                        radius: 7, y: 3
+                                        color: (hasText || hasAttachment) ? AppTheme.accentDeep.opacity(0.24) : .clear,
+                                        radius: 10, y: 4
                                     )
                             )
                     }
@@ -145,8 +146,8 @@ struct ComposerBar: View {
         .padding(.bottom, 10)
         .background(
             Rectangle()
-                .fill(AppTheme.groupedBackground.opacity(0.92))
-                .overlay(Divider().opacity(0.7), alignment: .top)
+                .fill(AppTheme.appBackground.opacity(0.94))
+                .overlay(Divider().opacity(0.5), alignment: .top)
         )
         .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: isFocused)
         .accessibilityElement(children: .contain)

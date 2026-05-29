@@ -25,9 +25,9 @@ struct RootTabView: View {
 
                     selectedContent(for: preferences)
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(AppTheme.appBackground)
+                        .background(AppBackground())
                 }
-                .background(AppTheme.appBackground)
+                .background(AppBackground())
                 #else
                 TabView(selection: $selectedTab) {
                     Tab(AppTab.chat.title, systemImage: AppTab.chat.systemImage, value: AppTab.chat) {
@@ -46,7 +46,7 @@ struct RootTabView: View {
                     }
                 }
                 .tint(AppTheme.accent)
-                .toolbarBackground(AppTheme.groupedBackground, for: .tabBar)
+                .toolbarBackground(AppTheme.appBackground, for: .tabBar)
                 .toolbarBackground(.visible, for: .tabBar)
                 #endif
             } else {
@@ -109,7 +109,7 @@ private struct MacAppSidebar: View {
         .padding(.bottom, AppTheme.spacingLG)
         .frame(width: 188)
         .frame(maxHeight: .infinity, alignment: .top)
-        .background(AppTheme.macSidebarBackground)
+        .background(AppTheme.macSidebarBackground.opacity(0.94))
     }
 }
 
@@ -129,7 +129,11 @@ private struct MacSidebarTabButton: View {
                 .padding(.horizontal, AppTheme.spacingSM)
                 .background(
                     RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
-                        .fill(isSelected ? AppTheme.accent.opacity(0.12) : Color.clear)
+                        .fill(isSelected ? AppTheme.accent.opacity(0.11) : Color.clear)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
+                        .stroke(isSelected ? AppTheme.accent.opacity(0.18) : Color.clear, lineWidth: 0.7)
                 )
         }
         .buttonStyle(.plain)
