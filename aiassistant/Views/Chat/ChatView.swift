@@ -212,13 +212,7 @@ struct ChatView: View {
         #if os(iOS)
         return AnyView(content
             .padding(.horizontal, outerHorizontalPadding)
-            .navigationTitle(navigationTitleText)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                iosChatToolbar
-            }
-            .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbar(.hidden, for: .navigationBar)
             .toolbar(isComposerFocused ? .hidden : .visible, for: .tabBar))
         #elseif os(macOS)
         return AnyView(content
@@ -267,6 +261,7 @@ struct ChatView: View {
 
         return AnyView(VStack(spacing: 0) {
             macChatHeaderView
+            iosChatHeaderView(usesCompactChrome: usesCompactChrome)
             modeSelectorView(usesCompactChrome: usesCompactChrome)
             upgradeTeaserView(usesCompactChrome: usesCompactChrome)
             attachmentBannerView
@@ -308,6 +303,26 @@ struct ChatView: View {
             }
             .buttonStyle(.bordered)
         })
+        #else
+        return AnyView(EmptyView())
+        #endif
+    }
+
+    private func iosChatHeaderView(usesCompactChrome: Bool) -> AnyView {
+        #if os(iOS)
+        guard !usesCompactChrome else {
+            return AnyView(EmptyView())
+        }
+
+        return AnyView(ChatScreenHeader(
+            title: preferences.ariEnabled ? "Ari" : "Assistant",
+            subtitle: activeThread?.title ?? "Ready for a new conversation",
+            onThreads: presentThreadList,
+            onNewChat: createNewThread,
+            onSettings: openSettings
+        )
+        .frame(maxWidth: contentMaxWidth)
+        .frame(maxWidth: .infinity))
         #else
         return AnyView(EmptyView())
         #endif
@@ -382,7 +397,7 @@ struct ChatView: View {
                     preferences: preferences,
                     isGenerating: isGenerating,
                     isComposerFocused: isComposerFocused,
-                    usesCompactChrome: usesCompactChrome,
+                    usesCompactChrome: isCompactLayout || usesCompactChrome,
                     onSaveArtifact: { message, suggestion in
                         let _ = dataModel.saveArtifact(
                             from: suggestion,
@@ -426,7 +441,7 @@ struct ChatView: View {
             if shouldShowAriGuidance {
                 AriGuidanceBar(
                     ari: dataModel.ari,
-                    usesCompactChrome: usesCompactChrome,
+                    usesCompactChrome: isCompactLayout || usesCompactChrome,
                     onAction: handleAriAction
                 )
                 .frame(maxWidth: contentMaxWidth)
@@ -458,7 +473,7 @@ struct ChatView: View {
     }
 
     private func shouldCollapseChrome(isCompact: Bool) -> Bool {
-        isCompact && (isComposerFocused || hasActiveMessages || isGenerating)
+        isCompact && (isComposerFocused || isGenerating)
     }
 
     private func modeDisplayStyle(usesCompactChrome: Bool) -> ModeChipBar.DisplayStyle {
@@ -906,6 +921,77 @@ private enum ImportError: LocalizedError {
         case .fileTooLarge:
             "That file is too large. Choose a PDF or image under 20 MB."
         }
+    }
+}
+
+private struct ChatScreenHeader: View {
+    let title: String
+    let subtitle: String
+    let onThreads: () -> Void
+    let onNewChat: () -> Void
+    let onSettings: () -> Void
+
+    var body: some View {
+        HStack(spacing: AppTheme.spacingMD) {
+            AppIconBadge(systemImage: "sparkles", tint: AppTheme.accent, size: 40)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.title3)
+                    .bold()
+                    .foregroundStyle(.primary)
+
+                Text(subtitle)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: AppTheme.spacingSM)
+
+            HStack(spacing: AppTheme.spacingSM) {
+                ChatHeaderButton("Chats", systemImage: "line.3.horizontal", action: onThreads)
+                ChatHeaderButton("New chat", systemImage: "square.and.pencil", action: onNewChat)
+                ChatHeaderButton("Settings", systemImage: "gearshape", action: onSettings)
+            }
+        }
+        .padding(.horizontal, AppTheme.spacingLG)
+        .padding(.top, AppTheme.spacingSM)
+        .padding(.bottom, AppTheme.spacingMD)
+        .background(
+            Rectangle()
+                .fill(AppTheme.appBackground.opacity(0.94))
+                .overlay(Divider().opacity(0.45), alignment: .bottom)
+        )
+        .accessibilityElement(children: .contain)
+        .accessibilityIdentifier("chat.header")
+    }
+}
+
+private struct ChatHeaderButton: View {
+    let title: String
+    let systemImage: String
+    let action: () -> Void
+
+    init(_ title: String, systemImage: String, action: @escaping () -> Void) {
+        self.title = title
+        self.systemImage = systemImage
+        self.action = action
+    }
+
+    var body: some View {
+        Button(title, systemImage: systemImage, action: action)
+            .labelStyle(.iconOnly)
+            .font(.system(size: 15, weight: .semibold))
+            .foregroundStyle(AppTheme.accent)
+            .frame(width: 40, height: 40)
+            .background(
+                Circle()
+                    .fill(AppTheme.surfaceFill)
+                    .overlay(Circle().stroke(AppTheme.surfaceStroke, lineWidth: 0.7))
+            )
+            .buttonStyle(.plain)
+            .accessibilityLabel(title)
     }
 }
 

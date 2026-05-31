@@ -19,6 +19,12 @@ func normalizedDisplayText(_ rawText: String) -> String {
     )
 
     text = text.replacingOccurrences(
+        of: #"(?m)^#{1,6}\s+"#,
+        with: "",
+        options: .regularExpression
+    )
+
+    text = text.replacingOccurrences(
         of: #"\*\*([^*]+)\*\*"#,
         with: "$1",
         options: .regularExpression
@@ -210,15 +216,16 @@ struct MessageBubble: View {
 
             // Bubble
             HStack(alignment: .bottom, spacing: 0) {
-                if isUser { Spacer(minLength: 48) }
+                if isUser { Spacer(minLength: 54) }
 
                 messageText(message.text)
                     .font(.body)
                     .lineSpacing(4)
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
+                    .padding(.horizontal, isUser ? 14 : 18)
+                    .padding(.vertical, isUser ? 10 : 16)
                     .background(bubbleShape)
                     .foregroundStyle(isUser ? .white : .primary)
+                    .frame(maxWidth: isUser ? 360 : 680, alignment: isUser ? .trailing : .leading)
                     #if os(iOS)
                     .contentShape(.contextMenuPreview, RoundedRectangle(cornerRadius: AppTheme.radiusBubble, style: .continuous))
                     #endif
@@ -250,7 +257,7 @@ struct MessageBubble: View {
                     .accessibilityValue(accessibilitySummary(for: message.text))
                     .accessibilityIdentifier(isUser ? "chat.message.user" : "chat.message.assistant")
 
-                if !isUser { Spacer(minLength: 48) }
+                if !isUser { Spacer(minLength: 28) }
             }
 
             // Inline action bar for assistant messages
@@ -303,7 +310,7 @@ struct MessageBubble: View {
                 .shadow(color: AppTheme.accentDeep.opacity(0.18), radius: 10, y: 4)
         } else {
             shape.fill(AppTheme.surfaceFill)
-                .overlay(shape.stroke(AppTheme.surfaceStrokeStrong, lineWidth: 0.6))
+                .overlay(shape.stroke(AppTheme.surfaceStroke, lineWidth: 0.7))
         }
     }
 
