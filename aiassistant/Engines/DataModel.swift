@@ -63,6 +63,10 @@ final class DataModel {
             ? assistant.classifyIntent(text)
             : selectedMode
 
+        if let availabilityMessage = assistant.foundationModelUnavailableMessage() {
+            return .failed(availabilityMessage)
+        }
+
         let historyBeforeSend = thread.sortedMessages
 
         // 2. Create user message

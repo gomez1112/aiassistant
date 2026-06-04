@@ -15,12 +15,29 @@ struct OutputsView: View {
 
     @State private var searchText = ""
     @State private var filterKind: ArtifactKind?
-    @State private var artifacts: [Artifact] = []
-    @State private var totalArtifactCount = 0
     @State private var showPersistenceError = false
     #if !os(macOS)
     @State private var showSettings = false
     #endif
+
+    @Query(sort: \Artifact.updatedAt, order: .reverse)
+    private var allArtifacts: [Artifact]
+
+    private var artifacts: [Artifact] {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return allArtifacts.filter { artifact in
+            let matchesKind = filterKind.map { artifact.kind == $0 } ?? true
+            let matchesSearch = query.isEmpty ||
+                artifact.title.localizedStandardContains(query) ||
+                artifact.content.localizedStandardContains(query) ||
+                artifact.tagsRaw.localizedStandardContains(query)
+            return matchesKind && matchesSearch
+        }
+    }
+
+    private var totalArtifactCount: Int {
+        allArtifacts.count
+    }
 
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -102,7 +119,7 @@ struct OutputsView: View {
                             #endif
                         }
                         .navigationDestination(for: UUID.self) { id in
-                            if let artifact = artifacts.first(where: { $0.id == id }) {
+                            if let artifact = allArtifacts.first(where: { $0.id == id }) {
                                 ArtifactDetailView(artifact: artifact, preferences: preferences)
                             } else {
                                 ContentUnavailableView(
@@ -152,9 +169,6 @@ struct OutputsView: View {
             .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
                 showPersistenceError = newValue != nil
             }
-            .onAppear(perform: refreshArtifacts)
-            .onChange(of: searchText) { _, _ in refreshArtifacts() }
-            .onChange(of: filterKind) { _, _ in refreshArtifacts() }
         }
     }
 
@@ -184,54 +198,6 @@ struct OutputsView: View {
             modelContext.delete(artifacts[index])
         }
         dataModel.saveChanges(in: modelContext, source: "deleteOutput")
-        refreshArtifacts()
-    }
-
-    private func refreshArtifacts() {
-        do {
-            totalArtifactCount = try modelContext.fetchCount(FetchDescriptor<Artifact>())
-            artifacts = try modelContext.fetch(artifactFetchDescriptor())
-        } catch {
-            dataModel.persistenceErrorMessage = "Could not load outputs. \(error.localizedDescription)"
-        }
-    }
-
-    private func artifactFetchDescriptor() -> FetchDescriptor<Artifact> {
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        let sort = [SortDescriptor(\Artifact.updatedAt, order: .reverse)]
-
-        switch (filterKind?.rawValue, query.isEmpty) {
-        case (.some(let kindRaw), false):
-            return FetchDescriptor<Artifact>(
-                predicate: #Predicate<Artifact> { artifact in
-                    artifact.kindRaw == kindRaw &&
-                    (
-                        artifact.title.localizedStandardContains(query) ||
-                        artifact.content.localizedStandardContains(query) ||
-                        artifact.tagsRaw.localizedStandardContains(query)
-                    )
-                },
-                sortBy: sort
-            )
-        case (.some(let kindRaw), true):
-            return FetchDescriptor<Artifact>(
-                predicate: #Predicate<Artifact> { artifact in
-                    artifact.kindRaw == kindRaw
-                },
-                sortBy: sort
-            )
-        case (.none, false):
-            return FetchDescriptor<Artifact>(
-                predicate: #Predicate<Artifact> { artifact in
-                    artifact.title.localizedStandardContains(query) ||
-                    artifact.content.localizedStandardContains(query) ||
-                    artifact.tagsRaw.localizedStandardContains(query)
-                },
-                sortBy: sort
-            )
-        case (.none, true):
-            return FetchDescriptor<Artifact>(sortBy: sort)
-        }
     }
 }
 
