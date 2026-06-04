@@ -274,7 +274,7 @@ struct ChatView: View {
         .safeAreaInset(edge: .bottom, spacing: 0) {
             bottomAccessory(usesCompactChrome: usesCompactChrome)
         }
-        .background(AppBackground()))
+        .background(AppTheme.appBackground.ignoresSafeArea()))
     }
 
     private var selectedModeBinding: Binding<AssistantMode> {
@@ -961,11 +961,6 @@ private struct ChatScreenHeader: View {
         .padding(.horizontal, AppTheme.spacingLG)
         .padding(.top, AppTheme.spacingSM)
         .padding(.bottom, AppTheme.spacingMD)
-        .background(
-            Rectangle()
-                .fill(AppTheme.appBackground.opacity(0.94))
-                .overlay(Divider().opacity(0.45), alignment: .bottom)
-        )
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("chat.header")
     }
@@ -986,13 +981,9 @@ private struct ChatHeaderButton: View {
         Button(title, systemImage: systemImage, action: action)
             .labelStyle(.iconOnly)
             .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(AppTheme.accent)
+            .foregroundStyle(.primary)
             .frame(width: 40, height: 40)
-            .background(
-                Circle()
-                    .fill(AppTheme.surfaceFill)
-                    .overlay(Circle().stroke(AppTheme.surfaceStroke, lineWidth: 0.7))
-            )
+            .contentShape(.circle)
             .buttonStyle(.plain)
             .accessibilityLabel(title)
     }
