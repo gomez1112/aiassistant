@@ -812,11 +812,13 @@ struct QuizView: View {
         var correctLetter: String?
 
         func flush() {
-            if let q = currentQuestion, !currentOptions.isEmpty {
+            if let q = currentQuestion,
+               let correctLetter,
+               currentOptions.contains(where: { $0.letter == correctLetter }) {
                 questions.append(QuizQuestion(
                     question: q,
                     options: currentOptions.map { QuizOption(letter: $0.letter, text: $0.text) },
-                    correctLetter: correctLetter ?? currentOptions.first?.letter ?? "A"
+                    correctLetter: correctLetter
                 ))
             }
             currentQuestion = nil
@@ -853,7 +855,7 @@ struct QuizView: View {
                 for prefix in prefixes {
                     if lowered.hasPrefix(prefix) {
                         let val = String(cleaned.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
-                        correctLetter = String(val.prefix(1)).uppercased()
+                        correctLetter = Self.correctLetter(from: val)
                         break
                     }
                 }
@@ -861,6 +863,17 @@ struct QuizView: View {
         }
         flush()
         return questions
+    }
+
+    private static func correctLetter(from text: String) -> String? {
+        let uppercased = text.uppercased()
+        if let match = uppercased.range(of: #"(^|[^A-Z])([A-D])([\)\.\:]|\b)"#, options: .regularExpression) {
+            let matchedText = String(uppercased[match])
+            if let letter = matchedText.first(where: { "ABCD".contains($0) }) {
+                return String(letter)
+            }
+        }
+        return nil
     }
 }
 

@@ -16,12 +16,28 @@ struct LibraryView: View {
 
     @State private var showAddSheet = false
     @State private var searchText = ""
-    @State private var items: [LibraryItem] = []
-    @State private var totalItemCount = 0
     @State private var showPersistenceError = false
     #if !os(macOS)
     @State private var showSettings = false
     #endif
+
+    @Query(sort: \LibraryItem.updatedAt, order: .reverse)
+    private var allItems: [LibraryItem]
+
+    private var items: [LibraryItem] {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return allItems }
+
+        return allItems.filter { item in
+            item.title.localizedStandardContains(query) ||
+            item.rawText.localizedStandardContains(query) ||
+            (item.aiSummary?.localizedStandardContains(query) ?? false)
+        }
+    }
+
+    private var totalItemCount: Int {
+        allItems.count
+    }
 
     private var isSearching: Bool {
         !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -83,7 +99,7 @@ struct LibraryView: View {
                         .searchable(text: $searchText, prompt: "Search library")
                         #endif
                         .navigationDestination(for: UUID.self) { id in
-                            if let item = items.first(where: { $0.id == id }) {
+                            if let item = allItems.first(where: { $0.id == id }) {
                                 LibraryItemDetailView(item: item, preferences: preferences)
                             } else {
                                 ContentUnavailableView(
@@ -125,7 +141,7 @@ struct LibraryView: View {
             .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             #endif
-            .sheet(isPresented: $showAddSheet, onDismiss: refreshItems) {
+            .sheet(isPresented: $showAddSheet) {
                 AddLibraryItemSheet()
             }
             #if !os(macOS)
@@ -143,8 +159,6 @@ struct LibraryView: View {
             .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
                 showPersistenceError = newValue != nil
             }
-            .onAppear(perform: refreshItems)
-            .onChange(of: searchText) { _, _ in refreshItems() }
         }
     }
 
@@ -178,34 +192,6 @@ struct LibraryView: View {
             modelContext.delete(items[index])
         }
         dataModel.saveChanges(in: modelContext, source: "deleteLibraryItem")
-        refreshItems()
-    }
-
-    private func refreshItems() {
-        do {
-            totalItemCount = try modelContext.fetchCount(FetchDescriptor<LibraryItem>())
-            items = try modelContext.fetch(libraryFetchDescriptor())
-        } catch {
-            dataModel.persistenceErrorMessage = "Could not load library items. \(error.localizedDescription)"
-        }
-    }
-
-    private func libraryFetchDescriptor() -> FetchDescriptor<LibraryItem> {
-        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        let sort = [SortDescriptor(\LibraryItem.updatedAt, order: .reverse)]
-
-        guard !query.isEmpty else {
-            return FetchDescriptor<LibraryItem>(sortBy: sort)
-        }
-
-        return FetchDescriptor<LibraryItem>(
-            predicate: #Predicate<LibraryItem> { item in
-                item.title.localizedStandardContains(query) ||
-                item.rawText.localizedStandardContains(query) ||
-                (item.aiSummary?.localizedStandardContains(query) ?? false)
-            },
-            sortBy: sort
-        )
     }
 }
 

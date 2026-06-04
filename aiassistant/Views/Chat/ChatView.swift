@@ -103,7 +103,10 @@ struct ChatView: View {
         let startOfDay = Calendar.current.startOfDay(for: .now)
         let endOfDay = Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? .now
         return FetchDescriptor<Message>(predicate: #Predicate {
-            $0.roleRaw == "user" && $0.createdAt >= startOfDay && $0.createdAt < endOfDay
+            $0.roleRaw == "user" &&
+            $0.statusRaw == "completed" &&
+            $0.createdAt >= startOfDay &&
+            $0.createdAt < endOfDay
         })
     }
 

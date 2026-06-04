@@ -4,6 +4,8 @@ Snapshot date: 2026-06-04
 
 Build status: Bitrig build succeeded with no diagnostics. `xcodebuild test` was attempted on iPhone 17 / iOS 26.5; it built the test runner but hung during simulator test launch with repeated `DebuggerVersionStore.StoreError` messages, so the stuck `xcodebuild` process was stopped.
 
+Fix status: All findings in this report were addressed on 2026-06-04. Verification after the fix: Bitrig build succeeded, and `xcodebuild test -project aiassistant.xcodeproj -scheme aiassistant -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' -only-testing:aiassistantTests` passed 9/9 unit tests.
+
 ## 1. Executive Summary
 
 1. **[High] Failed AI generations consume the free daily quota** - §2.1 - `aiassistant/Engines/DataModel.swift:68`, `aiassistant/Views/Chat/ChatView.swift:552`
