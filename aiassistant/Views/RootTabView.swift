@@ -5,11 +5,13 @@
 
 import SwiftUI
 import SwiftData
+import StoreKit
 import FlexStore
 
 struct RootTabView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.requestReview) private var requestReview
 
     @State private var selectedTab: AppTab = .chat
     @State private var preferences: UserPreferences?
@@ -57,6 +59,15 @@ struct RootTabView: View {
         }
         .onAppear {
             preferences = dataModel.loadOrCreatePreferences(in: modelContext)
+        }
+        .onChange(of: dataModel.review.isReviewRequestPending) { _, isPending in
+            guard isPending else { return }
+            Task {
+                // Let the new study aid settle on screen before asking.
+                try? await Task.sleep(for: .seconds(0.7))
+                requestReview()
+                dataModel.review.reviewRequestPresented()
+            }
         }
     }
 
