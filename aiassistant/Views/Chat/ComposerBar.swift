@@ -23,7 +23,7 @@ struct ComposerBar: View {
     }
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 10) {
+        HStack(alignment: .bottom, spacing: AppTheme.spacingSM) {
             Button(action: onAttach) {
                 Label("Attach file", systemImage: "paperclip")
                     .labelStyle(.iconOnly)
@@ -31,17 +31,9 @@ struct ComposerBar: View {
                     .foregroundStyle(
                         isImportingAttachment
                             ? AnyShapeStyle(.tertiary)
-                            : AnyShapeStyle(AppTheme.accent)
+                            : AnyShapeStyle(.primary)
                     )
-                    .frame(width: 40, height: 40)
-                    .background(
-                        Circle()
-                            .fill(AppTheme.surfaceFill)
-                            .overlay(
-                                Circle()
-                                    .stroke(AppTheme.surfaceStrokeStrong, lineWidth: 0.8)
-                            )
-                    )
+                    .frame(width: 36, height: 36)
             }
             .buttonStyle(.plain)
             .disabled(isImportingAttachment || isGenerating)
@@ -53,22 +45,7 @@ struct ComposerBar: View {
             TextField("Ask \(assistantName)…", text: $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .lineLimit(1...6)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 9)
-                .background(
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .fill(AppTheme.surfaceFill)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                                .stroke(
-                                    isFocused
-                                        ? AppTheme.accent.opacity(0.8)
-                                        : AppTheme.surfaceStroke,
-                                    lineWidth: isFocused ? 1.2 : 0.5
-                                )
-                        )
-                        .shadow(color: Color.primary.opacity(isFocused ? 0.06 : 0.025), radius: 10, y: 4)
-                )
+                .padding(.vertical, 10)
                 .focused($isFocused)
                 .submitLabel(.send)
                 .onSubmit {
@@ -90,7 +67,7 @@ struct ComposerBar: View {
                             .labelStyle(.iconOnly)
                             .font(.system(size: 16, weight: .bold))
                             .foregroundStyle(.white)
-                            .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                            .frame(width: 36, height: 36)
                             .background(Circle().fill(AppTheme.destructive))
                     }
                     .buttonStyle(.plain)
@@ -107,28 +84,15 @@ struct ComposerBar: View {
                             .foregroundStyle(
                                 hasText || hasAttachment
                                     ? AnyShapeStyle(.white)
-                                    : AnyShapeStyle(.secondary)
+                                    : AnyShapeStyle(.tertiary)
                             )
-                            .frame(width: AppTheme.minimumTapTarget, height: AppTheme.minimumTapTarget)
+                            .frame(width: 36, height: 36)
                             .background(
                                 Circle()
                                     .fill(
                                         hasText || hasAttachment
-                                            ? AnyShapeStyle(AppTheme.brandGradient)
-                                            : AnyShapeStyle(AppTheme.surfaceFill)
-                                    )
-                                    .overlay(
-                                        Circle()
-                                            .stroke(
-                                                hasText || hasAttachment
-                                                    ? Color.clear
-                                                    : AppTheme.surfaceStrokeStrong,
-                                                lineWidth: 0.7
-                                            )
-                                    )
-                                    .shadow(
-                                        color: (hasText || hasAttachment) ? AppTheme.accentDeep.opacity(0.24) : .clear,
-                                        radius: 10, y: 4
+                                            ? AnyShapeStyle(AppTheme.deep)
+                                            : AnyShapeStyle(AppTheme.surfaceElevated)
                                     )
                             )
                     }
@@ -141,14 +105,19 @@ struct ComposerBar: View {
             .transition(.scale.combined(with: .opacity))
             .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: isGenerating)
         }
-        .padding(.horizontal, AppTheme.spacingLG)
-        .padding(.top, 8)
-        .padding(.bottom, 10)
+        .padding(.horizontal, AppTheme.spacingMD)
+        .padding(.vertical, AppTheme.spacingXS)
         .background(
-            Rectangle()
-                .fill(AppTheme.appBackground.opacity(0.94))
-                .overlay(Divider().opacity(0.5), alignment: .top)
+            Capsule(style: .continuous)
+                .fill(AppTheme.appBackground)
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(isFocused ? AppTheme.surfaceStrokeStrong : AppTheme.surfaceStroke, lineWidth: isFocused ? 1 : 0.7)
+                )
+                .shadow(color: Color.primary.opacity(isFocused ? 0.14 : 0.09), radius: isFocused ? 22 : 16, y: isFocused ? 10 : 7)
         )
+        .padding(.horizontal, AppTheme.spacingLG)
+        .padding(.vertical, AppTheme.spacingSM)
         .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: isFocused)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("chat.composer")
