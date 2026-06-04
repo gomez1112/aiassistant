@@ -127,14 +127,16 @@ struct AIAssistantApp: App {
 
     @ViewBuilder
     private var appRoot: some View {
-        RootTabView()
-            .environment(dataModel)
-            .environment(\.persistenceMode, persistenceMode)
-            .attachStoreKit(
-                manager: flexStore,
-                groupID: Monetization.subscriptionGroupID,
-                ids: Monetization.productIDs
-            )
+        WelcomeOfferGate {
+            RootTabView()
+        }
+        .environment(dataModel)
+        .environment(\.persistenceMode, persistenceMode)
+        .attachStoreKit(
+            manager: flexStore,
+            groupID: Monetization.subscriptionGroupID,
+            ids: Monetization.productIDs
+        )
     }
 
     #if os(macOS)

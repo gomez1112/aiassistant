@@ -16,6 +16,7 @@ final class DataModel {
 
     let assistant = AssistantEngine()
     let ari = AriEngine()
+    let review = ReviewController()
 
     // MARK: - Active State
 
@@ -166,6 +167,7 @@ final class DataModel {
         link(artifact, to: message)
 
         saveContext(context, source: "saveArtifact.suggestion")
+        registerReviewMilestone(for: artifact.kind)
         return artifact
     }
 
@@ -185,6 +187,7 @@ final class DataModel {
         )
         context.insert(artifact)
         saveContext(context, source: "saveArtifact.manual")
+        registerReviewMilestone(for: kind)
         return artifact
     }
 
@@ -231,9 +234,11 @@ final class DataModel {
             sourceMessageID: artifact.sourceMessageID
         )
         context.insert(newArtifact)
-        return saveContext(context, source: "transformArtifact")
-            ? .completed(newArtifact)
-            : .failed(persistenceErrorMessage ?? "Could not save the transformed output.")
+        guard saveContext(context, source: "transformArtifact") else {
+            return .failed(persistenceErrorMessage ?? "Could not save the transformed output.")
+        }
+        registerReviewMilestone(for: newKind)
+        return .completed(newArtifact)
     }
 
     // MARK: - Library
@@ -283,6 +288,13 @@ final class DataModel {
     @discardableResult
     func saveChanges(in context: ModelContext, source: String) -> Bool {
         saveContext(context, source: source)
+    }
+
+    /// Surfaces a review prompt after the user creates a study aid — a quiz or
+    /// flashcard deck — which is a natural moment of realized value.
+    private func registerReviewMilestone(for kind: ArtifactKind) {
+        guard kind == .quiz || kind == .flashcards else { return }
+        review.registerStudyArtifactCreated()
     }
 
     private func generateThreadTitle(from input: String) -> String {

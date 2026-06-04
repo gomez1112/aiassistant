@@ -131,6 +131,13 @@ struct SubscriptionPaywallContext: Equatable, Sendable {
         subtitle: "Start with the free trial, then keep unlimited conversations, uploads, and Output Studio when Ari becomes part of your workflow."
     )
 
+    static let welcome = SubscriptionPaywallContext(
+        icon: "sparkles",
+        eyebrow: "Welcome to Ari",
+        title: "Start with Ari+ free",
+        subtitle: "Begin a free trial for unlimited conversations, file uploads, and Output Studio. No pressure — tap Close to keep using Ari for free."
+    )
+
     static let settings = SubscriptionPaywallContext(
         icon: "sparkles",
         eyebrow: "Ari+",
