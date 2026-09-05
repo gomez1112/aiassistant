@@ -47,6 +47,7 @@ struct ChatView: View {
     @State private var outputStudioSourceMessage: Message?
     @State private var ariGuidanceThreadID: UUID?
     @State private var todaysUserMessageCount = 0
+    @State private var sendFeedbackTrigger = 0
     @FocusState private var isComposerFocused: Bool
 
     private var activeThread: Thread? { dataModel.activeThread }
@@ -132,6 +133,7 @@ struct ChatView: View {
             .sheet(isPresented: $showThreadList) {
                 ThreadListSheet(
                     threads: threads,
+                    activeThreadID: activeThread?.id,
                     onSelect: { thread in
                         selectThread(thread)
                         showThreadList = false
@@ -208,6 +210,7 @@ struct ChatView: View {
         .onChange(of: threads.map(\.id)) { _, _ in
             ensureActiveThreadSelection()
         }
+        .sensoryFeedback(.impact(weight: .light), trigger: sendFeedbackTrigger)
         )
     }
 
@@ -267,7 +270,6 @@ struct ChatView: View {
             iosChatHeaderView(usesCompactChrome: usesCompactChrome)
             modeSelectorView(usesCompactChrome: usesCompactChrome)
             upgradeTeaserView(usesCompactChrome: usesCompactChrome)
-            attachmentBannerView
             chatContentView(usesCompactChrome: usesCompactChrome)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -375,7 +377,7 @@ struct ChatView: View {
                 .accessibilityIdentifier("chat.attachment.remove")
             }
             .padding(.horizontal, AppTheme.spacingLG)
-            .padding(.bottom, 8)
+            .padding(.top, AppTheme.spacingSM)
             .frame(maxWidth: contentMaxWidth)
             .frame(maxWidth: .infinity))
         }
@@ -390,10 +392,7 @@ struct ChatView: View {
     private func chatContent(usesCompactChrome: Bool) -> some View {
         if let thread = activeThread {
             if thread.sortedMessages.isEmpty {
-                ChatEmptyStateView(assistantName: assistantName)
-                    .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
-                    .frame(maxWidth: .infinity)
-                    .accessibilityIdentifier("chat.emptyState")
+                starterView
             } else {
                 MessageListView(
                     thread: thread,
@@ -422,20 +421,25 @@ struct ChatView: View {
                         } else {
                             presentPaywall(context: .outputStudio)
                         }
-                    }
+                    },
+                    onRetry: retryMessage
                 )
                 .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
                 .frame(maxWidth: .infinity)
             }
         } else {
-            ChatEmptyStateView(
-                assistantName: assistantName,
-                onNewChat: createNewThread
-            )
-            .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
-            .frame(maxWidth: .infinity)
-            .accessibilityIdentifier("chat.emptyState")
+            starterView
         }
+    }
+
+    private var starterView: some View {
+        ChatStarterView(
+            assistantName: assistantName,
+            prompts: StarterPrompt.defaults,
+            onSelect: sendStarterPrompt
+        )
+        .frame(maxWidth: contentMaxWidth, maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
     }
 
     @ViewBuilder
@@ -451,6 +455,8 @@ struct ChatView: View {
                 .frame(maxWidth: .infinity)
             }
 
+            attachmentBannerView
+
             ComposerBar(
                 text: $composerText,
                 isFocused: $isComposerFocused,
@@ -464,6 +470,9 @@ struct ChatView: View {
             )
             .frame(maxWidth: contentMaxWidth)
             .frame(maxWidth: .infinity)
+        }
+        .background(alignment: .top) {
+            ComposerFadeBackground()
         }
     }
 
@@ -500,8 +509,25 @@ struct ChatView: View {
 
     private func createNewThread() {
         isComposerFocused = false
-        let thread = dataModel.createThread(in: modelContext)
+        let thread = dataModel.startNewThread(in: modelContext)
         selectThread(thread)
+    }
+
+    /// Sends a suggested starter prompt as if the person had typed it.
+    private func sendStarterPrompt(_ prompt: StarterPrompt) {
+        guard !isGenerating else { return }
+        composerText = prompt.message
+        sendMessage()
+    }
+
+    /// Removes a failed user message and sends its text again.
+    private func retryMessage(_ message: Message) {
+        guard !isGenerating, message.status == .failed else { return }
+        let text = message.text
+        modelContext.delete(message)
+        dataModel.saveChanges(in: modelContext, source: "retryMessage")
+        composerText = text
+        sendMessage()
     }
 
     private func selectThread(_ thread: Thread) {
@@ -583,6 +609,7 @@ struct ChatView: View {
         pendingAttachmentName = nil
         isGenerating = true
         ariGuidanceThreadID = thread.id
+        sendFeedbackTrigger += 1
 
         generationTask = Task {
             defer { isGenerating = false }
@@ -989,20 +1016,21 @@ private struct ChatHeaderButton: View {
     }
 }
 
-private struct ChatEmptyStateView: View {
-    let assistantName: String
-    var onNewChat: (() -> Void)?
-
+/// Soft fade behind the floating composer so scrolled messages dissolve into the background.
+private struct ComposerFadeBackground: View {
     var body: some View {
-        AppEmptyStateView(
-            title: "What can we finish today?",
-            systemImage: "sparkles",
-            description: "Ask \(assistantName) to draft, explain, plan, or turn a file into clear next steps.",
-            actionTitle: onNewChat == nil ? nil : "Start Chat",
-            actionSystemImage: onNewChat == nil ? nil : "square.and.pencil",
-            actionAccessibilityIdentifier: onNewChat == nil ? nil : "chat.emptyState.startChat",
-            action: onNewChat
+        LinearGradient(
+            stops: [
+                .init(color: AppTheme.appBackground.opacity(0), location: 0),
+                .init(color: AppTheme.appBackground.opacity(0.9), location: 0.3),
+                .init(color: AppTheme.appBackground, location: 1)
+            ],
+            startPoint: .top,
+            endPoint: .bottom
         )
+        .padding(.top, -AppTheme.spacingXL)
+        .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 }
 

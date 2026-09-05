@@ -1,7 +1,7 @@
 // Views/Chat/ComposerBar.swift
 // ai.assistant
 //
-// Bottom composer bar with text field, send button, and cancel for active generation.
+// Floating composer with attach, multi-line input, and send/stop controls.
 
 import SwiftUI
 
@@ -22,26 +22,29 @@ struct ComposerBar: View {
         !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
+    private var canSend: Bool {
+        (hasText || hasAttachment) && !isGenerating && !isImportingAttachment
+    }
+
     var body: some View {
         HStack(alignment: .bottom, spacing: AppTheme.spacingSM) {
-            Button(action: onAttach) {
-                Label("Attach file", systemImage: "paperclip")
-                    .labelStyle(.iconOnly)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(
-                        isImportingAttachment
-                            ? AnyShapeStyle(.tertiary)
-                            : AnyShapeStyle(.primary)
-                    )
-                    .frame(width: 36, height: 36)
-            }
-            .buttonStyle(.plain)
-            .disabled(isImportingAttachment || isGenerating)
-            .frame(minWidth: AppTheme.minimumTapTarget, minHeight: AppTheme.minimumTapTarget)
-            .accessibilityLabel("Attach file")
-            .accessibilityIdentifier("chat.composer.attach")
+            Button("Attach file", systemImage: "paperclip", action: onAttach)
+                .labelStyle(.iconOnly)
+                .font(.body.weight(.semibold))
+                .foregroundStyle(isImportingAttachment ? AnyShapeStyle(.tertiary) : AnyShapeStyle(.primary))
+                .frame(width: 36, height: 36)
+                .contentShape(.circle)
+                .buttonStyle(.plain)
+                .disabled(isImportingAttachment)
+                .overlay {
+                    if isImportingAttachment {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
+                }
+                .accessibilityLabel(isImportingAttachment ? "Importing attachment" : "Attach file")
+                .accessibilityIdentifier("chat.composer.attach")
 
-            // Text input
             TextField("Ask \(assistantName)…", text: $text, axis: .vertical)
                 .textFieldStyle(.plain)
                 .lineLimit(1...6)
@@ -49,61 +52,49 @@ struct ComposerBar: View {
                 .focused($isFocused)
                 .submitLabel(.send)
                 .onSubmit {
-                    guard !isGenerating, !isImportingAttachment else { return }
+                    guard canSend else { return }
                     onSend()
                 }
-                .disabled(isGenerating || isImportingAttachment)
                 .accessibilityLabel("Message input")
                 .accessibilityIdentifier("chat.composer.input")
 
-            // Send / Stop button
             Group {
                 if isGenerating {
-                    Button {
-                        isFocused = false
+                    Button("Stop generating", systemImage: "stop.fill") {
                         onCancel()
-                    } label: {
-                        Label("Stop generating", systemImage: "stop.circle.fill")
-                            .labelStyle(.iconOnly)
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(.white)
-                            .frame(width: 36, height: 36)
-                            .background(Circle().fill(AppTheme.destructive))
                     }
+                    .labelStyle(.iconOnly)
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 36, height: 36)
+                    .background(AppTheme.deep, in: .circle)
+                    .contentShape(.circle)
                     .buttonStyle(.plain)
                     .accessibilityLabel("Stop generating")
                     .accessibilityIdentifier("chat.composer.stop")
                 } else {
-                    Button {
+                    Button("Send message", systemImage: "arrow.up") {
                         isFocused = false
                         onSend()
-                    } label: {
-                        Label("Send message", systemImage: "arrow.up")
-                            .labelStyle(.iconOnly)
-                            .font(.system(size: 16, weight: .bold))
-                            .foregroundStyle(
-                                hasText || hasAttachment
-                                    ? AnyShapeStyle(.white)
-                                    : AnyShapeStyle(.tertiary)
-                            )
-                            .frame(width: 36, height: 36)
-                            .background(
-                                Circle()
-                                    .fill(
-                                        hasText || hasAttachment
-                                            ? AnyShapeStyle(AppTheme.deep)
-                                            : AnyShapeStyle(AppTheme.surfaceElevated)
-                                    )
-                            )
                     }
+                    .labelStyle(.iconOnly)
+                    .font(.body.weight(.bold))
+                    .foregroundStyle(canSend ? AnyShapeStyle(.white) : AnyShapeStyle(.tertiary))
+                    .frame(width: 36, height: 36)
+                    .background(
+                        canSend ? AnyShapeStyle(AppTheme.deep) : AnyShapeStyle(AppTheme.surfaceElevated),
+                        in: .circle
+                    )
+                    .contentShape(.circle)
                     .buttonStyle(.plain)
-                    .disabled(!hasText && !hasAttachment)
+                    .disabled(!canSend)
                     .accessibilityLabel("Send message")
                     .accessibilityIdentifier("chat.composer.send")
                 }
             }
             .transition(.scale.combined(with: .opacity))
             .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: isGenerating)
+            .animation(reduceMotion ? nil : .snappy(duration: 0.2), value: canSend)
         }
         .padding(.horizontal, AppTheme.spacingMD)
         .padding(.vertical, AppTheme.spacingXS)
@@ -121,31 +112,5 @@ struct ComposerBar: View {
         .animation(reduceMotion ? nil : .easeOut(duration: 0.15), value: isFocused)
         .accessibilityElement(children: .contain)
         .accessibilityIdentifier("chat.composer")
-    }
-}
-
-#Preview {
-    ComposerBarPreviewHost()
-}
-
-private struct ComposerBarPreviewHost: View {
-    @State private var text = "Hello"
-    @FocusState private var isFocused: Bool
-
-    var body: some View {
-        VStack {
-            Spacer()
-            ComposerBar(
-                text: $text,
-                isFocused: $isFocused,
-                isGenerating: false,
-                isImportingAttachment: false,
-                hasAttachment: false,
-                assistantName: "Assistant",
-                onSend: {},
-                onCancel: {},
-                onAttach: {}
-            )
-        }
     }
 }

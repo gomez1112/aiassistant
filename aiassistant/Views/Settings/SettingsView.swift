@@ -43,8 +43,6 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
@@ -98,12 +96,6 @@ struct SettingsView: View {
         Form {
             // MARK: - Ari Character
             Section {
-                AppBanner(
-                    systemImage: "sparkles",
-                    message: "Tune Ari’s personality, defaults, privacy notes, and subscription access from one place.",
-                    tint: AppTheme.accent
-                )
-
                 if let message = persistenceWarningMessage {
                     AppBanner(
                         systemImage: "icloud.slash",

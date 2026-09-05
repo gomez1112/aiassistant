@@ -48,8 +48,6 @@ struct RootTabView: View {
                     }
                 }
                 .tint(AppTheme.accent)
-                .toolbarBackground(AppTheme.appBackground, for: .tabBar)
-                .toolbarBackground(.visible, for: .tabBar)
                 #endif
             } else {
                 ProgressView("Loading…")

@@ -1,4 +1,5 @@
 import Foundation
+import SwiftData
 import Testing
 @testable import aiassistant
 
@@ -98,5 +99,32 @@ struct AIAssistantTests {
         #expect(SubscriptionPaywallContext.fileUpload.eyebrow == "File upload")
         #expect(SubscriptionPaywallContext.outputStudio.icon == "wand.and.stars")
         #expect(SubscriptionPaywallContext.librarySummary.title == "Summarize saved source material")
+    }
+    @Test func startNewThreadReusesEmptyActiveThread() throws {
+        let configuration = ModelConfiguration(isStoredInMemoryOnly: true, cloudKitDatabase: .none)
+        let container = try ModelContainer(
+            for: Thread.self, Message.self, Artifact.self, LibraryItem.self, UserPreferences.self,
+            configurations: configuration
+        )
+        let context = ModelContext(container)
+        let model = DataModel()
+
+        let first = model.startNewThread(in: context)
+        let second = model.startNewThread(in: context)
+        #expect(first.id == second.id)
+
+        context.insert(Message(thread: first, role: .user, text: "Hello"))
+        let third = model.startNewThread(in: context)
+        #expect(third.id != first.id)
+        #expect(model.activeThread?.id == third.id)
+    }
+
+    @Test func starterPromptsCoverDistinctModesWithUniqueMessages() {
+        let prompts = StarterPrompt.defaults
+
+        #expect(!prompts.isEmpty)
+        #expect(Set(prompts.map(\.message)).count == prompts.count)
+        #expect(Set(prompts.map(\.mode)).count == prompts.count)
+        #expect(prompts.allSatisfy { !$0.title.isEmpty && !$0.systemImage.isEmpty })
     }
 }

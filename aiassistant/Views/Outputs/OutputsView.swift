@@ -67,7 +67,7 @@ struct OutputsView: View {
                     } else {
                         VStack(spacing: 0) {
                             // Filter chips
-                            ScrollView(.horizontal, showsIndicators: false) {
+                            ScrollView(.horizontal) {
                                 HStack(spacing: 6) {
                                     FilterChip(
                                         label: "All",
@@ -87,6 +87,7 @@ struct OutputsView: View {
                                 .padding(.horizontal, AppTheme.spacingLG)
                                 .padding(.vertical, 10)
                             }
+                            .scrollIndicators(.hidden)
 
                             Group {
                                 if artifacts.isEmpty {
@@ -98,6 +99,19 @@ struct OutputsView: View {
                                         ForEach(artifacts, id: \.id) { artifact in
                                             NavigationLink(value: artifact.id) {
                                                 ArtifactRow(artifact: artifact)
+                                            }
+                                            .contextMenu {
+                                                Button("Copy", systemImage: "doc.on.doc") {
+                                                    Clipboard.copy(artifact.content)
+                                                }
+                                                Button("Delete", systemImage: "trash", role: .destructive) {
+                                                    deleteArtifact(artifact)
+                                                }
+                                            }
+                                            .swipeActions(edge: .trailing) {
+                                                Button("Delete", systemImage: "trash", role: .destructive) {
+                                                    deleteArtifact(artifact)
+                                                }
                                             }
                                             #if os(macOS)
                                             .listRowBackground(Color.clear)
@@ -150,10 +164,6 @@ struct OutputsView: View {
                 }
             }
             #endif
-            #if os(iOS)
-            .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            #endif
             #if !os(macOS)
             .sheet(isPresented: $showSettings) {
                 SettingsView(preferences: preferences)
@@ -197,6 +207,11 @@ struct OutputsView: View {
         for index in offsets {
             modelContext.delete(artifacts[index])
         }
+        dataModel.saveChanges(in: modelContext, source: "deleteOutput")
+    }
+
+    private func deleteArtifact(_ artifact: Artifact) {
+        modelContext.delete(artifact)
         dataModel.saveChanges(in: modelContext, source: "deleteOutput")
     }
 }

@@ -35,6 +35,16 @@ final class DataModel {
         return thread
     }
 
+    /// Starts a fresh conversation, reusing the active thread when it has no messages yet
+    /// so the thread list does not fill up with empty chats.
+    @discardableResult
+    func startNewThread(in context: ModelContext) -> Thread {
+        if let activeThread, activeThread.sortedMessages.isEmpty {
+            return activeThread
+        }
+        return createThread(in: context)
+    }
+
     func deleteThread(_ thread: Thread, in context: ModelContext) {
         if activeThread?.id == thread.id {
             activeThread = nil

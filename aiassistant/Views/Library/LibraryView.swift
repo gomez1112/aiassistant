@@ -80,6 +80,19 @@ struct LibraryView: View {
                                         NavigationLink(value: item.id) {
                                             LibraryItemRow(item: item)
                                         }
+                                        .contextMenu {
+                                            Button("Copy", systemImage: "doc.on.doc") {
+                                                Clipboard.copy(item.rawText)
+                                            }
+                                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                                deleteItem(item)
+                                            }
+                                        }
+                                        .swipeActions(edge: .trailing) {
+                                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                                deleteItem(item)
+                                            }
+                                        }
                                         #if os(macOS)
                                         .listRowBackground(Color.clear)
                                         .listRowInsets(EdgeInsets(top: 2, leading: 18, bottom: 2, trailing: 18))
@@ -137,10 +150,6 @@ struct LibraryView: View {
                 }
                 #endif
             }
-            #if os(iOS)
-            .toolbarBackground(AppTheme.appBackground, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            #endif
             .sheet(isPresented: $showAddSheet) {
                 AddLibraryItemSheet()
             }
@@ -191,6 +200,11 @@ struct LibraryView: View {
         for index in offsets {
             modelContext.delete(items[index])
         }
+        dataModel.saveChanges(in: modelContext, source: "deleteLibraryItem")
+    }
+
+    private func deleteItem(_ item: LibraryItem) {
+        modelContext.delete(item)
         dataModel.saveChanges(in: modelContext, source: "deleteLibraryItem")
     }
 }
