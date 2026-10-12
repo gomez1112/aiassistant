@@ -1,6 +1,12 @@
 {
   "version": "1.2",
   "build": "7",
+  "buildPurpose": "source/capture",
+  "distributionBuilds": {
+    "iOS": "2",
+    "macOS": "10"
+  },
+  "submissionReport": "submission.json",
   "appID": "6759457807",
   "locale": "en-US",
   "verifiedAt": "2026-10-12",
@@ -15,7 +21,9 @@
       "url": "https://apps.apple.com/us/app/ai-assistant-ai-chat/id6759457807?ppid=8dbf8612-edb1-4cef-9a1a-bce8ca5090dc",
       "versionID": "4750177b-e13d-41ab-9ecb-71557fd3f9e7",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "promotionalText": "Find the words you meant. Draft emails, shape rough ideas, and keep your best writing ready to reuse with Ari."
+      "promotionalText": "Find the words you meant. Draft emails, shape rough ideas, and keep your best writing ready to reuse with Ari.",
+      "state": "WAITING_FOR_REVIEW",
+      "submissionID": "3a60f906-b68d-4b21-93b9-f10204998d13"
     },
     {
       "id": "f72eeae5-630c-4f68-a1d5-6cf2a12bc492",
@@ -23,7 +31,9 @@
       "url": "https://apps.apple.com/us/app/ai-assistant-ai-chat/id6759457807?ppid=f72eeae5-630c-4f68-a1d5-6cf2a12bc492",
       "versionID": "2bfc1c85-485c-4040-85f5-361c3250aafa",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "promotionalText": "Make learning stick. Bring your notes, revisit the essentials, and practice with flashcards you can flip and keep."
+      "promotionalText": "Make learning stick. Bring your notes, revisit the essentials, and practice with flashcards you can flip and keep.",
+      "state": "WAITING_FOR_REVIEW",
+      "submissionID": "3a60f906-b68d-4b21-93b9-f10204998d13"
     },
     {
       "id": "36b44e77-6371-4443-96e0-309ca34f727d",
@@ -31,12 +41,14 @@
       "url": "https://apps.apple.com/us/app/ai-assistant-ai-chat/id6759457807?ppid=36b44e77-6371-4443-96e0-309ca34f727d",
       "versionID": "7244ea46-13ea-4129-9bf7-6550cb624a11",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "promotionalText": "Less scattered, more sorted. Turn a busy week into a clear plan, keep useful checklists, and take the next step with Ari."
+      "promotionalText": "Less scattered, more sorted. Turn a busy week into a clear plan, keep useful checklists, and take the next step with Ari.",
+      "state": "WAITING_FOR_REVIEW",
+      "submissionID": "3a60f906-b68d-4b21-93b9-f10204998d13"
     }
   ],
-  "submittedForReview": false,
+  "submittedForReview": true,
   "campaign": "A little help. A lot more possible.",
-  "status": "verified-drafts",
+  "status": "waiting-for-review",
   "assets": [
     {
       "key": "default-header",
@@ -1559,6 +1571,6 @@
     "errors": [],
     "orderedScreenshotGroups": 13
   },
-  "localListingRefreshStatus": "refreshed",
+  "localListingRefreshStatus": "refreshed; queued privacy URL retained locally because the native refresh selects the published app-info record",
   "replacementApprovedAt": "2026-10-12"
 }

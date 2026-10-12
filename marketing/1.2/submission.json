@@ -1,0 +1,100 @@
+{
+  "appID": "6759457807",
+  "bundleID": "com.transfinite.aiassistant",
+  "version": "1.2",
+  "verifiedAt": "2026-10-12 20:20:57 UTC",
+  "platforms": {
+    "iOS": {
+      "versionID": "fde0ad80-8012-4ff0-b7ca-071d46dea6b5",
+      "buildID": "679d351b-712a-4c41-8376-e7ffcfcdd02b",
+      "buildNumber": "2",
+      "processingState": "VALID",
+      "state": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "submissionID": "3a60f906-b68d-4b21-93b9-f10204998d13",
+      "submittedDate": "2026-10-12T20:18:39.15Z",
+      "reviewStatusURL": "https://appstoreconnect.apple.com/apps/6759457807/distribution/reviewsubmissions/details/3a60f906-b68d-4b21-93b9-f10204998d13"
+    },
+    "macOS": {
+      "versionID": "63c200be-0f72-4100-8fb0-630fe7aab642",
+      "buildID": "ced9e253-e7e1-483a-b497-25033d75c7ed",
+      "buildNumber": "10",
+      "processingState": "VALID",
+      "state": "WAITING_FOR_REVIEW",
+      "releaseType": "AFTER_APPROVAL",
+      "submissionID": "af107364-d527-40c1-a1ee-e27864a9d3eb",
+      "submittedDate": "2026-10-12T20:19:14.494Z",
+      "reviewStatusURL": "https://appstoreconnect.apple.com/apps/6759457807/distribution/reviewsubmissions/details/af107364-d527-40c1-a1ee-e27864a9d3eb"
+    }
+  },
+  "customPages": [
+    {
+      "versionID": "2bfc1c85-485c-4040-85f5-361c3250aafa",
+      "state": "WAITING_FOR_REVIEW",
+      "submissionID": "3a60f906-b68d-4b21-93b9-f10204998d13",
+      "name": "Study with Ari"
+    },
+    {
+      "versionID": "4750177b-e13d-41ab-9ecb-71557fd3f9e7",
+      "state": "WAITING_FOR_REVIEW",
+      "submissionID": "3a60f906-b68d-4b21-93b9-f10204998d13",
+      "name": "Writing with Ari"
+    },
+    {
+      "versionID": "7244ea46-13ea-4129-9bf7-6550cb624a11",
+      "state": "WAITING_FOR_REVIEW",
+      "submissionID": "3a60f906-b68d-4b21-93b9-f10204998d13",
+      "name": "Plan with Ari"
+    }
+  ],
+  "contacts": {
+    "supportURL": "https://apps.transfinite.us/support",
+    "privacyPolicyURL": "https://apps.transfinite.us/ai-assistant/privacy-policy",
+    "reviewEmail": "transfinite@transfinite.us",
+    "reviewPhone": "+19143158248",
+    "supportLocalizationsVerified": {
+      "iOS": 11,
+      "macOS": 11
+    },
+    "privacyLocalizationsVerified": 11,
+    "publicPagesHTTPStatus": 200,
+    "inAppPrivacyLinkUpdated": true
+  },
+  "supersededBuilds": {
+    "iOS": "1",
+    "macOS": "9",
+    "reason": "Replaced before final review to include the new in-app privacy link.",
+    "withdrawnMacSubmissionID": "1ea5e1a8-3f4c-4691-841b-fc3c13e25803"
+  },
+  "validation": {
+    "updatedDistributionUploadsCompleted": true,
+    "appleProcessing": "VALID on both platforms",
+    "usesNonExemptEncryption": false,
+    "unitTests": "Earlier verification: 22 unit tests and 2 UI regressions passed on iPhone 18 Pro / iOS 27.0. Not repeated for the URL-only code change.",
+    "livePCCRequestVerified": false,
+    "twoDeviceCloudKitSyncVerified": false,
+    "localListingValidation": {
+      "status": "invalid",
+      "preExistingErrors": [
+        "Approved lifetime en-US purchase description is 46 characters; Bitrig limit is 45.",
+        "Approved weekly en-US subscription description is 46 characters; Bitrig limit is 45."
+      ],
+      "newContactFieldErrors": false
+    }
+  },
+  "privacyWebsiteFollowUp": {
+    "websiteEdited": false,
+    "currentPolicyDescribesOnDeviceAIOnly": true,
+    "proposedDisclosure": "privacy-disclosure.md"
+  },
+  "listingSync": {
+    "refreshStatus": "refreshed",
+    "versionContactsSynchronized": true,
+    "queuedAppInfoID": "3e76cfba-f21e-4e3c-8203-0e12fe7386cc",
+    "publishedAppInfoID": "15c1df34-b62a-4876-a0d1-ead3f0e574f1",
+    "publishedPrivacyUpdateRejected": "ENTITY_ERROR.ATTRIBUTE.INVALID.INVALID_STATE",
+    "localPrivacyFiles": "New URL retained as desired state; native refresh currently selects the published record.",
+    "lockEditedByHand": false,
+    "reconcileAfterApproval": true
+  }
+}

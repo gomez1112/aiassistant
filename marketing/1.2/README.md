@@ -2,7 +2,7 @@
 
 The current [redesigned campaign](redesign/README.md) uses large benefit headlines, photographic device compositions with Dynamic Island, coordinated ink/pastel colors, and actual app screens. It replaces the first media set after the user's explicit approval.
 
-Created for app `6759457807`, bundle `com.transfinite.aiassistant`, version **1.2**, build **7**. Both platform listings and the writing/studying/planning custom pages remain drafts.
+Created for app `6759457807`, bundle `com.transfinite.aiassistant`, version **1.2**. Media was captured from source build **7**. The submitted distribution builds are **iOS 2** and **macOS 10**. Both app versions and the writing/studying/planning custom pages are **WAITING_FOR_REVIEW** as verified on October 12, 2026. [Submission records](submission.json) contain the build IDs, review links, and verified contact details.
 
 ## Current campaign
 
@@ -27,7 +27,7 @@ Each page has fresh promotional copy and its own leading screenshot, preview sto
 - [Study with Ari](https://apps.apple.com/us/app/ai-assistant-ai-chat/id6759457807?ppid=f72eeae5-630c-4f68-a1d5-6cf2a12bc492)
 - [Plan with Ari](https://apps.apple.com/us/app/ai-assistant-ai-chat/id6759457807?ppid=36b44e77-6371-4443-96e0-309ca34f727d)
 
-These are drafts; their links become usable when Apple approves the pages. Only English media was replaced. Other existing localized screenshot sets were preserved. Existing release notes and published promotional text remain available in all supported listing languages.
+All three pages were included in the iOS 1.2 review submission. Their links become usable when Apple approves the pages. Only English media was replaced. Other existing localized screenshot sets were preserved. Existing release notes and published promotional text remain available in all supported listing languages.
 
 ## Capture and validation
 
@@ -39,6 +39,12 @@ The prior app verification remains recorded in [release readiness](../../RELEASE
 
 ## Release and listing limitations
 
-No app binary was uploaded, no page/version was submitted for review, and no release was published. [Release readiness](../../RELEASE_READINESS.md) records the verified production CloudKit schema and remaining real-device PCC/sync checks.
+Both distribution builds uploaded successfully and passed Apple's processing. iOS 1.2 build 2 and macOS 1.2 build 10 are waiting for review. The first Mac submission using build 9 was withdrawn after the user supplied the new privacy URL; replacement binaries include the new in-app privacy link. All three custom pages are waiting for review with the iOS submission. The existing `AFTER_APPROVAL` setting will publish each update after Apple approves it; this work has not itself published a release.
+
+The support URL is `https://apps.transfinite.us/support`, the privacy URL is `https://apps.transfinite.us/ai-assistant/privacy-policy`, and the review contact is `transfinite@transfinite.us`, `+19143158248`. Support URLs were verified across 11 localizations per platform, the privacy URL across all 11 app-info localizations, and the contact fields on both review records. Both public pages returned HTTP 200. Settings and the subscription paywall share the updated in-app privacy URL.
+
+The website still describes AI as on-device only. [Proposed privacy-page wording](privacy-disclosure.md) describes version 1.2's optional PCC processing; the website itself was not changed. [Release readiness](../../RELEASE_READINESS.md) records the verified production CloudKit schema and remaining real-device PCC/sync checks.
+
+The final native refresh synchronized the version listing and review contacts, but selected the published app-info record instead of the queued 1.2 app-info record. Apple rejected a change to the published record's privacy URL with `ENTITY_ERROR.ATTRIBUTE.INVALID.INVALID_STATE`. The queued record's 11 privacy URLs were successfully changed and verified before submission. Local app-info files retain the new URL as the desired state; Bitrig's managed lock was not edited by hand and still reflects the published record. A full refresh before approval can restore the old privacy URL locally. Refresh after approval to reconcile that record.
 
 Bitrig's listing updater created the two 1.2 drafts, then failed because Apple had already copied their review-details records. Metadata was completed with the API and verified. After explicit approval, a full refresh reconciled the native listing files and Bitrig-managed sync records with the uploaded drafts. Two pre-existing, approved purchase descriptions have 46 characters and trigger Bitrig's 45-character local validator. Apple rejects changes to those active localization records with `ENTITY_ERROR.ATTRIBUTE.UNMODIFIABLE`; the approved product text was preserved. This local validation issue does not prevent the successfully uploaded media, but the native listing updater remains blocked until that approved-record mismatch is resolved.

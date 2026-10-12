@@ -2598,10 +2598,10 @@
     },
     "appStoreReviewDetail:IOS:1.2": {
       "fields": {
-        "contactEmail": "gerardgomez11@outlook.com",
+        "contactEmail": "transfinite@transfinite.us",
         "contactFirstName": "Gerard",
         "contactLastName": "Gomez",
-        "contactPhone": "+16469388594",
+        "contactPhone": "+19143158248",
         "demoAccountRequired": false,
         "notes": "ai.assistant is an on-device AI assistant that helps users chat in modes (Write, Summarize, Explain, Plan, Brainstorm), optionally import a PDF/image to extract text, and save responses as “Outputs” (Artifacts). Content is stored on-device with optional iCloud sync via CloudKit.\nAccount / login\nNo account or login is required.\nHow to test core features\nLaunch the app → complete onboarding (if shown).\nGo to Chat tab.\nSelect a mode (top chips): Write / Summarize / Explain / Plan / Brainstorm.\nSend a message (example prompts):\n“Write a professional email asking for a meeting next week.”\n“Summarize this paragraph: …”\n“Explain compound interest step-by-step.”\n“Create a weekly workout plan for beginners.”"
       },
@@ -2610,10 +2610,10 @@
     },
     "appStoreReviewDetail:MAC_OS:1.2": {
       "fields": {
-        "contactEmail": "gerardgomez11@outlook.com",
+        "contactEmail": "transfinite@transfinite.us",
         "contactFirstName": "Gerard",
         "contactLastName": "Gomez",
-        "contactPhone": "+16469388594",
+        "contactPhone": "+19143158248",
         "demoAccountRequired": false,
         "notes": "ai.assistant is an on-device AI assistant that helps users chat in modes (Write, Summarize, Explain, Plan, Brainstorm), optionally import a PDF/image to extract text, and save responses as “Outputs” (Artifacts). Content is stored on-device with optional iCloud sync via CloudKit.\nAccount / login\nNo account or login is required.\nHow to test core features\nLaunch the app → complete onboarding (if shown).\nGo to Chat tab.\nSelect a mode (top chips): Write / Summarize / Explain / Plan / Brainstorm.\nSend a message (example prompts):\n“Write a professional email asking for a meeting next week.”\n“Summarize this paragraph: …”\n“Explain compound interest step-by-step.”\n“Create a weekly workout plan for beginners.”"
       },
@@ -2644,7 +2644,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "اختر الذكاء الاصطناعي على الجهاز أو Private Cloud Compute من Apple للدردشات والتحويلات والملخصات.\nمساحة عمل تتكيف مع iPhone وiPhone Duo وiPad وMac.\nتحسينات في الموثوقية وإلغاء المهام واستيراد الملفات وإمكانية الوصول مع النص الكبير."
       },
       "id": "e60f5ded-b421-4302-91f4-3b67ae634fff",
@@ -2656,7 +2656,7 @@
         "keywords": "chatgpt,chatbot,coach,brainstorming,writing,essay,homework,notes,study,planner, quiz",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Choose on-device AI or Apple’s Private Cloud Compute for chats, transformations, and summaries.\nA workspace that adapts across iPhone, iPhone Duo, iPad, and Mac.\nImproved reliability, cancellation, file imports, and larger-text accessibility."
       },
       "id": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
@@ -2667,7 +2667,7 @@
         "description": "Descubre ai.assistant, un asistente de IA privado para tu dispositivo que te ayuda a pensar, escribir y organizarte con claridad. Redacta correos electrónicos, resume artículos, explica temas complejos, planifica proyectos y genera ideas, todo con una experiencia impecable al estilo Apple en iPhone, iPad y Mac.\n\nConcéntrate en tus propios modos de chat.\nElige cómo quieres que te ayude el asistente para obtener exactamente lo que necesitas, más rápido:\n\nEscribe: Convierte tus ideas en texto claro.\n\n• Redacta correos electrónicos, ensayos y entradas de blog.\n• Reescribe mensajes para que sean más breves, amigables o profesionales.\n• Perfecciona la redacción sin perder tu estilo.\n\nResume: Ve al grano en segundos.\n\n• Convierte artículos o notas largos en conclusiones clave.\n• Genera resúmenes breves que puedes pegar en mensajes o documentos.\n• Compara varios resúmenes para decidir qué es importante.\n\nExplica: Comprende cualquier cosa con mayor claridad. • Desglosa textos, conceptos o instrucciones densos.\n• Solicita explicaciones paso a paso y analogías.\n• Convierte explicaciones confusas en lenguaje sencillo.\n\nPlanifica: Convierte objetivos en pasos concretos.\n• Crea listas de verificación para viajes, eventos o recados.\n• Planifica horarios de estudio o cronogramas de proyectos.\n• Convierte ideas vagas en planes de acción ordenados.\n\nLluvia de ideas: Explora opciones antes de decidir.\n• Genera ideas para nombres, temas, características o regalos.\n• Obtén enfoques alternativos para un problema.\n• Pregunta por los pros y los contras para aclarar tu razonamiento.\n\nO permanece en modo general y deja que ai.assistant se adapte a cualquier tarea a medida que evoluciona la conversación.\n\nImporta archivos PDF e imágenes para una comprensión instantánea.\n\nTrae archivos PDF o imágenes y deja que ai.assistant extraiga el texto para que puedas trabajar con él directamente. • Resalte los puntos principales de un PDF de 20 páginas con viñetas.\n• Solicite una explicación sencilla de un trabajo de investigación.\n• Convierta notas escaneadas o capturas de pantalla en texto limpio y editable.\n(PDF de hasta 50 páginas).\n\nConvierta excelentes respuestas en resultados reutilizables.\nCualquier respuesta que desee puede convertirse en un resultado (artefacto) que puede reutilizar más adelante.\n• Guarde borradores, resúmenes, planes, listas de verificación, cuestionarios, tarjetas didácticas y más.\n• Organice por tipo, tema o proyecto.\n• Busque, etiquete y filtre para encontrar exactamente lo que necesita.\n• Copie y reutilice resultados en diferentes aplicaciones en segundos.\n\nOutput Studio: reformule las respuestas con un solo toque.\nTransforme rápidamente cualquier respuesta a un nuevo formato sin tener que reescribirla desde cero. • Más corto: condensa una página en pocas frases concisas.\n• Más formal: convierte notas informales en texto profesional.\n• Viñetas: convierte párrafos en listas fáciles de leer.\n• Cuestionario: convierte un tema en preguntas de práctica.\n• Tarjetas de memoria: crea tarjetas con repetición espaciada a partir de puntos clave.\n\nPrevisualiza el resultado y guárdalo en Resultados para más tarde.\n\nCrea una biblioteca personal que realmente puedas usar.\nAlmacena notas, fragmentos y texto pegado como tu propia biblioteca de referencia.\n\nCaptura investigaciones, notas de reuniones o pasajes clave.\n• Genera resúmenes rápidos de IA para que cada elemento sea fácil de leer.\n• Vuelve más tarde, busca por palabra clave y recuerda al instante lo importante.\n\nActiva Ari para añadir una capa ligera de carácter para el coaching y la estructura. Recibe consejos de apoyo y calma cuando te sientas bloqueado.\n• Usa acciones con un solo toque como Simplificar, Crear lista de verificación o Refinar tono.\n• Ajusta la expresividad de Ari para que se adapte a tu estilo.",
         "keywords": "creatividad,texto,automatización,redacción,inspiración,diseño,eficiencia,escritura,conceptos",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Elige la IA en el dispositivo o Private Cloud Compute de Apple para chats, transformaciones y resúmenes.\nUn espacio de trabajo adaptable a iPhone, iPhone Duo, iPad y Mac.\nMejoras de fiabilidad, cancelación, importación de archivos y accesibilidad con texto grande."
       },
       "id": "6a114e62-0286-4227-96f7-04957a7b2477",
@@ -2678,7 +2678,7 @@
         "description": "Descubre ai.assistant, un asistente de IA privado para tu dispositivo que te ayuda a pensar, escribir y organizarte con claridad. Redacta correos electrónicos, resume artículos, explica temas complejos, planifica proyectos y genera ideas, todo con una experiencia impecable al estilo Apple en iPhone, iPad y Mac.\n\nConcéntrate en tus propios modos de chat.\nElige cómo quieres que te ayude el asistente para obtener exactamente lo que necesitas, más rápido:\n\nEscribe: Convierte tus ideas en texto claro.\n\n• Redacta correos electrónicos, ensayos y entradas de blog.\n• Reescribe mensajes para que sean más breves, amigables o profesionales.\n• Perfecciona la redacción sin perder tu estilo.\n\nResume: Ve al grano en segundos.\n\n• Convierte artículos o notas largos en conclusiones clave.\n• Genera resúmenes breves que puedes pegar en mensajes o documentos.\n• Compara varios resúmenes para decidir qué es importante.\n\nExplica: Comprende cualquier cosa con mayor claridad. • Desglosa textos, conceptos o instrucciones densos.\n• Solicita explicaciones paso a paso y analogías.\n• Convierte explicaciones confusas en lenguaje sencillo.\n\nPlanifica: Convierte objetivos en pasos concretos.\n• Crea listas de verificación para viajes, eventos o recados.\n• Planifica horarios de estudio o cronogramas de proyectos.\n• Convierte ideas vagas en planes de acción ordenados.\n\nLluvia de ideas: Explora opciones antes de decidir.\n• Genera ideas para nombres, temas, características o regalos.\n• Obtén enfoques alternativos para un problema.\n• Pregunta por los pros y los contras para aclarar tu razonamiento.\n\nO permanece en modo general y deja que ai.assistant se adapte a cualquier tarea a medida que evoluciona la conversación.\n\nImporta archivos PDF e imágenes para una comprensión instantánea.\n\nTrae archivos PDF o imágenes y deja que ai.assistant extraiga el texto para que puedas trabajar con él directamente. • Resalte los puntos principales de un PDF de 20 páginas con viñetas.\n• Solicite una explicación sencilla de un trabajo de investigación.\n• Convierta notas escaneadas o capturas de pantalla en texto limpio y editable.\n(PDF de hasta 50 páginas).\n\nConvierta excelentes respuestas en resultados reutilizables.\nCualquier respuesta que desee puede convertirse en un resultado (artefacto) que puede reutilizar más adelante.\n• Guarde borradores, resúmenes, planes, listas de verificación, cuestionarios, tarjetas didácticas y más.\n• Organice por tipo, tema o proyecto.\n• Busque, etiquete y filtre para encontrar exactamente lo que necesita.\n• Copie y reutilice resultados en diferentes aplicaciones en segundos.\n\nOutput Studio: reformule las respuestas con un solo toque.\nTransforme rápidamente cualquier respuesta a un nuevo formato sin tener que reescribirla desde cero. • Más corto: condensa una página en pocas frases concisas.\n• Más formal: convierte notas informales en texto profesional.\n• Viñetas: convierte párrafos en listas fáciles de leer.\n• Cuestionario: convierte un tema en preguntas de práctica.\n• Tarjetas de memoria: crea tarjetas con repetición espaciada a partir de puntos clave.\n\nPrevisualiza el resultado y guárdalo en Resultados para más tarde.\n\nCrea una biblioteca personal que realmente puedas usar.\nAlmacena notas, fragmentos y texto pegado como tu propia biblioteca de referencia.\n\nCaptura investigaciones, notas de reuniones o pasajes clave.\n• Genera resúmenes rápidos de IA para que cada elemento sea fácil de leer.\n• Vuelve más tarde, busca por palabra clave y recuerda al instante lo importante.\n\nActiva Ari para añadir una capa ligera de carácter para el coaching y la estructura. Recibe consejos de apoyo y calma cuando te sientas bloqueado.\n• Usa acciones con un solo toque como Simplificar, Crear lista de verificación o Refinar tono.\n• Ajusta la expresividad de Ari para que se adapte a tu estilo.",
         "keywords": "asistente,creatividad,escribir,texto,automatización,eficiencia,software,innovación,tecnología,móvil",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Elige la IA en el dispositivo o Private Cloud Compute de Apple para chats, transformaciones y resúmenes.\nUn espacio de trabajo adaptable a iPhone, iPhone Duo, iPad y Mac.\nMejoras de confiabilidad, cancelación, importación de archivos y accesibilidad con texto grande."
       },
       "id": "3d548771-aa01-492e-9e51-a0b4b1ddff14",
@@ -2690,7 +2690,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Choisissez l’IA sur l’appareil ou Private Cloud Compute d’Apple pour les conversations, transformations et résumés.\nUn espace de travail qui s’adapte à l’iPhone, l’iPhone Duo, l’iPad et au Mac.\nFiabilité, annulation, importation de fichiers et accessibilité du texte agrandi améliorées."
       },
       "id": "ca0ef7a2-75f0-4d1c-a6ca-16fe8b47bc6d",
@@ -2702,7 +2702,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "채팅, 변환, 요약에 기기 내 AI 또는 Apple의 Private Cloud Compute를 선택할 수 있습니다.\niPhone, iPhone Duo, iPad, Mac에 맞게 조정되는 작업 공간을 제공합니다.\n안정성, 작업 취소, 파일 가져오기 및 큰 텍스트 접근성을 개선했습니다."
       },
       "id": "e8dfb60f-d6be-414a-a906-a5a5238cb31e",
@@ -2714,7 +2714,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Escolha a IA no dispositivo ou o Private Cloud Compute da Apple para conversas, transformações e resumos.\nUm espaço de trabalho que se adapta ao iPhone, iPhone Duo, iPad e Mac.\nMelhorias na confiabilidade, no cancelamento, na importação de arquivos e na acessibilidade com texto ampliado."
       },
       "id": "25195f64-f171-4109-9c3b-de5b5e9a4483",
@@ -2726,7 +2726,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Выбирайте ИИ на устройстве или Private Cloud Compute от Apple для чатов, преобразований и кратких изложений.\nРабочее пространство адаптируется к iPhone, iPhone Duo, iPad и Mac.\nУлучшены надёжность, отмена операций, импорт файлов и доступность при крупном тексте."
       },
       "id": "ffb425c1-6920-4b7e-a3ae-fe08ba93b739",
@@ -2738,7 +2738,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Chọn AI trên thiết bị hoặc Private Cloud Compute của Apple cho trò chuyện, chuyển đổi và tóm tắt.\nKhông gian làm việc thích ứng với iPhone, iPhone Duo, iPad và Mac.\nCải thiện độ tin cậy, hủy tác vụ, nhập tệp và khả năng truy cập với chữ lớn."
       },
       "id": "b1ad4799-1aa0-4646-bf50-a9ceda98ede8",
@@ -2749,7 +2749,7 @@
         "description": "认识 ai.assistant —— 一款专属的端侧私有 AI 伴侣，帮助你思考，写作与整理更清晰的内容。它使用 Apple 端侧基础模型。起草邮件，概括文章，讲解复杂主题，规划项目，并激发灵感——在 iPhone，iPad 与 Mac 上带来精致的 Apple 风格体验。\n\n用专注的聊天模式保持高效  \n选择你希望助手如何帮助你，这样更快获得所需内容：\n\n写作 —— 把零散想法变成清晰文字。  \n• 起草邮件，论文与博客文章  \n• 将消息改写得更短，更友好或更专业  \n• 在保留你表达风格的同时润色措辞\n\n概括 —— 秒内抓住重点。  \n• 将长文章或笔记提炼为要点  \n• 生成可直接粘贴的 TL;DR 供发消息或写文档使用  \n• 对比多种概括结果，快速判断哪些信息最重要\n\n讲解 —— 更清楚地理解任何内容。  \n• 拆解密集文字，概念或指引  \n• 让它带你一步步理解，并用类比解释  \n• 把令人困惑的讲解转成易懂的表述\n\n规划 —— 把目标转为可执行步骤。  \n• 为出行，活动或跑腿任务生成清单  \n• 绘制学习安排或项目时间线  \n• 将模糊想法整理成有序行动计划\n\n激发灵感 —— 在做决定前探索更多可能。  \n• 为名字，主题，功能或礼物生成创意  \n• 为同一问题提供替代方案  \n• 追问优缺点，帮助你理清思路\n\n或保持在通用模式，让 ai.assistant 随对话演进自动适配每个任务。\n\n导入 PDF 和图片，立即理解  \n导入 PDF 或图片，让 ai.assistant 提取其中文字，方便你直接使用。  \n• 用几条要点概括一份 20 页 PDF 的主要内容  \n• 请求用通俗语言解释研究论文  \n• 将扫描笔记或截图转成可编辑的干净文字  \n（最多支持 50 页 PDF。）\n\n把好答案变成可复用输出  \n你喜欢的任何回复都可以变成输出（Artifact），以后随时复用。  \n• 保存草稿，概括，计划，清单，测验，闪卡等  \n• 按类型，主题或项目整理  \n• 搜索，打标签并筛选，迅速找到正需要的内容  \n• 只需几秒即可在不同 App 间复制并复用输出\n\n输出工作室：一键重塑答案  \n无需从头改写，快速把任何回复变成新格式。  \n• 更精简 —— 将一页内容压缩为几句凝练表述  \n• 更正式 —— 把随手笔记变成专业文字  \n• 要点式 —— 把段落改成便于浏览的列表  \n• 测验 —— 将主题变成练习题  \n• 闪卡 —— 从关键要点生成间隔复习风格卡片  \n先预览效果，再保存到输出中以备后用。\n\n打造真正好用的个人资料库  \n把笔记，摘录与粘贴内容存成自己的参考资料库。  \n• 收集研究资料，会议纪要或关键段落  \n• 生成快速 AI 概括，让每一条都便于浏览  \n• 之后可按关键词搜索，迅速回想当时的要点\n\nAri（可选）：带个性与温柔引导  \n开启 Ari，为教练式陪伴加入轻量角色层。  \n• 当你卡住时获得安静而有支持性的轻推  \n• 一键操作，如 简化，生成清单 或 优化措辞风格  \n• 调整 Ari 的表现力度，让其更贴合你的风格\n\n以隐私为先的设计  \n你的内容保存在设备上，而不是集中到通用档案。  \n• 通过 CloudKit 的可选 iCloud 同步，让数据在 Apple 设备间保持更新  \n• 通过 StoreKit 由 Apple 安全处理购买\n\nAri+  \n升级解锁更强大的付费工具，让你能与 ai.assistant 做得更多：  \n• 支持为 PDF 和图片导入文件  \n• 输出工作室中的高级转换  \n• 扩展 AI 工具，更适合更高要求的写作，规划与学习流程\n\n使用条款（EULA）：https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
         "keywords": "创意,任务,智能,效率,管理,沟通,组织,日程,快捷,提升,工作,工具,技巧,办公,规划",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "为聊天、内容转换和摘要选择设备端 AI 或 Apple 的 Private Cloud Compute。\n工作空间可适应 iPhone、iPhone Duo、iPad 和 Mac。\n改进了可靠性、任务取消、文件导入和大字体辅助功能。"
       },
       "id": "8913010c-b1a1-4e58-b2ed-c7dd2f03defa",
@@ -2759,7 +2759,7 @@
       "fields": {
         "description": "探索 ai.assistant：專屬、離線裝置上的私人 AI 夥伴，協助你更清晰地思考、寫作與整理。它使用 Apple 裝置端基礎模型。撰寫電子郵件、摘要文章、解釋複雜主題、規劃專案、集思廣益，並以精緻、Apple 風格的體驗，橫跨 iPhone、iPad 與 Mac。\n\n用專注對話模式保持清楚\n選擇你希望助理如何協助，讓你更快得到正確所需：\n\n寫作 Write - 把粗略想法變成清楚文字  \n• 草擬電子郵件、短文與部落格文章  \n• 依需求改寫訊息：更精簡、更親切或更專業  \n• 在保留你原本語氣的同時，潤飾措辭\n\n摘要 Summarize - 秒懂重點  \n• 把長篇文章或筆記濃縮成關鍵整理  \n• 生成可直接貼到訊息或文件的 TL;DR  \n• 比較多種摘要，判斷真正重要的內容\n\n解釋 Explain - 讓任何內容更好理解  \n• 拆解內容密集的文字、概念或指引  \n• 逐步帶你理解，並提供比喻與說明  \n• 將令人困惑的解釋化成更簡單的語言\n\n規劃 Plan - 把目標變成可執行步驟  \n• 為旅程、活動或跑腿事項建立檢查清單  \n• 規劃讀書進度或專案時程  \n• 將模糊想法整理成有順序的行動計畫\n\n集思廣益 Brainstorm - 做決定前先多想一些  \n• 針對名稱、主題、功能或禮物產生點子  \n• 提供問題的替代解法  \n• 讓你更清楚：提問優缺點，釐清思路\n\n或維持一般模式，讓 ai.assistant 隨著對話演進適應任何任務。\n\n匯入 PDF 與圖片，即刻理解  \n匯入 PDF 或圖片，讓 ai.assistant 擷取文字內容，讓你能直接進行處理。  \n• 用幾個條列重點整理 20 頁 PDF 的主要內容  \n• 要求用白話解釋研究論文  \n• 將掃描筆記或截圖轉成可編輯的乾淨文字  \n（PDF 最多 50 頁。）\n\n把好答案變成可重複使用的輸出 Outputs  \n你喜歡的任何回覆，都能變成可稍後重複使用的輸出（Artifact）。  \n• 儲存草稿、摘要、計畫、檢查清單、測驗、閃卡等  \n• 依類型、主題或專案整理  \n• 透過搜尋、標籤與篩選，快速找到你要的內容  \n• 幾秒內跨 App 複製並重用輸出\n\nOutput Studio：一鍵改寫成新格式  \n不必從頭重寫，快速把任何回覆轉成全新呈現。  \n• 更短 Shorter - 把一整頁壓縮成幾句精簡重點  \n• 更正式 More Formal - 把隨手筆記變成專業文字  \n• 條列 Bullets - 把段落整理成便於掃讀的清單  \n• 測驗 Quiz - 把主題轉成練習題  \n• 閃卡 Flashcards - 從重點建立間隔重複學習卡片  \n先預覽結果，再存進 Outputs 以便日後使用。\n\n建立真正用得上的個人圖書館  \n把筆記、片段與貼上文字存成你的專屬參考收藏。  \n• 收錄研究內容、會議筆記或重要摘錄  \n• 生成快速 AI 摘要，讓每一項都好掃讀  \n• 之後再回來，依關鍵字搜尋，立刻想起重點\n\nAri（可選）：帶個性、溫柔引導  \n開啟 Ari，加入輕量角色層，提供教練式的節奏與結構。  \n• 當你卡住時，給你冷靜、支持性的提醒  \n• 使用一鍵操作，例如 Simplify、Create checklist、Refine tone  \n• 調整 Ari 的表達程度，讓風格更貼近你\n\n隱私優先，設計即內建  \n你的內容保存在你的裝置上，不會放在集中式個人檔案。  \n• 可透過 CloudKit 使用 iCloud 同步，讓資料在你的 Apple 裝置間保持更新  \n• 付款由 Apple 透過 StoreKit 安全處理\n\nAri+  \n升級以解鎖進階工具，讓你能更深度使用 ai.assistant：  \n• 支援匯入 PDF 與圖片檔  \n• Output Studio 的進階轉換  \n• 擴充 AI 工具，更適合高需求的寫作、規劃與學習工作流程\n\n使用條款（EULA）：https://www.apple.com/legal/internet-services/itunes/dev/stdeula/",
         "keywords": "筆記,專注,項目,協作,時間管理,學習協助,大綱撰寫,靈感,信息處理,文件,流程優化,思維整理",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "為聊天、內容轉換和摘要選擇裝置端 AI 或 Apple 的 Private Cloud Compute。\n工作空間可適應 iPhone、iPhone Duo、iPad 和 Mac。\n改進了可靠性、工作取消、檔案輸入和大字體輔助功能。"
       },
       "id": "e1a2c5ea-5d2b-493d-bcec-0bf87387f2ad",
@@ -2771,7 +2771,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "حوّل أي دردشة إلى مسودات ودروس وأسئلة وبطاقات تعليمية. استورد ملفات PDF والصور، احفظ كل مخرجاتك، وابقَ منظمًا عبر iPhone وiPad وMac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "اختر الذكاء الاصطناعي على الجهاز أو Private Cloud Compute من Apple للدردشات والتحويلات والملخصات.\nمساحة عمل تتكيف مع iPhone وiPhone Duo وiPad وMac.\nتحسينات في الموثوقية وإلغاء المهام واستيراد الملفات وإمكانية الوصول مع النص الكبير."
       },
       "id": "2d672780-54ba-47cf-843e-29449e98521c",
@@ -2783,7 +2783,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Choose on-device AI or Apple’s Private Cloud Compute for chats, transformations, and summaries.\nA workspace that adapts across iPhone, iPhone Duo, iPad, and Mac.\nImproved reliability, cancellation, file imports, and larger-text accessibility."
       },
       "id": "a18aebe2-3a18-4976-8dce-cfd498b75716",
@@ -2795,7 +2795,7 @@
         "keywords": "creatividad,eficiencia,automatización,soluciones,innovación,optimización,estrategia,diseño,proyectos",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Convierte cualquier chat en borradores, guías de estudio, cuestionarios y tarjetas. Importa PDF e imágenes, guarda todo y mantén el orden en iPhone, iPad y Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Elige la IA en el dispositivo o Private Cloud Compute de Apple para chats, transformaciones y resúmenes.\nUn espacio de trabajo adaptable a iPhone, iPhone Duo, iPad y Mac.\nMejoras de fiabilidad, cancelación, importación de archivos y accesibilidad con texto grande."
       },
       "id": "f5b6c665-c754-4d6e-ab3d-d9090b6467ed",
@@ -2807,7 +2807,7 @@
         "keywords": "creatividad,generador,documentos,automatización,tareas,escribir,eficiencia,trabajo,digitalización",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Convierte cualquier chat en borradores, guías de estudio, cuestionarios y tarjetas. Importa PDFs e imágenes, guarda todo y mantente organizado en iPhone, iPad y Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Elige la IA en el dispositivo o Private Cloud Compute de Apple para chats, transformaciones y resúmenes.\nUn espacio de trabajo adaptable a iPhone, iPhone Duo, iPad y Mac.\nMejoras de confiabilidad, cancelación, importación de archivos y accesibilidad con texto grande."
       },
       "id": "33f50189-7c06-443d-9f78-42f7f001da24",
@@ -2819,7 +2819,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Choisissez l’IA sur l’appareil ou Private Cloud Compute d’Apple pour les conversations, transformations et résumés.\nUn espace de travail qui s’adapte à l’iPhone, l’iPhone Duo, l’iPad et au Mac.\nFiabilité, annulation, importation de fichiers et accessibilité du texte agrandi améliorées."
       },
       "id": "c8a2e470-3b4f-40be-97f7-b8f155e20341",
@@ -2831,7 +2831,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "채팅, 변환, 요약에 기기 내 AI 또는 Apple의 Private Cloud Compute를 선택할 수 있습니다.\niPhone, iPhone Duo, iPad, Mac에 맞게 조정되는 작업 공간을 제공합니다.\n안정성, 작업 취소, 파일 가져오기 및 큰 텍스트 접근성을 개선했습니다."
       },
       "id": "8484ad91-dca6-4404-a3bd-556b59ab6d13",
@@ -2843,7 +2843,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Escolha a IA no dispositivo ou o Private Cloud Compute da Apple para conversas, transformações e resumos.\nUm espaço de trabalho que se adapta ao iPhone, iPhone Duo, iPad e Mac.\nMelhorias na confiabilidade, no cancelamento, na importação de arquivos e na acessibilidade com texto ampliado."
       },
       "id": "ce0b7c51-0778-4064-85c7-3d2a12a7d068",
@@ -2855,7 +2855,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Turn any chat into drafts, study guides, quizzes, and flashcards. Import PDFs and images, save every output, and stay organized across iPhone, iPad, and Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Выбирайте ИИ на устройстве или Private Cloud Compute от Apple для чатов, преобразований и кратких изложений.\nРабочее пространство адаптируется к iPhone, iPhone Duo, iPad и Mac.\nУлучшены надёжность, отмена операций, импорт файлов и доступность при крупном тексте."
       },
       "id": "b36c0b93-045d-4a3f-a0fa-9f29d6ea4bc7",
@@ -2867,7 +2867,7 @@
         "keywords": "writing,notes,notion,chatbot,essay,homework,study,planner,coach,assistant,brainstorming,email",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "Biến mọi cuộc chat thành bản nháp, tài liệu học tập, câu đố và thẻ ghi nhớ. Nhập PDF và hình ảnh, lưu mọi kết quả, đồng bộ gọn gàng trên iPhone, iPad và Mac.",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "Chọn AI trên thiết bị hoặc Private Cloud Compute của Apple cho trò chuyện, chuyển đổi và tóm tắt.\nKhông gian làm việc thích ứng với iPhone, iPhone Duo, iPad và Mac.\nCải thiện độ tin cậy, hủy tác vụ, nhập tệp và khả năng truy cập với chữ lớn."
       },
       "id": "3771f78f-21fb-4bbd-89c2-cbc80fc4fb4b",
@@ -2879,7 +2879,7 @@
         "keywords": "创意,写作,效率,工具,算法,生成,文本,创新,智能,自动化,灵感,编辑,优化,工作助手,思维拓展",
         "marketingUrl": "https://github.com/gomez1112/aiassistant/tree/main",
         "promotionalText": "把任何聊天生成草稿、学习提纲、测验和闪卡。导入PDF和图片。保存所有内容，并在iPhone、iPad和Mac上保持有序。",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "为聊天、内容转换和摘要选择设备端 AI 或 Apple 的 Private Cloud Compute。\n工作空间可适应 iPhone、iPhone Duo、iPad 和 Mac。\n改进了可靠性、任务取消、文件导入和大字体辅助功能。"
       },
       "id": "42411963-9656-4a0f-b3c7-b33a41754c6b",
@@ -2890,7 +2890,7 @@
         "description": "認識ai.assistant—在裝置上的私人AI夥伴，幫助你清晰地思考、寫作和組織。擬草電子郵件、概覽文章、解釋複雜主題、規劃專案和集思廣益——在iPhone、iPad和Mac上均有優雅的Apple風格體驗。\n\n專注於專屬聊天模式  \n選擇助理如何協助你，以更快達成所需結果：\n\n寫作 – 將模糊想法變成清晰文本。  \n• 撰寫電子郵件、論文及部落格文章  \n• 改寫訊息以更簡短、友好或專業  \n• 精煉文句，保持個人風格\n\n概述 – 秒得要點。  \n• 將冗長文章或筆記變為重點  \n• 生成簡要內容，便於粘貼至訊息或文件  \n• 比較多項摘要以決定重點\n\n解釋 – 更清晰地理解一切。  \n• 拆解繁密文本、概念或指令  \n• 請求一步步教學或比擬  \n• 將複雜解釋轉為簡明語言\n\n規劃 – 將目標變成具體步驟。  \n• 為旅行、活動或任務創建清單  \n• 規劃學習時間表或專案時間線  \n• 將模糊想法變為有序行動計劃\n\n集思 – 探索選擇再決定。  \n• 生成名稱、主題、功能或禮物點子  \n• 提供問題的替代方法  \n• 請求優缺點以澄清思路\n\n或保持在通用模式，讓ai.assistant適應任何任務隨談話進行。\n\n導入PDF和圖片以瞬間了解  \n導入PDF或圖片，由ai.assistant提取文本以便直接處理。  \n• 將20頁PDF要點提煉為幾個重點  \n• 請求研究文章的通俗解釋  \n• 將掃描筆記或截圖轉為可編輯文本  \n（僅限50頁以內PDF。）\n\n將優秀回答變為可重用成果  \n任何喜歡的回答都能成為可重用的成果（產出）。  \n• 保存草稿、概述、計劃、清單、測驗卡片等  \n• 按類型、主題或專案整理  \n• 搜索、標籤和篩選以精確找到所需  \n• 跨應用快速複製和重新使用\n\n產出工作室：一鍵重塑回答  \n快速將任何反饋轉化為新格式而無需重寫。  \n• 簡短–將頁面壓縮為幾句精簡句子  \n• 更正式–將隨筆轉化為專業文本  \n• 條列–將段落轉成易掃描列表  \n• 測驗–將主題變成練習題  \n• 記憶卡–從重點創建記憶卡  \n預覽結果，再保存以後使用。\n\n打造實用個人圖書館  \n將筆記、珍貴片段及粘貼文本儲存為個人參照庫。  \n• 捕捉研究、會議筆記或關鍵段落  \n• 快速生成AI概述，使每項易於瀏覽  \n• 稍後通過關鍵詞搜索即刻回想重點\n\nAri(可選)：個性化指導  \n開啟Ari增添輕鬆角色層來輔導和架構。  \n• 提供支持性提示以突破困境  \n• 使用一鍵操作如簡化、創建清單或改善語氣  \n• 調整Ari表達風格匹配你的風格\n\n隱私至上設計  \n內容存儲於設備上，而非中央資料庫。  \n• 可選iCloud通過CloudKit同步，保持Apple裝置間的資料更新  \n• 購買由Apple通過StoreKit安全處理\n\nAri+  \n升級以解鎖更多功能，提升ai.assistant能力：  \n• PDF和圖片文件導入  \n• 進階變換功能於產出工作室  \n• 擴展AI工具，更好處理寫作、計劃及學習工作流",
         "keywords": "筆記,頭腦風暴,學習助手,日程,文案,內容創作,寫作助手,構思,技巧,概念建立,文章生成,靈感启发",
         "promotionalText": "把任何聊天變成草稿、學習指南、測驗和快閃卡。匯入PDF和圖片，保存所有輸出，並在iPhone、iPad與Mac保持有序。",
-        "supportUrl": "https://transfinite.us/contact/",
+        "supportUrl": "https://apps.transfinite.us/support",
         "whatsNew": "為聊天、內容轉換和摘要選擇裝置端 AI 或 Apple 的 Private Cloud Compute。\n工作空間可適應 iPhone、iPhone Duo、iPad 和 Mac。\n改進了可靠性、工作取消、檔案輸入和大字體輔助功能。"
       },
       "id": "3d98f136-e17b-4d55-be1b-62458ae96054",
