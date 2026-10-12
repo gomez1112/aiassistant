@@ -7,9 +7,6 @@
 import SwiftUI
 import SwiftData
 import UniformTypeIdentifiers
-import PDFKit
-import Vision
-import ImageIO
 import FlexStore
 
 struct ChatView: View {
@@ -212,6 +209,10 @@ struct ChatView: View {
             ensureActiveThreadSelection()
         }
         .sensoryFeedback(.impact(weight: .light), trigger: sendFeedbackTrigger)
+        .onDisappear {
+            cancelGeneration()
+            clearAttachment()
+        }
         )
     }
 
@@ -316,13 +317,10 @@ struct ChatView: View {
 
     private func iosChatHeaderView(usesCompactChrome: Bool) -> AnyView {
         #if os(iOS)
-        guard !usesCompactChrome else {
-            return AnyView(EmptyView())
-        }
-
         return AnyView(ChatScreenHeader(
             title: preferences.ariEnabled ? "Ari" : "Assistant",
             subtitle: activeThread?.title ?? "Ready for a new conversation",
+            isCompact: usesCompactChrome,
             onThreads: presentThreadList,
             onNewChat: createNewThread,
             onSettings: openSettings
@@ -465,7 +463,7 @@ struct ChatView: View {
                 isImportingAttachment: isImportingAttachment,
                 hasAttachment: pendingAttachmentText != nil,
                 assistantName: assistantName,
-                onSend: sendMessage,
+                onSend: { sendMessage() },
                 onCancel: cancelGeneration,
                 onAttach: handleAttachAction
             )
@@ -530,7 +528,14 @@ struct ChatView: View {
 
     private func selectThread(_ thread: Thread) {
         isComposerFocused = false
+        if dataModel.activeThread?.id != thread.id {
+            cancelGeneration()
+            clearAttachment()
+        }
         dataModel.activeThread = thread
+        dataModel.lastAssistantMessage = thread.sortedMessages.last {
+            $0.role == .assistant && $0.status == .completed
+        }
         syncAriGuidance(to: thread)
     }
 
@@ -758,14 +763,10 @@ struct ChatView: View {
                 }
             }
             do {
-                let extracted = try await Self.extractText(from: fileURL)
+                let extracted = try await AttachmentTextExtractor.extract(from: fileURL)
                 guard !Task.isCancelled, activeImportID == importID else { return }
 
-                let trimmed = Self.preparedAttachmentText(from: extracted)
-                guard !trimmed.isEmpty else {
-                    throw ImportError.noTextFound
-                }
-                pendingAttachmentText = trimmed
+                pendingAttachmentText = extracted
                 pendingAttachmentName = fileURL.lastPathComponent
             } catch is CancellationError {
             } catch {
@@ -774,100 +775,6 @@ struct ChatView: View {
                 }
             }
         }
-    }
-
-    @concurrent private static func extractText(from fileURL: URL) async throws -> String {
-        let hasAccess = fileURL.startAccessingSecurityScopedResource()
-        defer {
-            if hasAccess {
-                fileURL.stopAccessingSecurityScopedResource()
-            }
-        }
-
-        guard hasAccess || FileManager.default.isReadableFile(atPath: fileURL.path) else {
-            throw ImportError.permissionDenied
-        }
-
-        try validateAttachmentSize(fileURL)
-
-        guard let type = UTType(filenameExtension: fileURL.pathExtension.lowercased()) else {
-            throw ImportError.unsupportedFile
-        }
-
-        if type.conforms(to: .pdf) {
-            return try extractTextFromPDF(at: fileURL)
-        }
-        if type.conforms(to: .image) {
-            return try extractTextFromImage(at: fileURL)
-        }
-
-        throw ImportError.unsupportedFile
-    }
-
-    nonisolated private static func validateAttachmentSize(_ fileURL: URL) throws {
-        let values = try fileURL.resourceValues(forKeys: [.fileSizeKey])
-        if let fileSize = values?.fileSize, fileSize > ImportLimits.maxFileBytes {
-            throw ImportError.fileTooLarge
-        }
-    }
-
-    nonisolated private static func preparedAttachmentText(from extracted: String) -> String {
-        let trimmed = extracted.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard trimmed.count > ImportLimits.maxTextCharacters else { return trimmed }
-
-        let prefix = String(trimmed.prefix(ImportLimits.maxTextCharacters))
-        return """
-        \(prefix)
-
-        [Attachment text was truncated to fit Ari's prompt limit.]
-        """
-    }
-
-    nonisolated private static func extractTextFromPDF(at fileURL: URL) throws -> String {
-        guard let pdf = PDFDocument(url: fileURL) else {
-            throw ImportError.unreadableFile
-        }
-        if pdf.pageCount > 50 {
-            throw ImportError.pdfTooLong(pageCount: pdf.pageCount)
-        }
-
-        var pages: [String] = []
-        for index in 0..<pdf.pageCount {
-            try Task.checkCancellation()
-            if let text = pdf.page(at: index)?.string?.trimmingCharacters(in: .whitespacesAndNewlines),
-               !text.isEmpty {
-                pages.append(text)
-            }
-        }
-        return pages.joined(separator: "\n\n")
-    }
-
-    nonisolated private static func extractTextFromImage(at fileURL: URL) throws -> String {
-        guard let source = CGImageSourceCreateWithURL(fileURL as CFURL, nil),
-              let image = CGImageSourceCreateImageAtIndex(source, 0, nil) else {
-            throw ImportError.unreadableFile
-        }
-
-        let request = VNRecognizeTextRequest()
-        request.recognitionLevel = .accurate
-        request.usesLanguageCorrection = true
-
-        let handler = VNImageRequestHandler(cgImage: image, options: [:])
-        try Task.checkCancellation()
-        try handler.perform([request])
-        try Task.checkCancellation()
-
-        let observations = request.results ?? []
-        let sorted = observations.sorted { lhs, rhs in
-            if abs(lhs.boundingBox.minY - rhs.boundingBox.minY) > 0.02 {
-                return lhs.boundingBox.minY > rhs.boundingBox.minY
-            }
-            return lhs.boundingBox.minX < rhs.boundingBox.minX
-        }
-
-        return sorted
-            .compactMap { $0.topCandidates(1).first?.string }
-            .joined(separator: "\n")
     }
 
     private func ensureActiveThreadSelection() {
@@ -935,73 +842,50 @@ struct ChatView: View {
     }
 }
 
-private enum ImportLimits {
-    nonisolated static let maxFileBytes = 20 * 1024 * 1024
-    nonisolated static let maxTextCharacters = 60_000
-}
-
-private enum ImportError: LocalizedError {
-    case unsupportedFile
-    case unreadableFile
-    case noTextFound
-    case pdfTooLong(pageCount: Int)
-    case permissionDenied
-    case fileTooLarge
-
-    var errorDescription: String? {
-        switch self {
-        case .unsupportedFile:
-            "Only PDF and image files are supported."
-        case .unreadableFile:
-            "The selected file couldn’t be read."
-        case .noTextFound:
-            "No readable text was found in that file."
-        case .pdfTooLong(let pageCount):
-            "This PDF has \(pageCount) pages. The maximum allowed is 50 pages."
-        case .permissionDenied:
-            "Ari could not get permission to read that file."
-        case .fileTooLarge:
-            "That file is too large. Choose a PDF or image under 20 MB."
-        }
-    }
-}
-
 private struct ChatScreenHeader: View {
     let title: String
     let subtitle: String
+    let isCompact: Bool
     let onThreads: () -> Void
     let onNewChat: () -> Void
     let onSettings: () -> Void
 
     var body: some View {
         HStack(spacing: AppTheme.spacingMD) {
-            AppIconBadge(systemImage: "sparkles", tint: AppTheme.accent, size: 40)
+            if !isCompact {
+                AppIconBadge(systemImage: "sparkles", tint: AppTheme.accent, size: 40)
+            }
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.title3)
+                    .font(isCompact ? .headline : .title3)
                     .bold()
                     .foregroundStyle(.primary)
 
-                Text(subtitle)
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                if !isCompact {
+                    Text(subtitle)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
             }
 
             Spacer(minLength: AppTheme.spacingSM)
 
             HStack(spacing: AppTheme.spacingSM) {
                 ChatHeaderButton("Chats", systemImage: "line.3.horizontal", action: onThreads)
+                    .accessibilityIdentifier("chat.toolbar.threads")
                 ChatHeaderButton("New chat", systemImage: "square.and.pencil", action: onNewChat)
+                    .accessibilityIdentifier("chat.toolbar.newChat")
                 ChatHeaderButton("Settings", systemImage: "gearshape", action: onSettings)
+                    .accessibilityIdentifier("chat.toolbar.settings")
             }
         }
         .padding(.horizontal, AppTheme.spacingLG)
-        .padding(.top, AppTheme.spacingSM)
-        .padding(.bottom, AppTheme.spacingMD)
+        .padding(.top, isCompact ? AppTheme.spacingXS : AppTheme.spacingSM)
+        .padding(.bottom, isCompact ? AppTheme.spacingXS : AppTheme.spacingMD)
         .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("chat.header")
+        .accessibilityIdentifier(isCompact ? "chat.header.compact" : "chat.header")
     }
 }
 

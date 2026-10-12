@@ -4,12 +4,12 @@ A cross-platform AI assistant app built with SwiftUI, SwiftData, CloudKit, Onboa
 
 ## Platforms
 
-- iOS
-- iPadOS
-- macOS
+- iOS and iPadOS 27.0 or later (built and tested with the iOS 27.1 SDK)
+- macOS 27.0 or later (compatible with macOS 27.1)
 
 ## What It Does
 
+- Optional Apple Private Cloud Compute for chat, transforms, and summaries, with a device-local processing preference
 - Multi-mode chat experience (General, Write, Summarize, Explain, Plan, Brainstorm)
 - Output generation and saved artifacts
 - Personal library for reusable source material
@@ -41,7 +41,7 @@ Defined in `aiassistant/Models/Monetization.swift`:
 - Weekly subscription
 - Monthly subscription
 - Yearly subscription
-- Lifetime unlock: 
+- Lifetime unlock: one-time purchase
 - Free tier daily limit: `3` messages/day
 
 Policy links:
@@ -49,21 +49,18 @@ Policy links:
 - Privacy: https://gomez1112.github.io/Legal/privacy/
 - Terms: https://gomez1112.github.io/Legal/terms/
 
-## Running the App
+## Building and Running in Bitrig
 
-1. Open `aiassistant.xcodeproj` in Xcode.
-2. Select the desired destination (iOS, iPadOS, or macOS).
-3. Build and run.
+Build with `bitrig build -destination all --keep-going`. Bitrig launches the iOS app in its built-in simulator. Use Run on… for your own device or Mac.
 
-## Local StoreKit Testing
+The project uses Swift 6 language mode, Swift 6.4, strict concurrency checking, and Approachable Concurrency. It uses released OS 27 APIs; no beta-only APIs or earlier-OS compatibility paths were added.
 
-1. In Xcode, choose your run scheme.
-2. Edit Scheme > Run > Options.
-3. Set **StoreKit Configuration** to `ai.storekit`.
-4. Run and test weekly/monthly/yearly/lifetime purchases locally.
+The shared scheme already selects `ai.storekit` for local purchase testing. TestFlight and App Store builds use real App Store Connect products instead.
+
+See [RELEASE_READINESS.md](RELEASE_READINESS.md) for PCC signing verification, the production CloudKit schema status, and remaining release checks.
 
 ## Notes
 
 - The app uses SwiftData with a CloudKit-backed configuration and falls back to local storage if CloudKit container load fails.
 - macOS uses native Settings scene integration.
-- Subscription paywall uses FlexStore `SubscriptionPassStoreView`.
+- The custom subscription paywall uses the existing FlexStore service. Ari+ removes the app’s chat cap; Apple’s separate PCC quota still applies.

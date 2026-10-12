@@ -29,6 +29,7 @@ struct ArtifactDetailView: View {
     @State private var showPersistenceError = false
     @State private var transformErrorMessage: String?
     @State private var transformTask: Task<Void, Never>?
+    @State private var activeTransformID: UUID?
     @State private var navigationTarget: ArtifactNavigationTarget?
 
     var body: some View {
@@ -147,13 +148,12 @@ struct ArtifactDetailView: View {
             }
         }
         .sensoryFeedback(.success, trigger: copiedFeedback)
-        .onChange(of: copiedFeedback) {
-            if copiedFeedback {
-                Task {
-                    try? await Task.sleep(for: .seconds(1.5))
-                    copiedFeedback = false
-                }
-            }
+        .task(id: copiedFeedback) {
+            guard copiedFeedback else { return }
+            do {
+                try await Task.sleep(for: .seconds(1.5))
+                copiedFeedback = false
+            } catch { return }
         }
         .alert("Delete Artifact?", isPresented: $showDeleteConfirmation) {
             Button("Delete", role: .destructive) {
@@ -201,7 +201,10 @@ struct ArtifactDetailView: View {
             }
         }
         .onDisappear {
-            transformTask?.cancel()
+            cancelTransform()
+        }
+        .onChange(of: hasPremiumAccess) {
+            if !hasPremiumAccess { cancelTransform() }
         }
     }
 
@@ -212,11 +215,16 @@ struct ArtifactDetailView: View {
         }
 
         transformTask?.cancel()
+        let transformID = UUID()
+        activeTransformID = transformID
         isTransforming = true
         transformTask = Task {
             defer {
-                isTransforming = false
-                transformTask = nil
+                if activeTransformID == transformID {
+                    isTransforming = false
+                    transformTask = nil
+                    activeTransformID = nil
+                }
             }
 
             let outcome = await dataModel.transformArtifact(
@@ -225,7 +233,7 @@ struct ArtifactDetailView: View {
                 preferences: preferences,
                 in: modelContext
             )
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, activeTransformID == transformID else { return }
 
             switch outcome {
             case .completed(let newArtifact):
@@ -240,6 +248,13 @@ struct ArtifactDetailView: View {
 
     private var hasPremiumAccess: Bool {
         flexStore.isSubscribed || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID)
+    }
+
+    private func cancelTransform() {
+        transformTask?.cancel()
+        transformTask = nil
+        activeTransformID = nil
+        isTransforming = false
     }
 
     private var transformErrorBinding: Binding<Bool> {

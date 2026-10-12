@@ -84,9 +84,9 @@ enum Monetization {
     ]
 
     static let paywallFeatures: [PaywallFeature] = [
-        .init(icon: "message.badge.waveform", title: "Unlimited chats", description: "No daily cap for conversations and follow-ups.", accentColor: AppTheme.accent),
+        .init(icon: "message.badge.waveform", title: "Unlimited chats", description: "No Ari daily chat cap. Apple’s Private Cloud Compute limits still apply.", accentColor: AppTheme.accent),
         .init(icon: "wand.and.stars", title: "Advanced transforms", description: "Premium writing, planning, and output transformations.", accentColor: AppTheme.highlight),
-        .init(icon: "icloud", title: "Priority sync", description: "Faster CloudKit sync and cross-device continuity.", accentColor: AppTheme.accentLight)
+        .init(icon: "paperclip", title: "File uploads", description: "Ask questions about PDFs and images.", accentColor: AppTheme.accentLight)
     ]
 }
 

@@ -62,24 +62,25 @@ struct ModeChipBar: View {
 
     private var compactMenu: some View {
         HStack {
-            Menu {
+            Picker(selection: $selectedMode) {
                 ForEach(modes) { mode in
-                    Button {
-                        selectedMode = mode
-                    } label: {
-                        Label(mode.chipLabel, systemImage: selectedMode == mode ? "checkmark" : mode.icon)
-                    }
-                    .accessibilityIdentifier("chat.mode.option.\(mode.rawValue)")
+                    Label(mode.chipLabel, systemImage: mode.icon)
+                        .tag(mode)
+                        .accessibilityIdentifier("chat.mode.option.\(mode.rawValue)")
                 }
             } label: {
                 Label(selectedMode.chipLabel, systemImage: selectedMode.icon)
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(AppTheme.accent)
                     .padding(.horizontal, 12)
-                    .frame(height: AppTheme.minimumTapTarget)
+                    .frame(minHeight: AppTheme.minimumTapTarget)
                     .background(AppTheme.surfaceFill, in: Capsule())
-                    .overlay(Capsule().stroke(AppTheme.accent.opacity(0.22), lineWidth: 0.7))
+                    .overlay {
+                        Capsule().stroke(AppTheme.accent.opacity(0.22), lineWidth: 0.7)
+                    }
             }
+            .pickerStyle(.menu)
+            .buttonStyle(.plain)
             .accessibilityLabel("Mode")
             .accessibilityValue(selectedMode.chipLabel)
             .accessibilityIdentifier("chat.mode.compactMenu")

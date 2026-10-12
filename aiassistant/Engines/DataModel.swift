@@ -186,12 +186,13 @@ final class DataModel {
             return existing
         }
 
+        let sourceThreadID = if let message { message.thread?.id } else { activeThread?.id }
         let artifact = Artifact(
             kind: suggestion.kind,
             title: suggestion.title,
             content: suggestion.content,
             tags: suggestion.tags,
-            sourceThreadID: message?.thread?.id ?? activeThread?.id,
+            sourceThreadID: sourceThreadID,
             sourceMessageID: message?.id
         )
         context.insert(artifact)

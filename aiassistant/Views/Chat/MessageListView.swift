@@ -366,6 +366,8 @@ struct MessageBubble: View {
         let summary = trimmed.count > 180 ? String(trimmed.prefix(180)) + "..." : trimmed
         let time = message.createdAt.formatted(date: .omitted, time: .shortened)
         switch message.status {
+        case .pending:
+            return "\(summary). Awaiting a reply."
         case .completed:
             return "\(summary). Sent \(time)."
         case .cancelled:
@@ -377,6 +379,7 @@ struct MessageBubble: View {
 
     private var statusText: String {
         switch message.status {
+        case .pending: "Awaiting reply"
         case .completed: ""
         case .cancelled: "Reply stopped"
         case .failed: "Reply failed"
@@ -385,6 +388,7 @@ struct MessageBubble: View {
 
     private var statusIcon: String {
         switch message.status {
+        case .pending: "clock"
         case .completed: "checkmark.circle"
         case .cancelled: "stop.circle"
         case .failed: "exclamationmark.triangle"
@@ -393,6 +397,7 @@ struct MessageBubble: View {
 
     private var statusTint: Color {
         switch message.status {
+        case .pending: .secondary
         case .completed: .secondary
         case .cancelled: .secondary
         case .failed: AppTheme.warning

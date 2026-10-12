@@ -58,13 +58,18 @@ struct RootTabView: View {
         .onAppear {
             preferences = dataModel.loadOrCreatePreferences(in: modelContext)
         }
-        .onChange(of: dataModel.review.isReviewRequestPending) { _, isPending in
-            guard isPending else { return }
-            Task {
-                // Let the new study aid settle on screen before asking.
-                try? await Task.sleep(for: .seconds(0.7))
+        .task(id: dataModel.review.isReviewRequestPending) {
+            guard dataModel.review.isReviewRequestPending else { return }
+            // Cancel the delayed prompt when its window disappears.
+            do {
+                try await Task.sleep(for: .seconds(0.7))
+                try Task.checkCancellation()
                 requestReview()
                 dataModel.review.reviewRequestPresented()
+            } catch is CancellationError {
+                return
+            } catch {
+                return
             }
         }
     }

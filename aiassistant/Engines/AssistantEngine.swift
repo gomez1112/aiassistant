@@ -214,6 +214,7 @@ final class AssistantEngine {
         type: TransformType,
         preferences: UserPreferences
     ) async -> AssistantTextResult {
+        guard !Task.isCancelled else { return .cancelled }
         if let availabilityMessage = foundationModelUnavailableMessage() {
             return .failed(availabilityMessage)
         }
@@ -240,6 +241,7 @@ final class AssistantEngine {
     // MARK: - Summarize Library Item
 
     func summarizeLibraryItem(text: String) async -> AssistantTextResult {
+        guard !Task.isCancelled else { return .cancelled }
         if let availabilityMessage = foundationModelUnavailableMessage() {
             return .failed(availabilityMessage)
         }
@@ -326,6 +328,8 @@ final class AssistantEngine {
             streamingText = accumulated
             state = .streaming(partial: accumulated)
         }
+
+        guard isGenerationCurrent(generationID) else { throw CancellationError() }
 
         return GenerationResult(
             text: accumulated,
@@ -470,7 +474,9 @@ final class AssistantEngine {
         return prompt
     }
 
-    private func buildConversationContext(history: [Message]) -> String {
+    /// Includes only finished turns so interrupted and failed requests do not
+    /// become instructions for the next model request.
+    func buildConversationContext(history: [Message]) -> String {
         let recent = history.filter { $0.status == .completed }.suffix(10)
         return recent.compactMap { msg in
             let role: String

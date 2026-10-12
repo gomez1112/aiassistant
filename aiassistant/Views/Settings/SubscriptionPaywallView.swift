@@ -110,11 +110,7 @@ struct SubscriptionPaywallView: View {
     }
 
     private var displayedFeatures: [PaywallFeature] {
-        if persistenceMode.isLocalOnly {
-            Monetization.paywallFeatures.filter { $0.title != "Priority sync" }
-        } else {
-            Monetization.paywallFeatures
-        }
+        Monetization.paywallFeatures
     }
 
     private var paywallHero: some View {
@@ -177,7 +173,7 @@ struct SubscriptionPaywallView: View {
     private var subscriptionPlans: some View {
         VStack(spacing: AppTheme.spacingLG) {
             if flexStore.isLoading && subscriptionProducts.isEmpty {
-                ProgressView("Loading plans...")
+                ProgressView("Loading plans…")
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, AppTheme.spacingXL)
             } else if subscriptionProducts.isEmpty {

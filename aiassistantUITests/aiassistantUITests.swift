@@ -81,14 +81,20 @@ final class aiassistantUITests: XCTestCase {
     }
 
     @MainActor
-    func testCompactModeAndAssistantActionsAreReachable() throws {
+    func testModeSelectionAndAssistantActionsAreReachable() throws {
         launchApp(arguments: ["-ui-testing-seed-chat"])
 
         let modeMenu = element("chat.mode.compactMenu")
-        XCTAssertTrue(modeMenu.waitForExistence(timeout: 2))
-        modeMenu.tap()
-        XCTAssertTrue(app.buttons["Write"].waitForExistence(timeout: 2))
-        app.buttons["Write"].tap()
+        if modeMenu.waitForExistence(timeout: 2) {
+            modeMenu.tap()
+            XCTAssertTrue(app.buttons["Write"].waitForExistence(timeout: 2))
+            app.buttons["Write"].tap()
+        } else {
+            // Duo's unfolded display uses the expanded selector.
+            let writeMode = element("chat.mode.option.Write")
+            XCTAssertTrue(writeMode.waitForExistence(timeout: 2))
+            writeMode.tap()
+        }
 
         let actionsMenu = element("chat.messageActions.menu")
         XCTAssertTrue(actionsMenu.waitForExistence(timeout: 2))
@@ -132,6 +138,7 @@ final class aiassistantUITests: XCTestCase {
         app.launch()
     }
 
+    @MainActor
     private func element(_ identifier: String) -> XCUIElement {
         app.descendants(matching: .any)[identifier].firstMatch
     }

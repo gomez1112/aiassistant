@@ -404,6 +404,7 @@ struct LibraryItemDetailView: View {
     @State private var showPaywall = false
     @State private var summaryErrorMessage: String?
     @State private var summaryTask: Task<Void, Never>?
+    @State private var activeSummaryID: UUID?
 
     var body: some View {
         ScrollView {
@@ -493,7 +494,10 @@ struct LibraryItemDetailView: View {
             Text(summaryErrorMessage ?? "Please try again.")
         }
         .onDisappear {
-            summaryTask?.cancel()
+            cancelSummary()
+        }
+        .onChange(of: hasPremiumAccess) {
+            if !hasPremiumAccess { cancelSummary() }
         }
     }
 
@@ -504,14 +508,19 @@ struct LibraryItemDetailView: View {
         }
 
         summaryTask?.cancel()
+        let summaryID = UUID()
+        activeSummaryID = summaryID
         isSummarizing = true
         summaryTask = Task {
             defer {
-                isSummarizing = false
-                summaryTask = nil
+                if activeSummaryID == summaryID {
+                    isSummarizing = false
+                    summaryTask = nil
+                    activeSummaryID = nil
+                }
             }
             let outcome = await dataModel.summarizeItem(item, in: modelContext)
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, activeSummaryID == summaryID else { return }
 
             switch outcome {
             case .completed, .cancelled:
@@ -535,6 +544,13 @@ struct LibraryItemDetailView: View {
                 }
             }
         )
+    }
+
+    private func cancelSummary() {
+        summaryTask?.cancel()
+        summaryTask = nil
+        activeSummaryID = nil
+        isSummarizing = false
     }
 }
 

@@ -6,6 +6,7 @@
 
 import SwiftUI
 import SwiftData
+import FlexStore
 
 struct OutputStudioSheet: View {
     let sourceText: String
@@ -14,6 +15,7 @@ struct OutputStudioSheet: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
 
     @State private var selectedKind: ArtifactKind = .draft
     @State private var selectedTransform: TransformType? = nil
@@ -23,6 +25,7 @@ struct OutputStudioSheet: View {
     @State private var errorMessage: String?
     @State private var processingTask: Task<Void, Never>?
     @State private var activeProcessingID: UUID?
+    @State private var showPaywall = false
     @State private var isSourceExpanded = false
     private let transformColumns = [GridItem(.adaptive(minimum: 96, maximum: 170), spacing: 12)]
 
@@ -132,6 +135,12 @@ struct OutputStudioSheet: View {
             .onDisappear {
                 invalidateResult()
             }
+            .onChange(of: hasPremiumAccess) {
+                if !hasPremiumAccess { invalidateResult() }
+            }
+            .sheet(isPresented: $showPaywall) {
+                SubscriptionPaywallView(context: .outputStudio)
+            }
         }
     }
 
@@ -147,6 +156,10 @@ struct OutputStudioSheet: View {
     }
 
     private func generate() {
+        guard hasPremiumAccess else {
+            showPaywall = true
+            return
+        }
         guard let transform = selectedTransform else { return }
         processingTask?.cancel()
         let processingID = UUID()
@@ -189,6 +202,10 @@ struct OutputStudioSheet: View {
     }
 
     private func saveArtifact() {
+        guard hasPremiumAccess else {
+            showPaywall = true
+            return
+        }
         guard let content = result else { return }
         let _ = dataModel.saveArtifact(
             kind: selectedKind,
@@ -210,6 +227,10 @@ struct OutputStudioSheet: View {
         activeProcessingID = nil
         isProcessing = false
         result = nil
+    }
+
+    private var hasPremiumAccess: Bool {
+        flexStore.isSubscribed || flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID)
     }
 }
 
