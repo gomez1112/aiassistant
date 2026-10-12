@@ -16,6 +16,7 @@ enum MessageRole: String, Codable, CaseIterable {
 }
 
 enum MessageStatus: String, Codable, CaseIterable {
+    case pending
     case completed
     case cancelled
     case failed
@@ -56,7 +57,7 @@ final class Message {
     var modeRaw: String?
     var ariGuidance: String?
     var ariMoodRaw: String?
-    var statusRaw = MessageStatus.completed.rawValue
+    var statusRaw = "completed"
 
     // References to artifacts produced by this message
     var artifactIDsRaw = ""

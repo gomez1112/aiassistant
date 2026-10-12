@@ -1,0 +1,880 @@
+{
+  "availableInNewTerritories": true,
+  "territories": {
+    "AFG": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "AGO": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "AIA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ALB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ARE": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ARG": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ARM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ATG": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "AUS": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "AUT": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "AZE": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BEL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BEN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BFA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BGR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BHR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BHS": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BIH": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BLR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BLZ": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BMU": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BOL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BRA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BRB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BRN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BTN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "BWA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CAN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CHE": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CHL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CHN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CIV": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CMR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "COD": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "COG": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "COL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CPV": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CRI": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CYM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CYP": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "CZE": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "DEU": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "DMA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "DNK": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "DOM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "DZA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ECU": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "EGY": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ESP": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "EST": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "FIN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "FJI": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "FRA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "FSM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GAB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GBR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GEO": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GHA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GMB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GNB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GRC": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GRD": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GTM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "GUY": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "HKG": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "HND": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "HRV": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "HUN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "IDN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "IND": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "IRL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "IRQ": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ISL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ISR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ITA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "JAM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "JOR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "JPN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "KAZ": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "KEN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "KGZ": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "KHM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "KNA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "KOR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "KWT": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LAO": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LBN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LBR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LBY": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LCA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LKA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LTU": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LUX": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "LVA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MAC": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MAR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MDA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MDG": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MDV": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MEX": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MKD": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MLI": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MLT": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MMR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MNE": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MNG": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MOZ": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MRT": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MSR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MUS": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MWI": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "MYS": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NAM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NER": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NGA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NIC": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NLD": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NOR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NPL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NRU": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "NZL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "OMN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "PAK": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "PAN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "PER": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "PHL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "PLW": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "PNG": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "POL": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "PRT": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "PRY": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "QAT": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ROU": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "RUS": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "RWA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SAU": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SEN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SGP": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SLB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SLE": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SLV": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SRB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "STP": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SUR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SVK": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SVN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SWE": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SWZ": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "SYC": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TCA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TCD": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "THA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TJK": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TKM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TON": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TTO": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TUN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TUR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TWN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "TZA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "UGA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "UKR": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "URY": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "USA": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "UZB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "VCT": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "VEN": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "VGB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "VNM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "VUT": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "XKS": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "YEM": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ZAF": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ZMB": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    },
+    "ZWE": {
+      "available": true,
+      "preOrderEnabled": false,
+      "releaseDate": "2026-03-01"
+    }
+  }
+}

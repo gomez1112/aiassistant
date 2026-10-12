@@ -10,6 +10,7 @@ import SwiftData
 import FlexStore
 
 struct SettingsView: View {
+    @Environment(DataModel.self) private var dataModel
     @Bindable var preferences: UserPreferences
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -21,6 +22,7 @@ struct SettingsView: View {
     @State private var debugSeedResult: SampleSeedResult?
     @State private var cloudKitStatus: CloudKitHealthStatus = .checking
     @State private var isCheckingCloudKit = false
+    @State private var cloudKitRefreshID = 0
     #endif
 
     private var appVersionDescription: String {
@@ -72,8 +74,8 @@ struct SettingsView: View {
             } message: {
                 Text(debugSeedResult?.message ?? "")
             }
-            .task {
-                refreshCloudKitHealth()
+            .task(id: cloudKitRefreshID) {
+                await refreshCloudKitHealth()
             }
             #endif
         }
@@ -169,9 +171,11 @@ struct SettingsView: View {
                 Text("Assistant Defaults")
             }
 
+            AssistantProcessingSection(settings: dataModel.assistant.settings)
+
             // MARK: - Privacy
             Section {
-                PrivacyRow(icon: "lock.shield", text: "Chat generation runs on-device when supported.")
+                PrivacyRow(icon: "lock.shield", text: dataModel.assistant.settings.usesPrivateCloudCompute ? "AI requests use Apple’s Private Cloud Compute." : "AI requests run on this device.")
                 PrivacyRow(icon: persistenceMode.isLocalOnly ? "icloud.slash" : "icloud", text: persistencePrivacyText)
                 PrivacyRow(icon: "cart", text: "Subscriptions and purchases use Apple's StoreKit services.")
             } header: {
@@ -218,7 +222,7 @@ struct SettingsView: View {
                         .foregroundStyle(cloudKitStatus.color)
                 }
                 Button {
-                    refreshCloudKitHealth()
+                    cloudKitRefreshID += 1
                 } label: {
                     if isCheckingCloudKit {
                         Label {
@@ -261,29 +265,32 @@ struct SettingsView: View {
     }
 
     #if DEBUG
-    private func refreshCloudKitHealth() {
+    private func refreshCloudKitHealth() async {
         isCheckingCloudKit = true
         cloudKitStatus = .checking
-        Task {
+        defer { isCheckingCloudKit = false }
+        do {
             let container = CKContainer(identifier: "iCloud.com.transfinite.aiassistant")
-            let status = try? await container.accountStatus()
+            let status = try await container.accountStatus()
+            try Task.checkCancellation()
             switch status {
-            case .available?:
+            case .available:
                 cloudKitStatus = .available
-            case .restricted?:
+            case .restricted:
                 cloudKitStatus = .restricted
-            case .couldNotDetermine?:
+            case .couldNotDetermine:
                 cloudKitStatus = .unknown
-            case .noAccount?:
+            case .noAccount:
                 cloudKitStatus = .noAccount
-            case nil:
-                cloudKitStatus = .error
-            case .some(.temporarilyUnavailable):
+            case .temporarilyUnavailable:
                 cloudKitStatus = .unknown
             @unknown default:
                 cloudKitStatus = .unknown
             }
-            isCheckingCloudKit = false
+        } catch is CancellationError {
+            return
+        } catch {
+            cloudKitStatus = .error
         }
     }
     #endif
@@ -300,7 +307,7 @@ private enum CloudKitHealthStatus {
 
     var label: String {
         switch self {
-        case .checking: "Checking..."
+        case .checking: "Checking…"
         case .available: "Available"
         case .noAccount: "No iCloud Account"
         case .restricted: "Restricted"
@@ -394,12 +401,4 @@ private struct PrivacyRow: View {
                 .font(.subheadline)
         }
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    SettingsView(preferences: .defaults)
-        .environment(DataModel())
-        .environment(StoreKitService<AppSubscriptionTier>())
 }

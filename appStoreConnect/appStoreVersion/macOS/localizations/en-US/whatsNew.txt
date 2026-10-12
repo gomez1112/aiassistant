@@ -1,0 +1,8 @@
+- Cleaner Chat UI with a simpler top header and a floating ChatGPT-style message composer.
+- Failed or cancelled AI responses no longer count against the free daily message limit.
+- Outputs and Library now refresh live when content changes.
+- Navigation to saved Outputs and Library items is more reliable.
+- Better handling when on-device AI is unavailable.
+- Improved cancellation handling for AI transforms and summaries.
+- Quiz outputs now validate answer keys more safely before showing interactive quiz UI.
+- General stability fixes across chat, saved outputs, and library workflows.

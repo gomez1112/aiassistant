@@ -51,13 +51,6 @@ enum PersistenceMode: Equatable, Sendable {
     }
 }
 
-private struct PersistenceModeKey: EnvironmentKey {
-    static let defaultValue: PersistenceMode = .cloudKit
-}
-
 extension EnvironmentValues {
-    var persistenceMode: PersistenceMode {
-        get { self[PersistenceModeKey.self] }
-        set { self[PersistenceModeKey.self] = newValue }
-    }
+    @Entry var persistenceMode: PersistenceMode = .cloudKit
 }

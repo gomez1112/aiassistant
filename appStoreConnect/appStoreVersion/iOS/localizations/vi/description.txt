@@ -1,0 +1,79 @@
+Chào mừng ai.assistant — trợ lý AI riêng tư, chạy ngay trên thiết bị, giúp bạn suy nghĩ, viết và sắp xếp rõ ràng. Ứng dụng dùng Apple on-device foundational Models. Soạn email, tóm tắt bài viết, giải thích chủ đề phức tạp, lập kế hoạch dự án và brainstorm ý tưởng — với trải nghiệm mượt mà, đúng phong cách Apple trên iPhone, iPad và Mac.
+
+Giữ tập trung với các chế độ chat chuyên biệt  
+Chọn cách bạn muốn trợ lý hỗ trợ để nhận đúng điều mình cần, nhanh hơn:
+
+Viết — Biến ý nghĩ thô thành câu chữ rõ ràng.  
+• Soạn email, tiểu luận và bài blog  
+• Viết lại để ngắn hơn, thân thiện hơn hoặc chuyên nghiệp hơn  
+• Chỉnh câu chữ nhưng vẫn giữ đúng giọng của bạn
+
+Tóm tắt — Vào thẳng vấn đề chỉ trong vài giây.  
+• Biến bài dài hoặc ghi chú thành ý chính  
+• Tạo TL;DR để dán vào tin nhắn hoặc tài liệu  
+• So sánh nhiều bản tóm tắt để chọn điều quan trọng
+
+Giải thích — Hiểu rõ mọi thứ dễ hơn.  
+• Phân rã đoạn văn, khái niệm hoặc hướng dẫn dày đặc  
+• Yêu cầu hướng dẫn từng bước và ví dụ gần gũi  
+• Biến lời giải thích khó hiểu thành ngôn ngữ đơn giản
+
+Lập kế hoạch — Biến mục tiêu thành các bước cụ thể.  
+• Tạo danh sách việc cần làm cho chuyến đi, sự kiện, việc vặt  
+• Lên lịch học hoặc mốc thời gian dự án  
+• Biến ý tưởng mơ hồ thành kế hoạch hành động theo thứ tự
+
+Brainstorm — Khám phá nhiều lựa chọn trước khi quyết định.  
+• Gợi ý ý tưởng cho tên, chủ đề, tính năng hoặc quà tặng  
+• Đề xuất cách tiếp cận khác cho một vấn đề  
+• Hỏi ưu nhược để làm rõ suy nghĩ
+
+Hoặc ở chế độ Tổng quát và để ai.assistant tự điều chỉnh theo diễn biến cuộc trò chuyện.
+
+Nhập PDF và hình ảnh để hiểu ngay  
+Gửi PDF hoặc hình ảnh và để ai.assistant trích xuất nội dung để bạn làm việc trực tiếp.  
+• Tóm lược ý chính trong PDF 20 trang bằng vài gạch đầu dòng  
+• Yêu cầu giải thích đề tài nghiên cứu bằng ngôn ngữ dễ hiểu  
+• Chuyển ghi chú scan hoặc ảnh chụp thành văn bản gọn, có thể chỉnh sửa  
+(PDF tối đa 50 trang.)
+
+Biến câu trả lời thành Outputs có thể dùng lại  
+Bất kỳ phản hồi nào bạn thích đều có thể trở thành Output (Tài liệu) để dùng sau.  
+• Lưu bản nháp, tóm tắt, kế hoạch, checklist, câu đố, thẻ flashcard và hơn thế nữa  
+• Sắp xếp theo loại, chủ đề hoặc dự án  
+• Tìm kiếm, gắn nhãn và lọc để lấy đúng thứ bạn cần  
+• Sao chép và dùng lại Outputs giữa các app chỉ trong vài giây
+
+Output Studio: định dạng lại chỉ với một chạm  
+Biến nhanh bất kỳ phản hồi nào thành định dạng mới mà không cần viết lại từ đầu.  
+• Ngắn hơn: nén một trang thành vài câu súc tích  
+• Chuyên nghiệp hơn: biến ghi chú đời thường thành văn bản chuyên nghiệp  
+• Dạng gạch đầu dòng: chuyển đoạn dài thành danh sách dễ lướt  
+• Câu đố: biến một chủ đề thành câu hỏi luyện tập  
+• Flashcards: tạo thẻ ôn theo kiểu lặp ngắt quãng từ các ý chính  
+Xem trước, rồi lưu vào Outputs để dùng sau.
+
+Xây Thư viện cá nhân bạn thật sự dùng được  
+Lưu ghi chú, đoạn trích và văn bản dán vào làm thư viện tham khảo riêng.  
+• Ghi lại nghiên cứu, biên bản cuộc họp hoặc đoạn quan trọng  
+• Tạo tóm tắt AI nhanh để mỗi mục dễ quét  
+• Quay lại sau, tìm theo từ khóa và nhớ ngay điều quan trọng
+
+Ari (tùy chọn): gợi ý nhẹ nhàng kèm tính cách  
+Bật Ari để có thêm lớp nhân vật nhẹ nhàng cho việc hướng dẫn và tạo cấu trúc.  
+• Nhận lời nhắc bình tĩnh, động viên khi bạn thấy bế tắc  
+• Dùng các tác vụ một chạm như Simplify, Create checklist, hoặc Refine tone  
+• Điều chỉnh mức độ biểu cảm của Ari để phù hợp với phong cách của bạn
+
+Quyền riêng tư theo thiết kế  
+Nội dung của bạn được lưu ngay trên thiết bị, không phải hồ sơ trung tâm.  
+• Đồng bộ iCloud tùy chọn qua CloudKit để dữ liệu luôn cập nhật trên các thiết bị Apple  
+• Giao dịch được Apple xử lý an toàn qua StoreKit
+
+Ari+  
+Nâng cấp để mở khóa các công cụ cao cấp giúp bạn làm được nhiều hơn với ai.assistant:  
+• Nhập tệp cho PDF và hình ảnh  
+• Biến đổi nâng cao trong Output Studio  
+• Mở rộng công cụ AI cho viết, lập kế hoạch và học tập chuyên sâu hơn
+
+Điều khoản Sử dụng (EULA): https://www.apple.com/legal/internet-services/itunes/dev/stdeula/

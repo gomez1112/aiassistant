@@ -1,0 +1,8 @@
+Giao diện Chat gọn gàng hơn với thanh tiêu đề đơn giản và ô soạn tin kiểu ChatGPT dạng nổi.
+Các phản hồi AI bị lỗi hoặc hủy không còn tính vào giới hạn tin nhắn miễn phí hằng ngày.
+Bản xem Kết quả và Thư viện nay làm mới theo thời gian thực khi nội dung thay đổi.
+Điều hướng tới các mục đã lưu ở Kết quả và Thư viện đáng tin cậy hơn.
+Xử lý tốt hơn khi AI trên thiết bị không khả dụng.
+Cải thiện thao tác hủy cho các tác vụ chuyển đổi và tóm tắt bằng AI.
+Kết quả câu đố giờ xác thực đáp án an toàn hơn trước khi hiển thị giao diện câu đố tương tác.
+Khắc phục ổn định chung cho luồng Chat, Kết quả đã lưu và Thư viện.

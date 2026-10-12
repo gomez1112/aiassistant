@@ -14,9 +14,13 @@ final class DataModel {
 
     // MARK: - Engines
 
-    let assistant = AssistantEngine()
+    let assistant: AssistantEngine
     let ari = AriEngine()
     let review = ReviewController()
+
+    init(settings: AssistantModelSettings = AssistantModelSettings()) {
+        assistant = AssistantEngine(settings: settings)
+    }
 
     // MARK: - Active State
 
@@ -68,6 +72,9 @@ final class DataModel {
         context: ModelContext,
         preferences: UserPreferences
     ) async -> AssistantOperationOutcome {
+        guard !Task.isCancelled, !thread.isDeleted, thread.modelContext != nil else {
+            return .cancelled
+        }
         // 1. Classify intent and snapshot history before inserting the new message
         let mode = selectedMode == .general
             ? assistant.classifyIntent(text)
@@ -84,10 +91,15 @@ final class DataModel {
             thread: thread,
             role: .user,
             text: text,
-            mode: mode
+            mode: mode,
+            status: .pending
         )
         context.insert(userMessage)
         thread.updatedAt = .now
+        guard saveContext(context, source: "sendMessage.pending") else {
+            context.delete(userMessage)
+            return .failed(persistenceErrorMessage ?? "Could not save your message.")
+        }
 
         // 3. Update Ari before generation
         let messagesAfterUserInsert = thread.sortedMessages
@@ -107,6 +119,10 @@ final class DataModel {
             attachmentContext: attachmentContext
         )
 
+        // A deleted source must never be resurrected by a delayed model response.
+        guard !thread.isDeleted, thread.modelContext != nil, !userMessage.isDeleted else {
+            return .cancelled
+        }
         if Task.isCancelled {
             userMessage.status = .cancelled
             saveContext(context, source: "sendMessage.cancelled")
@@ -135,6 +151,7 @@ final class DataModel {
             ariMood: ari.currentMood
         )
         context.insert(assistantMessage)
+        userMessage.status = .completed
         lastAssistantMessage = assistantMessage
 
         // 6. Update thread title if first exchange
@@ -151,8 +168,9 @@ final class DataModel {
             preferences: preferences
         )
 
-        saveContext(context, source: "sendMessage")
-        return .completed
+        return saveContext(context, source: "sendMessage")
+            ? .completed
+            : .failed(persistenceErrorMessage ?? "Could not save the reply.")
     }
 
     // MARK: - Artifact Management
@@ -173,7 +191,7 @@ final class DataModel {
             title: suggestion.title,
             content: suggestion.content,
             tags: suggestion.tags,
-            sourceThreadID: activeThread?.id,
+            sourceThreadID: message?.thread?.id ?? activeThread?.id,
             sourceMessageID: message?.id
         )
         context.insert(artifact)
@@ -216,6 +234,10 @@ final class DataModel {
             type: type,
             preferences: preferences
         )
+
+        guard !Task.isCancelled, !artifact.isDeleted, artifact.modelContext != nil else {
+            return .cancelled
+        }
 
         let transformedText: String
         switch transformed {
@@ -263,6 +285,10 @@ final class DataModel {
     ) async -> AssistantOperationOutcome {
         let summary = await assistant.summarizeLibraryItem(text: item.rawText)
 
+        guard !Task.isCancelled, !item.isDeleted, item.modelContext != nil else {
+            return .cancelled
+        }
+
         let summaryText: String
         switch summary {
         case .success(let text):
@@ -288,8 +314,15 @@ final class DataModel {
 
     func loadOrCreatePreferences(in context: ModelContext) -> UserPreferences {
         let descriptor = FetchDescriptor<UserPreferences>()
-        if let existing = try? context.fetch(descriptor).first {
-            return existing
+        do {
+            // CloudKit can deliver multiple singleton records. Choose consistently
+            // without deleting another device's settings or relying on fetch order.
+            if let existing = try context.fetch(descriptor).min(by: { $0.id.uuidString < $1.id.uuidString }) {
+                return existing
+            }
+        } catch {
+            persistenceErrorMessage = "Could not load preferences: \(error.localizedDescription)"
+            return UserPreferences()
         }
         let prefs = UserPreferences()
         context.insert(prefs)
@@ -378,7 +411,6 @@ final class DataModel {
             return true
         } catch {
             persistenceErrorMessage = "Save failed (\(source)): \(error.localizedDescription)"
-            assertionFailure("SwiftData save failed (\(source)): \(error)")
             return false
         }
     }

@@ -1,0 +1,75 @@
+Conoce ai.assistant: tu compañero de IA privado que te ayuda a pensar, escribir y organizar con claridad. Redacta correos, resume artículos, explica temas complejos, planifica proyectos e ideas en un entorno Apple en iPhone, iPad y Mac.
+
+Mantente enfocado con modos de chat dedicados  
+Elige cómo deseas que el asistente te ayude para obtener exactamente lo que necesitas, más rápido:
+
+Escribir – Convierte ideas en textos claros.  
+• Redacta correos, ensayos y blogs  
+• Reescribe mensajes para ser más cortos o formales  
+• Pulir el estilo sin perder tu voz
+
+Resumir – Obtén lo esencial rápidamente.  
+• Transforma artículos largos en puntos clave  
+• Genera resúmenes para mensajes o documentos  
+• Compara varios resúmenes para decidir lo importante
+
+Explicar – Comprende todo con claridad.  
+• Descompón textos densos o instrucciones  
+• Pide explicaciones paso a paso  
+• Simplifica explicaciones confusas
+
+Planear – Convierte metas en pasos concretos.  
+• Crea listas para viajes, eventos o tareas  
+• Traza horarios de estudio o proyectos  
+• Organiza ideas en planes de acción
+
+Lluvia de ideas – Explora opciones antes de decidir.  
+• Genera nombres, temas, funciones o regalos  
+• Encuentra enfoques alternativos a problemas  
+• Pide pros y contras para aclarar tu pensamiento
+
+O permanece en modo General y que ai.assistant se adapte a cualquier tarea a medida que la conversación evoluciona.
+
+Importa PDFs e imágenes para comprensión instantánea  
+Trae PDFs o imágenes y deja que ai.assistant extraiga el texto para trabajar directamente.  
+• Resalta puntos clave de un PDF de 20 páginas en pocos puntos  
+• Pide una explicación sencilla de un estudio  
+• Convierte notas escaneadas en texto limpio
+
+Convierte grandes respuestas en Salidas reutilizables  
+Cualquier respuesta que te guste puede convertirse en una Salida (Artefacto) para usar más tarde.  
+• Guarda borradores, resúmenes, planes, listas y más  
+• Organiza por tipo, tema o proyecto  
+• Busca, etiqueta y filtra para encontrar lo que necesitas  
+• Copia y reutiliza salidas en aplicaciones en segundos
+
+Estudio de Salidas: recalibra respuestas con un toque  
+Transforma rápidamente cualquier respuesta a un nuevo formato sin reescribir.  
+• Más cortas – Comprime una página en frases concisas  
+• Más formal – Transforma notas informales en texto profesional  
+• Viñetas – Transforma párrafos en listas escaneables  
+• Quiz – Convierte un tema en preguntas de práctica  
+• Tarjetas – Crea tarjetas de repetición con puntos clave  
+Guarda el resultado en Salidas para usar después.
+
+Crea una Biblioteca personal que sí puedas usar  
+Guarda notas, fragmentos y texto como tu biblioteca de referencia.  
+• Captura investigación, notas de reuniones o pasajes clave  
+• Genera resúmenes rápidos de IA para escanear fácilmente  
+• Regresa luego, busca por palabras clave y recuerda lo importante
+
+Ari (opcional): orientación suave con personalidad  
+Activa Ari para una capa ligera de guía.  
+• Recibe ánimo y acciones simples como Simplificar o Crear lista  
+• Ajusta cuán expresivo es Ari para que coincida con tu estilo
+
+Privacidad diseño prioritario  
+Tus datos se guardan en tu dispositivo, no en un perfil central.  
+• Sincronización opcional por iCloud para mantener datos actualizados  
+• Compras seguras mediante Apple con StoreKit
+
+Ari+  
+Mejora para desbloquear herramientas premium que expanden tus capacidades con ai.assistant:  
+• Importación de archivos PDF e imágenes  
+• Transformaciones avanzadas en Estudio de Salidas  
+• Herramientas de IA ampliadas para escritura, planificación y estudio más avanzados

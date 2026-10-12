@@ -1,0 +1,114 @@
+DEFINE SCHEMA
+
+    RECORD TYPE CD_Artifact (
+        CD_content         STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_createdAt       TIMESTAMP QUERYABLE SORTABLE,
+        CD_entityName      STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_id              STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_kindRaw         STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_sourceMessageID STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_sourceThreadID  STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_tagsRaw         STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_title           STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_updatedAt       TIMESTAMP QUERYABLE SORTABLE,
+        "___createTime"    TIMESTAMP,
+        "___createdBy"     REFERENCE,
+        "___etag"          STRING,
+        "___modTime"       TIMESTAMP,
+        "___modifiedBy"    REFERENCE,
+        "___recordID"      REFERENCE,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
+    RECORD TYPE CD_LibraryItem (
+        CD_aiSummary    STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_createdAt    TIMESTAMP QUERYABLE SORTABLE,
+        CD_entityName   STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_id           STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_kindRaw      STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_rawText      STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_title        STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_updatedAt    TIMESTAMP QUERYABLE SORTABLE,
+        "___createTime" TIMESTAMP,
+        "___createdBy"  REFERENCE,
+        "___etag"       STRING,
+        "___modTime"    TIMESTAMP,
+        "___modifiedBy" REFERENCE,
+        "___recordID"   REFERENCE,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
+    RECORD TYPE CD_Message (
+        CD_ariGuidance    STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_ariMoodRaw     STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_artifactIDsRaw STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_createdAt      TIMESTAMP QUERYABLE SORTABLE,
+        CD_entityName     STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_id             STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_modeRaw        STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_roleRaw        STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_text           STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_thread         STRING QUERYABLE SEARCHABLE SORTABLE,
+        "___createTime"   TIMESTAMP,
+        "___createdBy"    REFERENCE,
+        "___etag"         STRING,
+        "___modTime"      TIMESTAMP,
+        "___modifiedBy"   REFERENCE,
+        "___recordID"     REFERENCE,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
+    RECORD TYPE CD_Thread (
+        CD_createdAt    TIMESTAMP QUERYABLE SORTABLE,
+        CD_entityName   STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_id           STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_pinned       INT64 QUERYABLE SORTABLE,
+        CD_title        STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_updatedAt    TIMESTAMP QUERYABLE SORTABLE,
+        "___createTime" TIMESTAMP,
+        "___createdBy"  REFERENCE,
+        "___etag"       STRING,
+        "___modTime"    TIMESTAMP,
+        "___modifiedBy" REFERENCE,
+        "___recordID"   REFERENCE,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
+    RECORD TYPE CD_UserPreferences (
+        CD_ariEnabled           INT64 QUERYABLE SORTABLE,
+        CD_ariExpressivenessRaw STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_ariVibeRaw           STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_entityName           STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_id                   STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_outputStyleRaw       STRING QUERYABLE SEARCHABLE SORTABLE,
+        CD_verbosityRaw         STRING QUERYABLE SEARCHABLE SORTABLE,
+        "___createTime"         TIMESTAMP,
+        "___createdBy"          REFERENCE,
+        "___etag"               STRING,
+        "___modTime"            TIMESTAMP,
+        "___modifiedBy"         REFERENCE,
+        "___recordID"           REFERENCE,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
+    RECORD TYPE Users (
+        "___createTime" TIMESTAMP,
+        "___createdBy"  REFERENCE,
+        "___etag"       STRING,
+        "___modTime"    TIMESTAMP,
+        "___modifiedBy" REFERENCE,
+        "___recordID"   REFERENCE,
+        roles           LIST<INT64>,
+        GRANT WRITE TO "_creator",
+        GRANT READ TO "_world"
+    );

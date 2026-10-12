@@ -4,13 +4,11 @@
 // Orchestrates user intent routing, Foundation Models calls,
 // streaming responses, and artifact generation.
 //
-// Uses Apple Foundation Models (iOS 26+) for on-device inference.
-// Falls back gracefully when the model is unavailable (Simulator, etc.).
+// Uses the selected Apple Foundation Model on iOS and macOS 27.
+// Availability, cloud quota, cancellation, and request failures are surfaced explicitly.
 
 import Foundation
-#if canImport(FoundationModels)
 import FoundationModels
-#endif
 
 // MARK: - Engine State
 
@@ -48,9 +46,16 @@ struct ArtifactSuggestion: Sendable {
 
 // MARK: - AssistantEngine
 
+@available(iOS 27.0, macOS 27.0, *)
 @MainActor
 @Observable
 final class AssistantEngine {
+
+    let settings: AssistantModelSettings
+
+    init(settings: AssistantModelSettings = AssistantModelSettings()) {
+        self.settings = settings
+    }
 
     var state: EngineState = .idle
     var streamingText: String = ""
@@ -64,9 +69,7 @@ final class AssistantEngine {
         (.brainstorm, ["brainstorm", "ideas", "suggest", "alternatives", "options", "creative"])
     ]
 
-    #if canImport(FoundationModels)
     private var session: LanguageModelSession?
-    #endif
 
     // MARK: - Intent Classification
 
@@ -90,6 +93,12 @@ final class AssistantEngine {
         preferences: UserPreferences,
         attachmentContext: String? = nil
     ) async -> GenerationResult {
+        guard !Task.isCancelled else {
+            return GenerationResult(text: "", mode: mode, ariGuidance: nil, ariMood: nil, errorMessage: nil)
+        }
+        guard activeGenerationID == nil else {
+            return failureResult(message: "A reply is already being generated. Wait for it to finish or stop it first.", mode: mode)
+        }
         if let availabilityMessage = foundationModelUnavailableMessage() {
             return failureResult(message: availabilityMessage, mode: mode)
         }
@@ -104,6 +113,7 @@ final class AssistantEngine {
         defer {
             if activeGenerationID == generationID {
                 activeGenerationID = nil
+                session = nil
             }
         }
 
@@ -150,7 +160,6 @@ final class AssistantEngine {
 
         state = .generating
 
-        #if canImport(FoundationModels)
         do {
             let result = try await generateWithFoundationModels(
                 systemPrompt: systemPrompt,
@@ -179,18 +188,16 @@ final class AssistantEngine {
                 errorMessage: nil
             )
         } catch {
-            let errorMessage = error.localizedDescription
+            if Task.isCancelled {
+                return GenerationResult(text: "", mode: mode, ariGuidance: nil, ariMood: nil, errorMessage: nil)
+            }
+            let errorMessage = AssistantModelSettings.requestErrorMessage(error)
             if activeGenerationID == generationID {
                 state = .idle
                 streamingText = ""
             }
             return failure("Generation failed. \(errorMessage)")
         }
-        #else
-        state = .complete
-        streamingText = ""
-        return failure("On-device AI is unavailable on this device right now.")
-        #endif
     }
 
     // MARK: - Transform Content
@@ -214,7 +221,6 @@ final class AssistantEngine {
         beginTransformOperation()
         defer { endTransformOperation() }
 
-        #if canImport(FoundationModels)
         do {
             try Task.checkCancellation()
             let text = try await transformWithFoundationModels(
@@ -227,11 +233,8 @@ final class AssistantEngine {
         } catch is CancellationError {
             return .cancelled
         } catch {
-            return .failed("Transform failed. \(error.localizedDescription)")
+            return Task.isCancelled ? .cancelled : .failed(AssistantModelSettings.requestErrorMessage(error))
         }
-        #else
-        return .failed("On-device AI is unavailable on this device right now.")
-        #endif
     }
 
     // MARK: - Summarize Library Item
@@ -244,10 +247,9 @@ final class AssistantEngine {
         beginSummaryOperation()
         defer { endSummaryOperation() }
 
-        #if canImport(FoundationModels)
         do {
             try Task.checkCancellation()
-            let session = LanguageModelSession()
+            let session = try settings.makeSession()
             let prompt = "Summarize the following text in 2-3 concise sentences:\n\n\(text)"
             let response = try await session.respond(to: prompt)
             try Task.checkCancellation()
@@ -255,11 +257,8 @@ final class AssistantEngine {
         } catch is CancellationError {
             return .cancelled
         } catch {
-            return .failed("Summary failed. \(error.localizedDescription)")
+            return Task.isCancelled ? .cancelled : .failed(AssistantModelSettings.requestErrorMessage(error))
         }
-        #else
-        return .failed("On-device AI is unavailable on this device right now.")
-        #endif
     }
 
     // MARK: - Cancel
@@ -268,9 +267,7 @@ final class AssistantEngine {
         activeGenerationID = nil
         state = .idle
         streamingText = ""
-        #if canImport(FoundationModels)
         session = nil
-        #endif
     }
 
     private func beginTransformOperation() {
@@ -295,7 +292,6 @@ final class AssistantEngine {
 
     // MARK: - Foundation Models Integration
 
-    #if canImport(FoundationModels)
     private func generateWithFoundationModels(
         systemPrompt: String,
         context: String,
@@ -305,9 +301,7 @@ final class AssistantEngine {
         attachmentContext: String?,
         generationID: UUID
     ) async throws -> GenerationResult {
-        let session = LanguageModelSession(
-            instructions: systemPrompt
-        )
+        let session = try settings.makeSession(instructions: systemPrompt)
         self.session = session
 
         var promptParts: [String] = []
@@ -347,7 +341,7 @@ final class AssistantEngine {
         type: TransformType,
         preferences: UserPreferences
     ) async throws -> String {
-        let session = LanguageModelSession(
+        let session = try settings.makeSession(
             instructions: "You are a content transformation assistant. Transform the given content as requested. Output only the transformed content."
         )
 
@@ -409,25 +403,18 @@ final class AssistantEngine {
         let response = try await session.respond(to: prompt)
         return response.content
     }
-    #endif
 
     private func isGenerationCurrent(_ id: UUID) -> Bool {
         activeGenerationID == id && !Task.isCancelled
     }
 
     func foundationModelUnavailableMessage() -> String? {
-        #if canImport(FoundationModels)
-        switch SystemLanguageModel.default.availability {
-        case .available:
+        #if DEBUG
+        if ProcessInfo.processInfo.arguments.contains("-ui-testing-fast-ai") {
             return nil
-        case .unavailable(let reason):
-            return "On-device AI is unavailable right now. \(Self.availabilityReasonMessage(reason))"
-        @unknown default:
-            return "On-device AI is unavailable right now."
         }
-        #else
-        return "On-device AI is unavailable on this device right now."
         #endif
+        return settings.unavailableMessage()
     }
 
     private func failureResult(message: String, mode: AssistantMode) -> GenerationResult {
@@ -439,21 +426,6 @@ final class AssistantEngine {
             errorMessage: message
         )
     }
-
-    #if canImport(FoundationModels)
-    private static func availabilityReasonMessage(_ reason: SystemLanguageModel.Availability.UnavailableReason) -> String {
-        switch reason {
-        case .deviceNotEligible:
-            "This device does not support Apple Intelligence."
-        case .appleIntelligenceNotEnabled:
-            "Apple Intelligence is not enabled."
-        case .modelNotReady:
-            "The model is still downloading or preparing."
-        @unknown default:
-            "Try again later."
-        }
-    }
-    #endif
 
     // MARK: - System Prompt Builder
 
@@ -499,7 +471,7 @@ final class AssistantEngine {
     }
 
     private func buildConversationContext(history: [Message]) -> String {
-        let recent = history.suffix(10)
+        let recent = history.filter { $0.status == .completed }.suffix(10)
         return recent.compactMap { msg in
             let role: String
             switch msg.role {

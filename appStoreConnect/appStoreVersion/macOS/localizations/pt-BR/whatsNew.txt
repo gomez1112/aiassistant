@@ -1,0 +1,8 @@
+- Interface de chat mais limpa, com cabeçalho superior mais simples e um compositor de mensagens flutuante estilo ChatGPT.  
+- Respostas de IA falhadas ou canceladas não contam mais no limite diário gratuito de mensagens.  
+- Saídas e Biblioteca agora atualizam em tempo real quando o conteúdo muda.  
+- Navegação para itens salvos em Saídas e Biblioteca mais confiável.  
+- Melhor tratamento quando a IA no dispositivo não estiver disponível.  
+- Cancelamento aprimorado para transformações e resumos com IA.  
+- As saídas de quiz agora validam as chaves de resposta com mais segurança antes de mostrar a UI interativa do quiz.  
+- Correções gerais de estabilidade nos fluxos de chat, saídas salvas e biblioteca.

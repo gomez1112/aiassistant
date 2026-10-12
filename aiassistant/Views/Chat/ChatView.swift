@@ -42,6 +42,7 @@ struct ChatView: View {
     @State private var paywallContext: SubscriptionPaywallContext = .general
     @State private var showPersistenceError = false
     @State private var generationTask: Task<Void, Never>?
+    @State private var activeGenerationID: UUID?
     @State private var importTask: Task<Void, Never>?
     @State private var activeImportID: UUID?
     @State private var outputStudioSourceMessage: Message?
@@ -520,14 +521,11 @@ struct ChatView: View {
         sendMessage()
     }
 
-    /// Removes a failed user message and sends its text again.
+    /// Keep the original failed message until the retry passes availability and quota checks.
     private func retryMessage(_ message: Message) {
         guard !isGenerating, message.status == .failed else { return }
-        let text = message.text
-        modelContext.delete(message)
-        dataModel.saveChanges(in: modelContext, source: "retryMessage")
-        composerText = text
-        sendMessage()
+        composerText = message.text
+        sendMessage(retrying: message)
     }
 
     private func selectThread(_ thread: Thread) {
@@ -571,12 +569,16 @@ struct ChatView: View {
         pendingAttachmentName = nil
     }
 
-    private func sendMessage() {
+    private func sendMessage(retrying failedMessage: Message? = nil) {
         guard !isGenerating, !isImportingAttachment else { return }
 
         let typedText = composerText.trimmingCharacters(in: .whitespacesAndNewlines)
         let attachmentContext = pendingAttachmentText
         guard !typedText.isEmpty || attachmentContext != nil else { return }
+        if let message = dataModel.assistant.foundationModelUnavailableMessage() {
+            generationErrorMessage = message
+            return
+        }
 
         let freeMessageCountBeforeSend: Int?
         if !hasPremiumAccess {
@@ -595,6 +597,10 @@ struct ChatView: View {
 
         let userMessageText = typedText.isEmpty ? "Analyze the attached file." : typedText
 
+        if let failedMessage {
+            modelContext.delete(failedMessage)
+        }
+
         // Create thread if needed
         let thread: Thread
         if let active = activeThread {
@@ -610,10 +616,17 @@ struct ChatView: View {
         isGenerating = true
         ariGuidanceThreadID = thread.id
         sendFeedbackTrigger += 1
+        let generationID = UUID()
+        activeGenerationID = generationID
 
         generationTask = Task {
-            defer { isGenerating = false }
-            defer { generationTask = nil }
+            defer {
+                if activeGenerationID == generationID {
+                    isGenerating = false
+                    generationTask = nil
+                    activeGenerationID = nil
+                }
+            }
             let outcome = await dataModel.sendMessage(
                 text: userMessageText,
                 attachmentContext: attachmentContext,
@@ -621,6 +634,7 @@ struct ChatView: View {
                 context: modelContext,
                 preferences: preferences
             )
+            guard !Task.isCancelled, activeGenerationID == generationID else { return }
             if dataModel.activeThread?.id == thread.id {
                 ariGuidanceThreadID = thread.id
             }
@@ -628,7 +642,7 @@ struct ChatView: View {
 
             switch outcome {
             case .completed:
-                if shouldPresentLimitPaywallAfterSend {
+                if shouldPresentLimitPaywallAfterSend, !hasPremiumAccess {
                     presentPaywall(context: .messageLimit)
                 }
             case .failed(let message):
@@ -643,6 +657,7 @@ struct ChatView: View {
         isComposerFocused = false
         generationTask?.cancel()
         generationTask = nil
+        activeGenerationID = nil
         dataModel.assistant.cancel()
         isGenerating = false
     }
@@ -743,11 +758,7 @@ struct ChatView: View {
                 }
             }
             do {
-                let extractionTask: Task<String, Error> = Task.detached(priority: .userInitiated) {
-                    try Task.checkCancellation()
-                    return try Self.extractText(from: fileURL)
-                }
-                let extracted = try await extractionTask.value
+                let extracted = try await Self.extractText(from: fileURL)
                 guard !Task.isCancelled, activeImportID == importID else { return }
 
                 let trimmed = Self.preparedAttachmentText(from: extracted)
@@ -765,7 +776,7 @@ struct ChatView: View {
         }
     }
 
-    nonisolated private static func extractText(from fileURL: URL) throws -> String {
+    @concurrent private static func extractText(from fileURL: URL) async throws -> String {
         let hasAccess = fileURL.startAccessingSecurityScopedResource()
         defer {
             if hasAccess {
@@ -794,7 +805,7 @@ struct ChatView: View {
     }
 
     nonisolated private static func validateAttachmentSize(_ fileURL: URL) throws {
-        let values = try? fileURL.resourceValues(forKeys: [.fileSizeKey])
+        let values = try fileURL.resourceValues(forKeys: [.fileSizeKey])
         if let fileSize = values?.fileSize, fileSize > ImportLimits.maxFileBytes {
             throw ImportError.fileTooLarge
         }
@@ -822,6 +833,7 @@ struct ChatView: View {
 
         var pages: [String] = []
         for index in 0..<pdf.pageCount {
+            try Task.checkCancellation()
             if let text = pdf.page(at: index)?.string?.trimmingCharacters(in: .whitespacesAndNewlines),
                !text.isEmpty {
                 pages.append(text)

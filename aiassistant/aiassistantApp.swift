@@ -16,7 +16,7 @@ struct AIAssistantApp: App {
     let persistenceMode: PersistenceMode
     let startupIssueMessage: String?
     
-    @State private var dataModel = DataModel()
+    @State private var assistantSettings = AssistantModelSettings()
     @State private var flexStore = StoreKitService<AppSubscriptionTier>()
 
     private static var launchArguments: [String] {
@@ -57,7 +57,8 @@ struct AIAssistantApp: App {
             } else {
                 config = ModelConfiguration(
                     "AIAssistant",
-                    schema: schema
+                    schema: schema,
+                    cloudKitDatabase: .private("iCloud.com.transfinite.aiassistant")
                 )
             }
             resolvedContainer = try ModelContainer(for: schema, configurations: [config])
@@ -72,12 +73,10 @@ struct AIAssistantApp: App {
                 resolvedContainer = try ModelContainer(for: schema, configurations: [fallbackConfig])
                 resolvedMode = .localFallback(primaryError.localizedDescription)
                 resolvedIssue = "CloudKit container load failed. Falling back to local store. Error: \(primaryError.localizedDescription)"
-                assertionFailure(resolvedIssue ?? "CloudKit container load failed.")
             } catch {
                 resolvedContainer = nil
                 resolvedMode = .recovery(error.localizedDescription)
                 resolvedIssue = "Failed to create any ModelContainer. CloudKit error: \(primaryError.localizedDescription). Local fallback error: \(error.localizedDescription)"
-                assertionFailure(resolvedIssue ?? "Failed to create any ModelContainer.")
             }
         }
 
@@ -127,10 +126,7 @@ struct AIAssistantApp: App {
 
     @ViewBuilder
     private var appRoot: some View {
-        WelcomeOfferGate {
-            RootTabView()
-        }
-        .environment(dataModel)
+        WorkspaceRootView(settings: assistantSettings)
         .environment(\.persistenceMode, persistenceMode)
         .attachStoreKit(
             manager: flexStore,
@@ -143,8 +139,7 @@ struct AIAssistantApp: App {
     @ViewBuilder
     private var settingsContent: some View {
         if let modelContainer {
-            AppSettingsSceneView()
-                .environment(dataModel)
+            AppSettingsSceneView(settings: assistantSettings)
                 .environment(\.persistenceMode, persistenceMode)
                 .attachStoreKit(
                     manager: flexStore,
@@ -235,9 +230,13 @@ private struct PersistenceRecoveryView: View {
 }
 #if os(macOS)
 private struct AppSettingsSceneView: View {
-    @Environment(DataModel.self) private var dataModel
+    @State private var dataModel: DataModel
     @Environment(\.modelContext) private var modelContext
     @State private var preferences: UserPreferences?
+
+    init(settings: AssistantModelSettings) {
+        dataModel = DataModel(settings: settings)
+    }
 
     var body: some View {
         Group {
@@ -248,6 +247,7 @@ private struct AppSettingsSceneView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+        .environment(dataModel)
         .onAppear {
             preferences = dataModel.loadOrCreatePreferences(in: modelContext)
         }

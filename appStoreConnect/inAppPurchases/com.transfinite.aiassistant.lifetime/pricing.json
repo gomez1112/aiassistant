@@ -1,0 +1,9 @@
+{
+  "baseTerritory": "USA",
+  "manualPrices": [
+    {
+      "customerPrice": "199.99",
+      "territory": "USA"
+    }
+  ]
+}

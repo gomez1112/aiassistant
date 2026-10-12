@@ -1,0 +1,12 @@
+ai.assistant is an on-device AI assistant that helps users chat in modes (Write, Summarize, Explain, Plan, Brainstorm), optionally import a PDF/image to extract text, and save responses as “Outputs” (Artifacts). Content is stored on-device with optional iCloud sync via CloudKit.
+Account / login
+No account or login is required.
+How to test core features
+Launch the app → complete onboarding (if shown).
+Go to Chat tab.
+Select a mode (top chips): Write / Summarize / Explain / Plan / Brainstorm.
+Send a message (example prompts):
+“Write a professional email asking for a meeting next week.”
+“Summarize this paragraph: …”
+“Explain compound interest step-by-step.”
+“Create a weekly workout plan for beginners.”

@@ -22,6 +22,7 @@ struct OutputStudioSheet: View {
     @State private var result: String?
     @State private var errorMessage: String?
     @State private var processingTask: Task<Void, Never>?
+    @State private var activeProcessingID: UUID?
     @State private var isSourceExpanded = false
     private let transformColumns = [GridItem(.adaptive(minimum: 96, maximum: 170), spacing: 12)]
 
@@ -83,6 +84,7 @@ struct OutputStudioSheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         processingTask?.cancel()
+                        activeProcessingID = nil
                         dismiss()
                     }
                 }
@@ -122,13 +124,13 @@ struct OutputStudioSheet: View {
                 Text(errorMessage ?? "Please try again.")
             }
             .onChange(of: selectedKind) { _, _ in
-                result = nil
+                invalidateResult()
             }
             .onChange(of: selectedTransform) { _, _ in
-                result = nil
+                invalidateResult()
             }
             .onDisappear {
-                processingTask?.cancel()
+                invalidateResult()
             }
         }
     }
@@ -147,19 +149,25 @@ struct OutputStudioSheet: View {
     private func generate() {
         guard let transform = selectedTransform else { return }
         processingTask?.cancel()
+        let processingID = UUID()
+        activeProcessingID = processingID
+        let kind = selectedKind
         result = nil
         isProcessing = true
         processingTask = Task {
             defer {
-                isProcessing = false
-                processingTask = nil
+                if activeProcessingID == processingID {
+                    isProcessing = false
+                    processingTask = nil
+                    activeProcessingID = nil
+                }
             }
             let outcome = await dataModel.assistant.transform(
                 content: sourceText,
                 type: transform,
                 preferences: preferences
             )
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, activeProcessingID == processingID else { return }
 
             switch outcome {
             case .success(let output):
@@ -170,7 +178,7 @@ struct OutputStudioSheet: View {
                 }
                 result = trimmed
                 if title.isEmpty {
-                    title = "\(selectedKind.rawValue) - \(transform.rawValue)"
+                    title = "\(kind.rawValue) - \(transform.rawValue)"
                 }
             case .cancelled:
                 break
@@ -189,7 +197,19 @@ struct OutputStudioSheet: View {
             tags: [selectedKind.rawValue.lowercased()],
             in: modelContext
         )
-        dismiss()
+        if let message = dataModel.persistenceErrorMessage {
+            errorMessage = message
+        } else {
+            dismiss()
+        }
+    }
+
+    private func invalidateResult() {
+        processingTask?.cancel()
+        processingTask = nil
+        activeProcessingID = nil
+        isProcessing = false
+        result = nil
     }
 }
 
