@@ -28,55 +28,22 @@ struct AppEmptyStateView: View {
     }
 
     var body: some View {
-        VStack(spacing: AppTheme.spacingLG) {
-            Image(systemName: systemImage)
-                .font(.system(size: 34, weight: .semibold))
-                .foregroundStyle(AppTheme.brandGradient)
-                .frame(width: 82, height: 82)
-                .background(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .fill(AppTheme.brandWash)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(AppTheme.accent.opacity(0.22), lineWidth: 1)
-                )
-                .accessibilityHidden(true)
-
-            VStack(spacing: AppTheme.spacingSM) {
-                Text(title)
-                    .font(.title3.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .multilineTextAlignment(.center)
-
-                Text(description)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(2)
-                    .frame(maxWidth: 320)
+        GeometryReader { geometry in
+            ScrollView {
+                ContentUnavailableView {
+                    Label(title, systemImage: systemImage)
+                } description: {
+                    Text(description)
+                } actions: {
+                    if let actionTitle, let action {
+                        Button(actionTitle, systemImage: actionSystemImage ?? "plus", action: action)
+                            .buttonStyle(.borderedProminent)
+                            .accessibilityIdentifier(actionAccessibilityIdentifier ?? "emptyState.action")
+                    }
+                }
+                .frame(maxWidth: .infinity, minHeight: geometry.size.height)
             }
-
-            if let actionTitle, let action {
-                actionButton(title: actionTitle, action: action)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(AppTheme.spacingXL)
-    }
-
-    @ViewBuilder
-    private func actionButton(title: String, action: @escaping () -> Void) -> some View {
-        let button = AppPrimaryButton(
-            title,
-            systemImage: actionSystemImage,
-            action: action
-        )
-
-        if let actionAccessibilityIdentifier {
-            button.accessibilityIdentifier(actionAccessibilityIdentifier)
-        } else {
-            button
+            .scrollBounceBehavior(.basedOnSize)
         }
     }
 }

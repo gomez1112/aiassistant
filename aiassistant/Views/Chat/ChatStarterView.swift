@@ -10,47 +10,53 @@ struct ChatStarterView: View {
     let prompts: [StarterPrompt]
     let onSelect: (StarterPrompt) -> Void
 
-    private let columns = [GridItem(.adaptive(minimum: 150, maximum: 260), spacing: AppTheme.spacingSM)]
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var columns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.adaptive(minimum: 150, maximum: 260), spacing: AppTheme.spacingSM)]
+    }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: AppTheme.spacingXL) {
-                VStack(spacing: AppTheme.spacingSM) {
-                    Image(systemName: "sparkles")
-                        .font(.largeTitle.weight(.semibold))
-                        .foregroundStyle(AppTheme.brandGradient)
-                        .accessibilityHidden(true)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(spacing: AppTheme.spacingXL) {
+                    VStack(spacing: AppTheme.spacingSM) {
+                        Image(systemName: "sparkles")
+                            .font(.largeTitle.weight(.semibold))
+                            .foregroundStyle(AppTheme.brandGradient)
+                            .accessibilityHidden(true)
 
-                    Text("What can we finish today?")
-                        .font(.title2.weight(.semibold))
-                        .multilineTextAlignment(.center)
+                        Text("What can we finish today?")
+                            .font(.title2.weight(.semibold))
+                            .multilineTextAlignment(.center)
 
-                    Text("Ask \(assistantName) to draft, explain, plan, or turn a file into clear next steps.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 340)
-                }
+                        Text("Ask \(assistantName) to draft, explain, plan, or turn a file into clear next steps.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 340)
+                    }
 
-                LazyVGrid(columns: columns, spacing: AppTheme.spacingSM) {
-                    ForEach(prompts) { prompt in
-                        StarterPromptButton(prompt: prompt) {
-                            onSelect(prompt)
+                    LazyVGrid(columns: columns, spacing: AppTheme.spacingSM) {
+                        ForEach(prompts) { prompt in
+                            StarterPromptButton(prompt: prompt) {
+                                onSelect(prompt)
+                            }
                         }
                     }
+                    .frame(maxWidth: 560)
                 }
-                .frame(maxWidth: 560)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, AppTheme.spacingLG)
+                .padding(.vertical, AppTheme.spacingXL)
+                .frame(minHeight: geometry.size.height)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, AppTheme.spacingLG)
-            .padding(.vertical, AppTheme.spacingXL)
-            .containerRelativeFrame(.vertical, alignment: .center) { height, _ in
-                height
-            }
+            .scrollDismissesKeyboard(.interactively)
+            .scrollBounceBehavior(.basedOnSize)
+            .accessibilityIdentifier("chat.emptyState")
         }
-        .scrollDismissesKeyboard(.interactively)
-        .scrollBounceBehavior(.basedOnSize)
-        .accessibilityIdentifier("chat.emptyState")
     }
 }
 
@@ -72,7 +78,7 @@ private struct StarterPromptButton: View {
                 Text(prompt.message)
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .multilineTextAlignment(.leading)
             .frame(maxWidth: .infinity, minHeight: 112, alignment: .topLeading)

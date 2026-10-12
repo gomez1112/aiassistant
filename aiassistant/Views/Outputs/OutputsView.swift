@@ -243,7 +243,7 @@ struct ArtifactRow: View {
                     .lineLimit(1)
 
                 if !artifact.tags.isEmpty {
-                    HStack(spacing: 4) {
+                    FlowLayout(spacing: 4) {
                         ForEach(artifact.tags.prefix(3), id: \.self) { tag in
                             AppTagPill(title: tag)
                         }
@@ -283,7 +283,7 @@ struct ArtifactRow: View {
                 .lineSpacing(2)
 
             if !artifact.tags.isEmpty {
-                HStack(spacing: 4) {
+                FlowLayout(spacing: 4) {
                     ForEach(artifact.tags.prefix(3), id: \.self) { tag in
                         AppTagPill(title: tag)
                     }
@@ -311,7 +311,7 @@ struct ArtifactRow: View {
             "Updated \(artifact.updatedAt.formatted(date: .abbreviated, time: .shortened))"
         ]
         if !artifact.tags.isEmpty {
-            parts.append("Tags: \(artifact.tags.prefix(3).joined(separator: ", "))")
+            parts.append("Tags: \(artifact.tags.prefix(3).formatted())")
         }
         return parts.joined(separator: ". ")
     }
@@ -362,16 +362,4 @@ struct FilterChip: View {
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
         .sensoryFeedback(.selection, trigger: isSelected)
     }
-}
-
-// MARK: - Preview
-
-#Preview {
-    OutputsView(preferences: .defaults)
-        .environment(DataModel())
-        .environment(StoreKitService<AppSubscriptionTier>())
-        .modelContainer(for: [
-            Thread.self, Message.self, Artifact.self,
-            LibraryItem.self, UserPreferences.self
-        ], inMemory: true)
 }

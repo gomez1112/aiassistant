@@ -13,6 +13,8 @@ struct SubscriptionPaywallView: View {
     @State private var selectedProductID = Monetization.subscriptionYearlyID
     @State private var purchasingProductID: String?
     @State private var errorMessage: String?
+    @State private var restoreID: UUID?
+    @State private var refreshID = 0
 
     private let subscriptionsURL = URL(string: "https://apps.apple.com/account/subscriptions") ?? URL(fileURLWithPath: "/")
     private let productOrder = [
@@ -53,11 +55,11 @@ struct SubscriptionPaywallView: View {
                 }
             }
             #if os(macOS)
-            .frame(minWidth: 620, minHeight: 760)
+            .frame(minWidth: 420, idealWidth: 560, minHeight: 360, idealHeight: 660)
             #endif
         }
         .tint(AppTheme.paywallTint)
-        .task {
+        .task(id: refreshID) {
             await refreshProductsAndEntitlements()
             syncSelection()
         }
@@ -69,24 +71,15 @@ struct SubscriptionPaywallView: View {
                 dismiss()
             }
         }
-        .alert("Purchase Error", isPresented: errorBinding) {
-            Button("OK", role: .cancel) {
-                errorMessage = nil
-            }
-        } message: {
-            Text(errorMessage ?? "Please try again.")
+        .task(id: restoreID) {
+            guard let restoreID else { return }
+            await flexStore.restorePurchases()
+            guard !Task.isCancelled, self.restoreID == restoreID else { return }
+            self.restoreID = nil
         }
-    }
-
-    private var errorBinding: Binding<Bool> {
-        Binding(
-            get: { errorMessage != nil },
-            set: { isPresented in
-                if !isPresented {
-                    errorMessage = nil
-                }
-            }
-        )
+        .alert("Purchase Error", item: $errorMessage) { _ in } message: { message in
+            Text(message)
+        }
     }
 
     private var hasPremiumAccess: Bool {
@@ -183,10 +176,7 @@ struct SubscriptionPaywallView: View {
                     Text("Ari could not load subscription plans. Check your connection and try again.")
                 } actions: {
                     Button("Retry") {
-                        Task {
-                            await refreshProductsAndEntitlements()
-                            syncSelection()
-                        }
+                        refreshID += 1
                     }
                     .buttonStyle(.borderedProminent)
                     .accessibilityIdentifier("paywall.plans.retry")
@@ -223,15 +213,17 @@ struct SubscriptionPaywallView: View {
 
                     Text(renewalDisclosure(for: selectedProduct))
                         .font(.footnote.weight(.semibold))
-                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
                         .multilineTextAlignment(.center)
                 }
                 .foregroundStyle(.white)
                 .frame(maxWidth: .infinity)
+                .padding(.vertical, AppTheme.spacingSM)
                 .frame(minHeight: 58)
+                .background(AppTheme.brandGradient, in: .rect(cornerRadius: AppTheme.radiusCard))
+                .contentShape(.rect(cornerRadius: AppTheme.radiusCard))
             }
             .buttonStyle(.plain)
-            .background(AppTheme.brandGradient, in: Capsule())
             .shadow(color: AppTheme.accent.opacity(0.3), radius: 12, y: 5)
             .disabled(purchasingProductID != nil)
             .accessibilityLabel("Subscribe. \(renewalDisclosure(for: selectedProduct))")
@@ -259,7 +251,7 @@ struct SubscriptionPaywallView: View {
                         ProgressView()
                             .controlSize(.small)
                             .tint(.white)
-                        Text("Purchasing...")
+                        Text("Purchasing…")
                     }
                 } else if flexStore.purchasedNonConsumables.contains(Monetization.lifetimeID) {
                     Label("Lifetime Active", systemImage: "checkmark.circle.fill")
@@ -280,30 +272,42 @@ struct SubscriptionPaywallView: View {
 
     private var policySection: some View {
         VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
-            HStack {
-                Button("Restore Purchases") {
-                    Task {
-                        await flexStore.restorePurchases()
-                    }
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: AppTheme.spacingXL) {
+                    Button("Restore Purchases", action: restorePurchases)
+                        .disabled(restoreID != nil)
+                    Button("Manage Subscriptions", systemImage: "gearshape") { openURL(subscriptionsURL) }
                 }
+                .fixedSize(horizontal: true, vertical: false)
 
-                Spacer()
-
-                Button {
-                    openURL(subscriptionsURL)
-                } label: {
-                    Label("Manage Subscriptions", systemImage: "gearshape")
+                VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
+                    Button("Restore Purchases", action: restorePurchases)
+                        .disabled(restoreID != nil)
+                    Button("Manage Subscriptions", systemImage: "gearshape") { openURL(subscriptionsURL) }
                 }
             }
 
-            HStack(spacing: AppTheme.spacingXL) {
-                Link("Privacy Policy", destination: Monetization.privacyPolicyURL)
-                Link("Terms of Service", destination: Monetization.termsOfServiceURL)
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: AppTheme.spacingXL) {
+                    Link("Privacy Policy", destination: Monetization.privacyPolicyURL)
+                    Link("Terms of Service", destination: Monetization.termsOfServiceURL)
+                }
+                .fixedSize(horizontal: true, vertical: false)
+
+                VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
+                    Link("Privacy Policy", destination: Monetization.privacyPolicyURL)
+                    Link("Terms of Service", destination: Monetization.termsOfServiceURL)
+                }
             }
         }
         .font(.subheadline)
         .foregroundStyle(.secondary)
         .buttonStyle(.plain)
+    }
+
+    private func restorePurchases() {
+        guard restoreID == nil else { return }
+        restoreID = UUID()
     }
 
     private func purchase(_ product: Product) {
@@ -499,9 +503,4 @@ private struct SelectionIndicator: View {
         }
         .accessibilityHidden(true)
     }
-}
-
-#Preview {
-    SubscriptionPaywallView()
-        .environment(StoreKitService<AppSubscriptionTier>())
 }

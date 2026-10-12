@@ -12,6 +12,7 @@ struct ModeChipBar: View {
         case segmented
     }
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Binding var selectedMode: AssistantMode
     let displayStyle: DisplayStyle
 
@@ -30,10 +31,10 @@ struct ModeChipBar: View {
         case .compactMenu:
             compactMenu
         case .segmented:
-            segmentedPicker
+            adaptivePicker
         case .expandedChips:
             #if os(macOS)
-            segmentedPicker
+            adaptivePicker
             #else
             expandedChips
             #endif
@@ -62,24 +63,18 @@ struct ModeChipBar: View {
 
     private var compactMenu: some View {
         HStack {
-            Picker(selection: $selectedMode) {
+            Picker("Mode", selection: $selectedMode) {
                 ForEach(modes) { mode in
-                    Label(mode.chipLabel, systemImage: mode.icon)
+                    Text(mode.chipLabel)
                         .tag(mode)
                         .accessibilityIdentifier("chat.mode.option.\(mode.rawValue)")
                 }
-            } label: {
-                Label(selectedMode.chipLabel, systemImage: selectedMode.icon)
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(AppTheme.accent)
-                    .padding(.horizontal, 12)
-                    .frame(minHeight: AppTheme.minimumTapTarget)
-                    .background(AppTheme.surfaceFill, in: Capsule())
-                    .overlay {
-                        Capsule().stroke(AppTheme.accent.opacity(0.22), lineWidth: 0.7)
-                    }
             }
             .pickerStyle(.menu)
+            .font(.footnote)
+            .padding(.horizontal, AppTheme.spacingSM)
+            .frame(minHeight: AppTheme.minimumTapTarget)
+            .background(AppTheme.surfaceFill, in: .capsule)
             .buttonStyle(.plain)
             .accessibilityLabel("Mode")
             .accessibilityValue(selectedMode.chipLabel)
@@ -88,10 +83,22 @@ struct ModeChipBar: View {
             Spacer(minLength: 0)
         }
         .padding(.horizontal, AppTheme.spacingLG)
-        .padding(.vertical, 4)
+        .padding(.vertical, AppTheme.spacingXS)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Mode selector")
         .accessibilityIdentifier("chat.mode.selector")
+    }
+
+    @ContentBuilder
+    private var adaptivePicker: some View {
+        if dynamicTypeSize.isAccessibilitySize {
+            compactMenu
+        } else {
+            ViewThatFits(in: .horizontal) {
+                segmentedPicker
+                compactMenu
+            }
+        }
     }
 
     private var segmentedPicker: some View {
@@ -106,6 +113,7 @@ struct ModeChipBar: View {
             .pickerStyle(.segmented)
             .labelsHidden()
             .tint(AppTheme.accent)
+            .fixedSize(horizontal: true, vertical: false)
             .frame(maxWidth: 760)
             .accessibilityIdentifier("chat.mode.segmentedPicker")
 
@@ -117,45 +125,4 @@ struct ModeChipBar: View {
         .accessibilityLabel("Mode selector")
         .accessibilityIdentifier("chat.mode.selector")
     }
-}
-
-struct ModeChip: View {
-    let mode: AssistantMode
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Label(mode.chipLabel, systemImage: mode.icon)
-                .font(.footnote.weight(isSelected ? .semibold : .medium))
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .frame(minHeight: 38)
-                .background(
-                    Capsule()
-                        .fill(isSelected
-                            ? AnyShapeStyle(AppTheme.accent.opacity(0.14))
-                            : AnyShapeStyle(AppTheme.surfaceFill)
-                        )
-                )
-                .overlay(
-                    Capsule()
-                        .stroke(
-                            isSelected ? AppTheme.accent.opacity(0.28) : AppTheme.surfaceStroke,
-                            lineWidth: 0.7
-                        )
-                )
-                .foregroundStyle(isSelected ? AppTheme.accent : .secondary)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(mode.chipLabel)
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
-        .accessibilityValue(isSelected ? "Selected" : "Not selected")
-        .accessibilityIdentifier("chat.mode.option.\(mode.rawValue)")
-        .sensoryFeedback(.selection, trigger: isSelected)
-    }
-}
-
-#Preview {
-    ModeChipBar(selectedMode: .constant(.general))
 }

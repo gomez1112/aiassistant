@@ -4,7 +4,7 @@ import SwiftUI
 struct MacPlainHeader<Actions: View>: View {
     let title: String
     let subtitle: String?
-    @ViewBuilder let actions: () -> Actions
+    @ContentBuilder let actions: Actions
 
     var body: some View {
         HStack(alignment: .center, spacing: AppTheme.spacingLG) {
@@ -12,12 +12,12 @@ struct MacPlainHeader<Actions: View>: View {
 
             Spacer(minLength: AppTheme.spacingLG)
 
-            actions()
+            actions
         }
         .padding(.horizontal, AppTheme.spacingXL)
         .padding(.vertical, AppTheme.spacingLG)
         .background(AppTheme.appBackground)
-        .overlay(Divider().opacity(0.65), alignment: .bottom)
+        .overlay(alignment: .bottom) { Divider().opacity(0.65) }
     }
 
     private var titleBlock: some View {
@@ -42,23 +42,31 @@ struct MacSearchHeader<Actions: View>: View {
     let subtitle: String?
     @Binding var searchText: String
     let prompt: String
-    @ViewBuilder let actions: () -> Actions
+    @ContentBuilder let actions: Actions
 
     var body: some View {
-        HStack(alignment: .center, spacing: AppTheme.spacingLG) {
-            titleBlock
-
-            Spacer(minLength: AppTheme.spacingLG)
-
-            HStack(spacing: AppTheme.spacingMD) {
-                MacSearchField(text: $searchText, prompt: prompt)
-                actions()
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .center, spacing: AppTheme.spacingLG) {
+                titleBlock.fixedSize(horizontal: true, vertical: false)
+                Spacer(minLength: AppTheme.spacingLG)
+                searchAndActions
+            }
+            VStack(alignment: .leading, spacing: AppTheme.spacingMD) {
+                titleBlock
+                searchAndActions
             }
         }
         .padding(.horizontal, AppTheme.spacingXL)
         .padding(.vertical, AppTheme.spacingLG)
         .background(AppTheme.appBackground)
-        .overlay(Divider().opacity(0.65), alignment: .bottom)
+        .overlay(alignment: .bottom) { Divider().opacity(0.65) }
+    }
+
+    private var searchAndActions: some View {
+        HStack(spacing: AppTheme.spacingMD) {
+            MacSearchField(text: $searchText, prompt: prompt)
+            actions
+        }
     }
 
     private var titleBlock: some View {
@@ -90,7 +98,7 @@ private struct MacSearchField: View {
 
             TextField(prompt, text: $text)
                 .textFieldStyle(.plain)
-                .frame(width: 220)
+                .frame(minWidth: 100, idealWidth: 220, maxWidth: 300)
 
             if !text.isEmpty {
                 Button("Clear search", systemImage: "xmark.circle.fill") {
@@ -104,7 +112,7 @@ private struct MacSearchField: View {
             }
         }
         .padding(.horizontal, AppTheme.spacingMD)
-        .frame(height: 30)
+        .padding(.vertical, AppTheme.spacingSM)
         .background(
             RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
                 .fill(AppTheme.surfaceFill)

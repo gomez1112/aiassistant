@@ -106,6 +106,38 @@ final class aiassistantUITests: XCTestCase {
     }
 
     @MainActor
+    func testDraftSurvivesTabNavigationAndRotation() throws {
+        launchApp()
+        let input = element("chat.composer.input")
+        XCTAssertTrue(input.waitForExistence(timeout: 5))
+        input.tap()
+        input.typeText("Keep this unsent draft while resizing.")
+
+        // Open a native sheet to dismiss the keyboard before switching tabs.
+        element("chat.toolbar.threads").tap()
+        XCTAssertTrue(element("threadList.sheet").waitForExistence(timeout: 3))
+        app.buttons["threadList.done"].tap()
+        let outputsTab = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", "Outputs")).firstMatch
+        XCTAssertTrue(outputsTab.waitForExistence(timeout: 3))
+        outputsTab.tap()
+        XCTAssertTrue(element("tab.outputs.content").waitForExistence(timeout: 3))
+
+        XCUIDevice.shared.orientation = .landscapeLeft
+        defer { XCUIDevice.shared.orientation = .portrait }
+        let chatTab = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", "Chat")).firstMatch
+        XCTAssertTrue(chatTab.waitForExistence(timeout: 3))
+        chatTab.tap()
+        XCTAssertTrue(input.waitForExistence(timeout: 3))
+        XCTAssertEqual(input.value as? String, "Keep this unsent draft while resizing.")
+        XCTAssertTrue(element("chat.toolbar.threads").isHittable)
+        XCTAssertTrue(element("chat.toolbar.newChat").isHittable)
+        XCTAssertGreaterThanOrEqual(element("chat.composer.attach").frame.width, 44)
+        XCTAssertGreaterThanOrEqual(element("chat.composer.send").frame.height, 44)
+    }
+
+    @MainActor
     func testPaywallProductStateIsReachableUnderUITesting() throws {
         launchApp()
 

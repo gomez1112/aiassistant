@@ -27,7 +27,13 @@ struct OutputStudioSheet: View {
     @State private var activeProcessingID: UUID?
     @State private var showPaywall = false
     @State private var isSourceExpanded = false
-    private let transformColumns = [GridItem(.adaptive(minimum: 96, maximum: 170), spacing: 12)]
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
+    private var transformColumns: [GridItem] {
+        dynamicTypeSize.isAccessibilitySize
+            ? [GridItem(.flexible())]
+            : [GridItem(.adaptive(minimum: 120), spacing: AppTheme.spacingMD)]
+    }
 
     var body: some View {
         NavigationStack {
@@ -119,12 +125,8 @@ struct OutputStudioSheet: View {
                         )
                 }
             }
-            .alert("Couldn’t generate output", isPresented: errorBinding) {
-                Button("OK", role: .cancel) {
-                    errorMessage = nil
-                }
-            } message: {
-                Text(errorMessage ?? "Please try again.")
+            .alert("Couldn’t generate output", item: $errorMessage) { _ in } message: { message in
+                Text(message)
             }
             .onChange(of: selectedKind) { _, _ in
                 invalidateResult()
@@ -142,17 +144,6 @@ struct OutputStudioSheet: View {
                 SubscriptionPaywallView(context: .outputStudio)
             }
         }
-    }
-
-    private var errorBinding: Binding<Bool> {
-        Binding(
-            get: { errorMessage != nil },
-            set: { isPresented in
-                if !isPresented {
-                    errorMessage = nil
-                }
-            }
-        )
     }
 
     private func generate() {
@@ -246,7 +237,7 @@ struct TransformButton: View {
                     .font(.title3)
                 Text(type.rawValue)
                     .font(.caption)
-                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity)
             .frame(minHeight: AppTheme.minimumTapTarget)

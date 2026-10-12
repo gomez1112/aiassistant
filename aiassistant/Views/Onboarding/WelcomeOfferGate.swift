@@ -16,6 +16,7 @@ struct WelcomeOfferGate<Content: View>: View {
     @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
 
     @State private var showWelcomeOffer = false
+    @State private var offerPending = false
 
     @ViewBuilder var content: Content
 
@@ -27,6 +28,17 @@ struct WelcomeOfferGate<Content: View>: View {
                 guard oldValue.isEmpty, !newValue.isEmpty else { return }
                 presentWelcomeOfferIfNeeded()
             }
+            .task(id: offerPending) {
+                guard offerPending else { return }
+                do {
+                    try await Task.sleep(for: .seconds(0.5))
+                    try Task.checkCancellation()
+                    guard !welcomeOfferPresented, !hasPremiumAccess else { offerPending = false; return }
+                    welcomeOfferPresented = true
+                    showWelcomeOffer = true
+                    offerPending = false
+                } catch { return }
+            }
             .sheet(isPresented: $showWelcomeOffer) {
                 SubscriptionPaywallView(context: .welcome)
             }
@@ -34,16 +46,11 @@ struct WelcomeOfferGate<Content: View>: View {
 
     private func presentWelcomeOfferIfNeeded() {
         guard !welcomeOfferPresented else { return }
-        welcomeOfferPresented = true
 
         // Skip the offer for anyone who already has access.
         guard !hasPremiumAccess else { return }
 
-        Task {
-            // Let the onboarding cover finish dismissing before presenting.
-            try? await Task.sleep(for: .seconds(0.5))
-            showWelcomeOffer = true
-        }
+        offerPending = true
     }
 
     private var hasPremiumAccess: Bool {

@@ -54,12 +54,3 @@ struct AppPrimaryButton: View {
         }
     }
 }
-
-#Preview {
-    VStack(spacing: 20) {
-        AppPrimaryButton("Start Chat", systemImage: "square.and.pencil") {}
-        AppPrimaryButton("Disabled", isDisabled: true) {}
-        AppPrimaryButton("Full Width", systemImage: "wand.and.stars", fillsWidth: true) {}
-    }
-    .padding()
-}

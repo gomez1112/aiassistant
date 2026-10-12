@@ -8,6 +8,7 @@ import SwiftData
 import StoreKit
 import FlexStore
 
+@available(iOS 27.0, macOS 27.0, *)
 struct RootTabView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
@@ -19,18 +20,6 @@ struct RootTabView: View {
     var body: some View {
         Group {
             if let preferences {
-                #if os(macOS)
-                HStack(spacing: 0) {
-                    MacAppSidebar(selectedTab: $selectedTab)
-
-                    Divider()
-
-                    selectedContent(for: preferences)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(AppBackground())
-                }
-                .background(AppBackground())
-                #else
                 TabView(selection: $selectedTab) {
                     Tab(AppTab.chat.title, systemImage: AppTab.chat.systemImage, value: AppTab.chat) {
                         ChatView(preferences: preferences)
@@ -47,15 +36,18 @@ struct RootTabView: View {
                             .accessibilityIdentifier("tab.library.content")
                     }
                 }
-                .tint(AppTheme.accent)
+                .tabViewStyle(.sidebarAdaptable)
+                #if os(iOS)
+                .defaultTabBarPlacement(.sidebar)
                 #endif
+                .tint(AppTheme.accent)
             } else {
                 ProgressView("Loading…")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .background(AppTheme.appBackground)
             }
         }
-        .onAppear {
+        .task {
             preferences = dataModel.loadOrCreatePreferences(in: modelContext)
         }
         .task(id: dataModel.review.isReviewRequestPending) {
@@ -74,97 +66,4 @@ struct RootTabView: View {
         }
     }
 
-    @ViewBuilder
-    private func selectedContent(for preferences: UserPreferences) -> some View {
-        switch selectedTab {
-        case .chat:
-            ChatView(preferences: preferences)
-        case .outputs:
-            OutputsView(preferences: preferences)
-        case .library:
-            LibraryView(preferences: preferences)
-        }
-    }
-}
-
-#if os(macOS)
-private struct MacAppSidebar: View {
-    @Binding var selectedTab: AppTab
-
-    private let tabs: [AppTab] = [.chat, .outputs, .library]
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: AppTheme.spacingLG) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Ari")
-                    .font(.title3.weight(.semibold))
-
-                Text("Workspace")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .padding(.horizontal, AppTheme.spacingMD)
-            .padding(.top, AppTheme.spacingLG)
-
-            VStack(spacing: AppTheme.spacingXS) {
-                ForEach(tabs, id: \.self) { tab in
-                    MacSidebarTabButton(
-                        tab: tab,
-                        isSelected: selectedTab == tab
-                    ) {
-                        selectedTab = tab
-                    }
-                }
-            }
-
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, AppTheme.spacingSM)
-        .padding(.bottom, AppTheme.spacingLG)
-        .frame(width: 188)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .background(AppTheme.macSidebarBackground.opacity(0.94))
-    }
-}
-
-private struct MacSidebarTabButton: View {
-    let tab: AppTab
-    let isSelected: Bool
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Label(tab.title, systemImage: tab.systemImage)
-                .font(.callout.weight(isSelected ? .semibold : .regular))
-                .labelStyle(.titleAndIcon)
-                .foregroundStyle(isSelected ? AnyShapeStyle(AppTheme.accent) : AnyShapeStyle(.primary))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .frame(minHeight: AppTheme.minimumTapTarget)
-                .padding(.horizontal, AppTheme.spacingSM)
-                .background(
-                    RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
-                        .fill(isSelected ? AppTheme.accent.opacity(0.11) : Color.clear)
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous)
-                        .stroke(isSelected ? AppTheme.accent.opacity(0.18) : Color.clear, lineWidth: 0.7)
-                )
-        }
-        .buttonStyle(.plain)
-        .contentShape(RoundedRectangle(cornerRadius: AppTheme.radiusSmall, style: .continuous))
-        .accessibilityIdentifier("sidebar.tab.\(tab.title)")
-    }
-}
-#endif
-
-// MARK: - Preview
-
-#Preview {
-    RootTabView()
-        .environment(DataModel())
-        .environment(StoreKitService<AppSubscriptionTier>())
-        .modelContainer(for: [
-            Thread.self, Message.self, Artifact.self,
-            LibraryItem.self, UserPreferences.self
-        ], inMemory: true)
 }

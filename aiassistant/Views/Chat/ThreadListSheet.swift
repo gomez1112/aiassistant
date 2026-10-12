@@ -45,7 +45,7 @@ struct ThreadListSheet: View {
                         description: Text("Start a new chat to begin.")
                     )
                 } else if filteredThreads.isEmpty {
-                    ContentUnavailableView.search(text: searchText)
+                    ContentUnavailableView.search
                 } else {
                     threadList
                 }
@@ -69,12 +69,8 @@ struct ThreadListSheet: View {
             }
             .confirmationDialog(
                 "Delete this chat?",
-                isPresented: Binding(
-                    get: { threadPendingDeletion != nil },
-                    set: { if !$0 { threadPendingDeletion = nil } }
-                ),
-                titleVisibility: .visible,
-                presenting: threadPendingDeletion
+                item: $threadPendingDeletion,
+                titleVisibility: .visible
             ) { thread in
                 Button("Delete Chat", role: .destructive) {
                     onDelete(thread)

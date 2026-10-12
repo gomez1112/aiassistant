@@ -15,6 +15,8 @@ struct ChatView: View {
     @Environment(DataModel.self) private var dataModel
     @Environment(\.modelContext) private var modelContext
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.verticalSizeClass) private var verticalSizeClass
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
 
     @Query(sort: \Thread.updatedAt, order: .reverse)
@@ -33,8 +35,6 @@ struct ChatView: View {
     @State private var pendingAttachmentName: String?
     @State private var importErrorMessage: String?
     @State private var generationErrorMessage: String?
-    @State private var showImportError = false
-    @State private var showGenerationError = false
     @State private var showPaywall = false
     @State private var paywallContext: SubscriptionPaywallContext = .general
     @State private var showPersistenceError = false
@@ -60,7 +60,7 @@ struct ChatView: View {
         #if os(macOS)
         "Chat"
         #else
-        activeThread?.title ?? "Chat"
+        assistantName
         #endif
     }
     private var macNavigationSubtitle: String {
@@ -123,10 +123,10 @@ struct ChatView: View {
         navigationRoot
     }
 
-    private var navigationRoot: AnyView {
+    private var navigationRoot: some View {
         let chatLayout = mainChatLayout(isCompact: isCompactLayout)
 
-        return AnyView(NavigationStack {
+        return NavigationStack {
             decoratedNavigationContent(chatLayout)
             .sheet(isPresented: $showThreadList) {
                 ThreadListSheet(
@@ -168,19 +168,11 @@ struct ChatView: View {
             ) { result in
                 handleFileImport(result)
             }
-            .alert("Couldn’t import file", isPresented: $showImportError) {
-                Button("OK", role: .cancel) {
-                    importErrorMessage = nil
-                }
-            } message: {
-                Text(importErrorMessage ?? "Please try another file.")
+            .alert("Couldn’t import file", item: $importErrorMessage) { _ in } message: { message in
+                Text(message)
             }
-            .alert("Couldn’t generate response", isPresented: $showGenerationError) {
-                Button("OK", role: .cancel) {
-                    generationErrorMessage = nil
-                }
-            } message: {
-                Text(generationErrorMessage ?? "Please try again.")
+            .alert("Couldn’t generate response", item: $generationErrorMessage) { _ in } message: { message in
+                Text(message)
             }
             .alert("Couldn’t save changes", isPresented: $showPersistenceError) {
                 Button("OK", role: .cancel) {
@@ -188,12 +180,6 @@ struct ChatView: View {
                 }
             } message: {
                 Text(dataModel.persistenceErrorMessage ?? "Please try again.")
-            }
-            .onChange(of: importErrorMessage) { _, newValue in
-                showImportError = newValue != nil
-            }
-            .onChange(of: generationErrorMessage) { _, newValue in
-                showGenerationError = newValue != nil
             }
             .onChange(of: dataModel.persistenceErrorMessage) { _, newValue in
                 showPersistenceError = newValue != nil
@@ -213,48 +199,47 @@ struct ChatView: View {
             cancelGeneration()
             clearAttachment()
         }
-        )
     }
 
-    private func decoratedNavigationContent(_ content: AnyView) -> AnyView {
+    @ContentBuilder
+    private func decoratedNavigationContent<Content: View>(_ content: Content) -> some View {
         #if os(iOS)
-        return AnyView(content
+        content
             .padding(.horizontal, outerHorizontalPadding)
-            .toolbar(.hidden, for: .navigationBar)
-            .toolbar(isComposerFocused ? .hidden : .visible, for: .tabBar))
+            .navigationTitle(navigationTitleText)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { iosChatToolbar }
+            .toolbarVisibility(isComposerFocused ? .hidden : .visible, for: .tabBar)
         #elseif os(macOS)
-        return AnyView(content
+        content
             .padding(.horizontal, outerHorizontalPadding)
             .navigationTitle(navigationTitleText)
             .navigationSubtitle(macNavigationSubtitle)
-            .toolbarTitleDisplayMode(.inline))
+            .toolbarTitleDisplayMode(.inline)
         #else
-        return AnyView(content
+        content
             .padding(.horizontal, outerHorizontalPadding)
-            .navigationTitle(navigationTitleText))
+            .navigationTitle(navigationTitleText)
         #endif
     }
 
     #if !os(macOS)
     @ToolbarContentBuilder
     private var iosChatToolbar: some ToolbarContent {
-        ToolbarItem(placement: .automatic) {
+        ToolbarItem(placement: .topBarLeading) {
             Button("Thread list", systemImage: "line.3.horizontal", action: presentThreadList)
                 .buttonStyle(.plain)
                 .labelStyle(.iconOnly)
                 .accessibilityLabel("Thread list")
                 .accessibilityIdentifier("chat.toolbar.threads")
         }
-        ToolbarSpacer(.fixed)
-        ToolbarItem(placement: .automatic) {
+        ToolbarItemGroup(placement: .primaryAction) {
             Button("New chat", systemImage: "square.and.pencil", action: createNewThread)
                 .buttonStyle(.plain)
                 .labelStyle(.iconOnly)
                 .accessibilityLabel("New chat")
                 .accessibilityIdentifier("chat.toolbar.newChat")
-        }
-        ToolbarSpacer(.fixed)
-        ToolbarItem(placement: .automatic) {
+
             Button("Settings", systemImage: "gearshape", action: openSettings)
                 .buttonStyle(.plain)
                 .labelStyle(.iconOnly)
@@ -264,33 +249,26 @@ struct ChatView: View {
     }
     #endif
 
-    private func mainChatLayout(isCompact: Bool) -> AnyView {
+    private func mainChatLayout(isCompact: Bool) -> some View {
         let usesCompactChrome = shouldCollapseChrome(isCompact: isCompact)
 
-        return AnyView(VStack(spacing: 0) {
+        return VStack(spacing: 0) {
             macChatHeaderView
-            iosChatHeaderView(usesCompactChrome: usesCompactChrome)
             modeSelectorView(usesCompactChrome: usesCompactChrome)
             upgradeTeaserView(usesCompactChrome: usesCompactChrome)
-            chatContentView(usesCompactChrome: usesCompactChrome)
+            chatContent(usesCompactChrome: usesCompactChrome)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .safeAreaInset(edge: .bottom, spacing: 0) {
+        .safeAreaBar(edge: .bottom, spacing: 0) {
             bottomAccessory(usesCompactChrome: usesCompactChrome)
         }
-        .background(AppTheme.appBackground.ignoresSafeArea()))
+        .background { AppTheme.appBackground.ignoresSafeArea() }
     }
 
-    private var selectedModeBinding: Binding<AssistantMode> {
-        Binding(
-            get: { dataModel.selectedMode },
-            set: { dataModel.selectedMode = $0 }
-        )
-    }
-
-    private var macChatHeaderView: AnyView {
+    @ContentBuilder
+    private var macChatHeaderView: some View {
         #if os(macOS)
-        return AnyView(MacPlainHeader(
+        MacPlainHeader(
             title: "Chat",
             subtitle: macNavigationSubtitle
         ) {
@@ -309,41 +287,24 @@ struct ChatView: View {
                 .accessibilityIdentifier("chat.toolbar.newChat")
             }
             .buttonStyle(.bordered)
-        })
-        #else
-        return AnyView(EmptyView())
+        }
         #endif
     }
 
-    private func iosChatHeaderView(usesCompactChrome: Bool) -> AnyView {
-        #if os(iOS)
-        return AnyView(ChatScreenHeader(
-            title: preferences.ariEnabled ? "Ari" : "Assistant",
-            subtitle: activeThread?.title ?? "Ready for a new conversation",
-            isCompact: usesCompactChrome,
-            onThreads: presentThreadList,
-            onNewChat: createNewThread,
-            onSettings: openSettings
-        )
-        .frame(maxWidth: contentMaxWidth)
-        .frame(maxWidth: .infinity))
-        #else
-        return AnyView(EmptyView())
-        #endif
-    }
-
-    private func modeSelectorView(usesCompactChrome: Bool) -> AnyView {
-        AnyView(ModeChipBar(
-            selectedMode: selectedModeBinding,
+    private func modeSelectorView(usesCompactChrome: Bool) -> some View {
+        @Bindable var model = dataModel
+        return ModeChipBar(
+            selectedMode: $model.selectedMode,
             displayStyle: modeDisplayStyle(usesCompactChrome: usesCompactChrome)
         )
         .frame(maxWidth: contentMaxWidth)
-        .frame(maxWidth: .infinity))
+        .frame(maxWidth: .infinity)
     }
 
-    private func upgradeTeaserView(usesCompactChrome: Bool) -> AnyView {
+    @ContentBuilder
+    private func upgradeTeaserView(usesCompactChrome: Bool) -> some View {
         if shouldShowUpgradeTeaser(usesCompactChrome: usesCompactChrome) {
-            return AnyView(UpgradeTeaserBanner(
+            UpgradeTeaserBanner(
                 remainingFreeMessages: remainingFreeMessages,
                 action: {
                     presentPaywall(context: remainingFreeMessages <= 2 ? .messageLimit : .general)
@@ -353,14 +314,14 @@ struct ChatView: View {
             .padding(.top, 0)
             .padding(.bottom, 6)
             .frame(maxWidth: contentMaxWidth)
-            .frame(maxWidth: .infinity))
+            .frame(maxWidth: .infinity)
         }
-        return AnyView(EmptyView())
     }
 
-    private var attachmentBannerView: AnyView {
+    @ContentBuilder
+    private var attachmentBannerView: some View {
         if let pendingAttachmentName {
-            return AnyView(AppBanner(
+            AppBanner(
                 systemImage: "paperclip",
                 message: "Attached: \(pendingAttachmentName)",
                 tint: AppTheme.accentLight
@@ -378,13 +339,8 @@ struct ChatView: View {
             .padding(.horizontal, AppTheme.spacingLG)
             .padding(.top, AppTheme.spacingSM)
             .frame(maxWidth: contentMaxWidth)
-            .frame(maxWidth: .infinity))
+            .frame(maxWidth: .infinity)
         }
-        return AnyView(EmptyView())
-    }
-
-    private func chatContentView(usesCompactChrome: Bool) -> AnyView {
-        AnyView(chatContent(usesCompactChrome: usesCompactChrome))
     }
 
     @ViewBuilder
@@ -470,9 +426,6 @@ struct ChatView: View {
             .frame(maxWidth: contentMaxWidth)
             .frame(maxWidth: .infinity)
         }
-        .background(alignment: .top) {
-            ComposerFadeBackground()
-        }
     }
 
     private var isCompactLayout: Bool {
@@ -484,12 +437,13 @@ struct ChatView: View {
     }
 
     private func shouldCollapseChrome(isCompact: Bool) -> Bool {
-        isCompact && (isComposerFocused || isGenerating)
+        dynamicTypeSize.isAccessibilitySize || verticalSizeClass == .compact ||
+        isComposerFocused || (isCompact && isGenerating)
     }
 
     private func modeDisplayStyle(usesCompactChrome: Bool) -> ModeChipBar.DisplayStyle {
         #if os(macOS)
-        .segmented
+        usesCompactChrome ? .compactMenu : .segmented
         #else
         usesCompactChrome ? .compactMenu : .expandedChips
         #endif
@@ -840,144 +794,4 @@ struct ChatView: View {
         return false
         #endif
     }
-}
-
-private struct ChatScreenHeader: View {
-    let title: String
-    let subtitle: String
-    let isCompact: Bool
-    let onThreads: () -> Void
-    let onNewChat: () -> Void
-    let onSettings: () -> Void
-
-    var body: some View {
-        HStack(spacing: AppTheme.spacingMD) {
-            if !isCompact {
-                AppIconBadge(systemImage: "sparkles", tint: AppTheme.accent, size: 40)
-            }
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(isCompact ? .headline : .title3)
-                    .bold()
-                    .foregroundStyle(.primary)
-
-                if !isCompact {
-                    Text(subtitle)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-            }
-
-            Spacer(minLength: AppTheme.spacingSM)
-
-            HStack(spacing: AppTheme.spacingSM) {
-                ChatHeaderButton("Chats", systemImage: "line.3.horizontal", action: onThreads)
-                    .accessibilityIdentifier("chat.toolbar.threads")
-                ChatHeaderButton("New chat", systemImage: "square.and.pencil", action: onNewChat)
-                    .accessibilityIdentifier("chat.toolbar.newChat")
-                ChatHeaderButton("Settings", systemImage: "gearshape", action: onSettings)
-                    .accessibilityIdentifier("chat.toolbar.settings")
-            }
-        }
-        .padding(.horizontal, AppTheme.spacingLG)
-        .padding(.top, isCompact ? AppTheme.spacingXS : AppTheme.spacingSM)
-        .padding(.bottom, isCompact ? AppTheme.spacingXS : AppTheme.spacingMD)
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier(isCompact ? "chat.header.compact" : "chat.header")
-    }
-}
-
-private struct ChatHeaderButton: View {
-    let title: String
-    let systemImage: String
-    let action: () -> Void
-
-    init(_ title: String, systemImage: String, action: @escaping () -> Void) {
-        self.title = title
-        self.systemImage = systemImage
-        self.action = action
-    }
-
-    var body: some View {
-        Button(title, systemImage: systemImage, action: action)
-            .labelStyle(.iconOnly)
-            .font(.system(size: 15, weight: .semibold))
-            .foregroundStyle(.primary)
-            .frame(width: 40, height: 40)
-            .contentShape(.circle)
-            .buttonStyle(.plain)
-            .accessibilityLabel(title)
-    }
-}
-
-/// Soft fade behind the floating composer so scrolled messages dissolve into the background.
-private struct ComposerFadeBackground: View {
-    var body: some View {
-        LinearGradient(
-            stops: [
-                .init(color: AppTheme.appBackground.opacity(0), location: 0),
-                .init(color: AppTheme.appBackground.opacity(0.9), location: 0.3),
-                .init(color: AppTheme.appBackground, location: 1)
-            ],
-            startPoint: .top,
-            endPoint: .bottom
-        )
-        .padding(.top, -AppTheme.spacingXL)
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
-    }
-}
-
-private struct UpgradeTeaserBanner: View {
-    let remainingFreeMessages: Int
-    let action: () -> Void
-
-    private var isLimitClose: Bool {
-        remainingFreeMessages <= 2
-    }
-
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: AppTheme.spacingSM) {
-                Image(systemName: isLimitClose ? "message.badge" : "sparkles")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(AppTheme.accent)
-                    .frame(width: 20)
-
-                Text(isLimitClose ? "\(remainingFreeMessages) free messages left today" : "Start trial for unlimited chat")
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(2)
-
-                Spacer(minLength: AppTheme.spacingSM)
-
-                Label(isLimitClose ? "Start Trial" : "Ari+", systemImage: "arrow.up.right")
-                    .font(.footnote.weight(.semibold))
-                    .foregroundStyle(AppTheme.accent)
-                    .lineLimit(1)
-            }
-            .padding(.horizontal, 10)
-            .padding(.vertical, 7)
-            .frame(minHeight: AppTheme.minimumTapTarget)
-            .background(AppTheme.surfaceFill, in: Capsule())
-            .overlay(Capsule().stroke(AppTheme.surfaceStroke, lineWidth: 0.6))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Upgrade to Ari+. \(remainingFreeMessages) free messages left. Start a free trial for unlimited chats, files, and Output Studio.")
-        .accessibilityIdentifier("chat.upgradeTeaser")
-    }
-}
-
-// MARK: - Preview
-
-#Preview {
-        ChatView(preferences: .defaults)
-            .environment(DataModel())
-        .environment(StoreKitService<AppSubscriptionTier>())
-        .modelContainer(for: [
-            Thread.self, Message.self, Artifact.self,
-            LibraryItem.self, UserPreferences.self
-        ], inMemory: true)
 }

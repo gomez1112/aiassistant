@@ -196,7 +196,7 @@ struct MessageListView: View {
     }
 
     private func scrollToBottomForStreaming() {
-        let now = Date()
+        let now = Date.now
         guard now.timeIntervalSince(lastStreamingScrollDate) > 0.35 else { return }
         lastStreamingScrollDate = now
         scrollToBottom(animated: false)
@@ -363,7 +363,7 @@ struct MessageBubble: View {
 
     private func accessibilitySummary(for text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        let summary = trimmed.count > 180 ? String(trimmed.prefix(180)) + "..." : trimmed
+        let summary = trimmed.count > 180 ? String(trimmed.prefix(180)) + "…" : trimmed
         let time = message.createdAt.formatted(date: .omitted, time: .shortened)
         switch message.status {
         case .pending:
@@ -475,15 +475,18 @@ struct OutputCardView: View {
         }
         .padding(.leading, -AppTheme.spacingMD)
         .sensoryFeedback(.impact(flexibility: .soft), trigger: copiedFeedback)
+        .task(id: copiedFeedback) {
+            guard copiedFeedback else { return }
+            do {
+                try await Task.sleep(for: .seconds(1.2))
+                copiedFeedback = false
+            } catch { return }
+        }
     }
 
     private func copy() {
         onCopy()
         copiedFeedback = true
-        Task {
-            try? await Task.sleep(for: .seconds(1.2))
-            copiedFeedback = false
-        }
     }
 }
 
