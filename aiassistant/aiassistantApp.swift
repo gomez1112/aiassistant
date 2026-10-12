@@ -31,6 +31,14 @@ struct AIAssistantApp: App {
         #endif
     }
     
+    private static var isMarketingCapture: Bool {
+        #if DEBUG
+        MarketingCaptureSession.isEnabled
+        #else
+        false
+        #endif
+    }
+
     init() {
         let schema = Schema([
             Thread.self,
@@ -46,7 +54,7 @@ struct AIAssistantApp: App {
 
         do {
             let config: ModelConfiguration
-            if Self.isUITesting {
+            if Self.isUITesting || Self.isMarketingCapture {
                 config = ModelConfiguration(
                     "AIAssistantUITests",
                     schema: schema,
@@ -83,6 +91,11 @@ struct AIAssistantApp: App {
         modelContainer = resolvedContainer
         persistenceMode = resolvedMode
         startupIssueMessage = resolvedIssue
+        #if DEBUG && os(macOS)
+        if Self.isMarketingCapture, let resolvedContainer {
+            MarketingMacCapture.presentWindow(container: resolvedContainer)
+        }
+        #endif
     }
     
     var body: some Scene {
@@ -104,7 +117,7 @@ struct AIAssistantApp: App {
     private var mainWindowContent: some View {
         if let modelContainer {
             Group {
-                if Self.isUITesting {
+                if Self.isUITesting || Self.isMarketingCapture {
                     appRoot
                 } else {
                     OnboardingWrapper(

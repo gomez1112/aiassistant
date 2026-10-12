@@ -14,6 +14,12 @@ struct OutputsView: View {
     @Environment(\.modelContext) private var modelContext
 
     @State private var searchText = ""
+    // Sidebar tab navigation can contribute a different value type on macOS.
+    // NavigationPath safely stores the combined values when opening an output.
+    @State private var navigationPath = NavigationPath()
+    #if DEBUG
+    @Environment(\.marketingCapture) private var capture
+    #endif
     @State private var filterKind: ArtifactKind?
     @State private var showPersistenceError = false
     #if !os(macOS)
@@ -48,7 +54,7 @@ struct OutputsView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             VStack(spacing: 0) {
                 #if os(macOS)
                 MacSearchHeader(
@@ -167,6 +173,11 @@ struct OutputsView: View {
             #if !os(macOS)
             .sheet(isPresented: $showSettings) {
                 SettingsView(preferences: preferences)
+            }
+            #endif
+            #if DEBUG
+            .task(id: capture?.scene) {
+                if capture?.scene == .study, let id = capture?.studyArtifactID { navigationPath = NavigationPath([id]) }
             }
             #endif
             .alert("Couldn’t save changes", isPresented: $showPersistenceError) {

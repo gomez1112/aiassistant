@@ -16,6 +16,9 @@ struct RootTabView: View {
 
     @State private var selectedTab: AppTab = .chat
     @State private var preferences: UserPreferences?
+    #if DEBUG
+    @Environment(\.marketingCapture) private var capture
+    #endif
 
     var body: some View {
         Group {
@@ -48,8 +51,24 @@ struct RootTabView: View {
             }
         }
         .task {
+            #if DEBUG
+            if let capture {
+                do { try capture.prepare(in: modelContext, model: dataModel) }
+                catch { dataModel.persistenceErrorMessage = error.localizedDescription }
+                selectedTab = capture.tab
+            }
+            #endif
             preferences = dataModel.loadOrCreatePreferences(in: modelContext)
         }
+        #if DEBUG
+        .task { await capture?.runTour() }
+        .onChange(of: capture?.scene) {
+            if let capture {
+                capture.selectConversation(in: dataModel)
+                selectedTab = capture.tab
+            }
+        }
+        #endif
         .task(id: dataModel.review.isReviewRequestPending) {
             guard dataModel.review.isReviewRequestPending else { return }
             // Cancel the delayed prompt when its window disappears.

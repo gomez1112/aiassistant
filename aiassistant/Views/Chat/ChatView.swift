@@ -19,6 +19,10 @@ struct ChatView: View {
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(StoreKitService<AppSubscriptionTier>.self) private var flexStore
 
+    #if DEBUG
+    @Environment(\.marketingCapture) private var capture
+    #endif
+
     @Query(sort: \Thread.updatedAt, order: .reverse)
     private var threads: [Thread]
 
@@ -194,6 +198,15 @@ struct ChatView: View {
         .onChange(of: threads.map(\.id)) { _, _ in
             ensureActiveThreadSelection()
         }
+        #if DEBUG
+        .task(id: capture?.scene) {
+            guard let capture else { return }
+            capture.selectConversation(in: dataModel)
+            #if !os(macOS)
+            showSettings = capture.scene == .privacy
+            #endif
+        }
+        #endif
         .sensoryFeedback(.impact(weight: .light), trigger: sendFeedbackTrigger)
         .onDisappear {
             cancelGeneration()

@@ -15,11 +15,11 @@ Checked October 12, 2026. The app supports iOS/iPadOS/macOS 27.0 and newer, incl
 - `com.apple.developer.private-cloud-compute` is `true` in the app entitlements file and is included by the app target.
 - App ID `com.transfinite.aiassistant` has the `PRIVATE_CLOUD_COMPUTE` capability enabled in Apple’s developer account; verified through App Store Connect API.
 - A fresh Apple-issued Mac development profile was generated using the existing Apple Development certificate and the same three registered Macs. It contains PCC, the correct App ID/team, and `iCloud.com.transfinite.aiassistant`.
-- Mac Debug builds select `aiassistant PCC macOS Development 2026-10-12` explicitly because automatic signing continued selecting the old profile without PCC. The profile is installed in the local Xcode provisioning-profile directory and kept outside the repository. iOS and distribution signing retain their existing automatic configuration. To return Mac Debug to automatic signing once Xcode refreshes its managed profile, remove the three SDK-specific signing overrides in the app target’s Debug configuration.
+- Mac Debug builds select `aiassistant PCC macOS Development 2026-10-12` explicitly because automatic signing continued selecting the old profile without PCC. The profile is installed in the local Xcode provisioning-profile directory and kept outside the repository. iOS Debug retains automatic signing. Release now selects the PCC-capable App Store profiles described below. To return Mac Debug to automatic signing once Xcode refreshes its managed profile, remove the three SDK-specific signing overrides in the app target’s Debug configuration.
 - The signed Mac app contains the PCC entitlement, CloudKit container, sandbox, and outgoing-network entitlement. `codesign --verify --deep --strict` passed with normal access to the certificate trust store.
 - The iOS simulator’s generated simulated-entitlements file contains PCC; simulator signatures are not evidence of device/distribution provisioning.
 - Settings offers a persisted, device-local PCC choice. Cloud inference is opt-in and is used consistently for chat, transforms, and library summaries. No request silently switches from local to cloud processing. Availability and Apple’s separate per-user quota are checked, with actionable network/quota/context-size errors.
-- A real PCC round trip on a provisioned device or distribution build has not yet been verified. The Mac app was built and its signature checked, but not launched.
+- A real PCC round trip on a provisioned device or distribution build has not yet been verified. The Mac UI was launched using isolated, in-memory marketing fixtures. This does not verify a live PCC request or production persistence.
 
 ## CloudKit production
 
@@ -55,3 +55,15 @@ Actual two-device CloudKit sync and production record writes remain unverified. 
 - Affected UI regression tests on iPhone Duo / iOS 27.1: 3 passed, 0 failed, with no compiler warnings. These cover sending a reply, mode selection/message actions, and switching chats while the composer is focused.
 
 Bitrig/Xcode sometimes reports an App Intents metadata-extraction warning because the app has no App Intents dependency. No framework was added solely to suppress that tooling warning.
+
+## Version 1.2 distribution check
+
+- App version 1.2, build 7; iOS and macOS 1.2 submission drafts created. Version 1.1.0 was already released and remains intact.
+- Debug and Release builds passed for iOS Simulator and native macOS. The capture flag is absent from Info.plist, and fixture/capture code is excluded from Release builds.
+- Automatic Mac Release signing selected the old profile without PCC. Apple-issued `aiassistant PCC macOS App Store 2026-10-12` and `aiassistant PCC iOS App Store 2026-10-12` profiles now include PCC and use the existing Apple Distribution certificate. Profiles are installed locally, outside git.
+- Release selects these profiles and the existing distribution identity with per-SDK overrides. Separate iOS/macOS distribution entitlements select production APNs and CloudKit. To return to automatic signing after Xcode refreshes its managed profiles, remove the Release SDK-specific signing identity/style/profile overrides; preserve the distribution entitlements.
+- The Mac App Store Release app's signature passed verification and its signed entitlements include PCC, production APNs, production CloudKit, and the intended container. An iOS device archive and a real PCC round trip remain unverified; the iOS App Store profile itself was verified to contain PCC.
+- Capture testing found SwiftUI's navigation comparison-type crash when opening an output under the Mac sidebar. The output stack now uses NavigationPath. The complete five-scene Mac flow ran successfully afterward.
+- 22 unit tests and 2 UI regressions passed on iPhone 18 Pro / iOS 27.0. The new UI regression switches tabs, opens saved study cards, flips a card, and advances the deck. The second preserves an unsent draft across tab switching and rotation.
+- [Marketing assets and upload report](marketing/1.2/README.md) records all 36 accepted media assets, 72 placements, and 3 draft custom pages. No binary was uploaded and no review submission or release was performed.
+- Production was re-exported after the distribution signing check: all five model types exist, and `CD_Message.CD_statusRaw` is still absent. Production deployment of this field and two-device CloudKit sync remain outstanding, as described above. Production entitlements do not deploy the CloudKit schema.

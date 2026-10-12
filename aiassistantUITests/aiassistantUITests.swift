@@ -138,6 +138,33 @@ final class aiassistantUITests: XCTestCase {
     }
 
     @MainActor
+    func testSavedStudyCardsOpenAfterTabChanges() throws {
+        launchApp(arguments: ["-marketing-capture"])
+
+        for title in ["Outputs", "Library", "Outputs"] {
+            let tab = app.descendants(matching: .any)
+                .matching(NSPredicate(format: "label == %@", title)).firstMatch
+            XCTAssertTrue(tab.waitForExistence(timeout: 5))
+            tab.tap()
+        }
+
+        let cards = app.buttons.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "Flashcards: Learn a little")
+        ).firstMatch
+        XCTAssertTrue(cards.waitForExistence(timeout: 5))
+        cards.tap()
+
+        let front = app.buttons["Front: What is active recall?"]
+        XCTAssertTrue(front.waitForExistence(timeout: 5))
+        front.tap()
+        XCTAssertTrue(app.buttons.matching(
+            NSPredicate(format: "label BEGINSWITH %@", "Back: Practice retrieving")
+        ).firstMatch.waitForExistence(timeout: 3))
+        app.buttons["Next card"].tap()
+        XCTAssertTrue(app.buttons["Front: What is spaced repetition?"].waitForExistence(timeout: 3))
+    }
+
+    @MainActor
     func testPaywallProductStateIsReachableUnderUITesting() throws {
         launchApp()
 
