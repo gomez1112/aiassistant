@@ -5,46 +5,46 @@
       "IOS:1.2:en-US:APP_IPAD_PRO_3GEN_129": {
         "screenshots": [
           {
-            "fileName": "1.2-ipad-writing-opaque.png",
-            "fileSize": 307830,
-            "id": "956241a8-c965-4c34-a2ac-fb130a555b34",
-            "renditionChecksum": "39c82e0cbf65de1512cabcb0ba805fda",
-            "sourceFileChecksum": "2f58ba6f002b8badc0e10cade34b8b34"
+            "fileName": "01-writing.png",
+            "fileSize": 421634,
+            "id": "442705c7-de62-4404-9c6d-3c6dbdc64681",
+            "renditionChecksum": "20831d5d0113fd78df847e097b0e06c0",
+            "sourceFileChecksum": "423a37c83a25258a233e0c7a726e8c95"
           },
           {
-            "fileName": "1.2-ipad-planning-opaque.png",
-            "fileSize": 317729,
-            "id": "c1dd8701-f5cc-40d1-a213-662d4d1ee4fc",
-            "renditionChecksum": "d7a5df88ad59956f8a07e3d8857acf64",
-            "sourceFileChecksum": "3e0708288511b24c168efe6dd36e09e1"
+            "fileName": "02-planning.png",
+            "fileSize": 433071,
+            "id": "f9baedd3-b23f-4fb5-be9f-368b2cb3be56",
+            "renditionChecksum": "857f461e1c03321a04e32cc0529d6228",
+            "sourceFileChecksum": "a0cdbe279e0070a118cd004bf683ea69"
           },
           {
-            "fileName": "1.2-ipad-outputs-opaque.png",
-            "fileSize": 1876834,
-            "id": "fad06ebb-4215-45a4-8917-c4e86656d59f",
-            "renditionChecksum": "c0f90d5dfbae20865f528b4a8acf27d1",
-            "sourceFileChecksum": "6579006e728b2b39f3833922f6dcc198"
+            "fileName": "03-outputs.png",
+            "fileSize": 1082223,
+            "id": "7404c92c-986a-47c5-84ca-ca4569f446e4",
+            "renditionChecksum": "6fd615446ad2d6c1ebfcf906e27751e9",
+            "sourceFileChecksum": "e43d5f728ca299fdd1f6ba0b9c82801f"
           },
           {
-            "fileName": "1.2-ipad-library-opaque.png",
-            "fileSize": 2919108,
-            "id": "64d70329-6afc-42d7-b01a-2f9832fa0333",
-            "renditionChecksum": "9b9a5743dccb606087c98936938e3258",
-            "sourceFileChecksum": "c573c315ac690abfb4cb35464189f434"
+            "fileName": "04-library.png",
+            "fileSize": 1477974,
+            "id": "24cb8a02-a625-424a-9aad-afe476d36c79",
+            "renditionChecksum": "36f101ba34635a38edd4da9e97018734",
+            "sourceFileChecksum": "16330952aedc4ef4ad510f1e28e58444"
           },
           {
-            "fileName": "1.2-ipad-study-opaque.png",
-            "fileSize": 162571,
-            "id": "ef1b9f98-04ff-4e98-a5eb-92b98115c91c",
-            "renditionChecksum": "ff0c3fb15cdd0758dc5e5d2416ea420c",
-            "sourceFileChecksum": "156781be6d2a494ece39a63d877a4751"
+            "fileName": "05-study.png",
+            "fileSize": 351883,
+            "id": "f21a8fa9-1c30-427d-9ae4-d73d436a2a5d",
+            "renditionChecksum": "3c7ee45ab367d3799ab0661ae2b20523",
+            "sourceFileChecksum": "06010915037267a671462ab83681f5af"
           },
           {
-            "fileName": "1.2-ipad-privacy-opaque.png",
-            "fileSize": 977102,
-            "id": "76ed98e5-98b9-4791-bf94-86ac5b35d84b",
-            "renditionChecksum": "31da8027f99fcb39318488ab6e947e1c",
-            "sourceFileChecksum": "fac0c63f90996895da27f8e6f313c9fe"
+            "fileName": "06-privacy.png",
+            "fileSize": 666043,
+            "id": "1c93d1bc-df83-43c2-b277-eeb6f366df69",
+            "renditionChecksum": "8c15e9d10c1c8e76016796b64474db62",
+            "sourceFileChecksum": "580c03f30abdc83cca98f6bfcaa44ab4"
           }
         ],
         "setID": "7afecd73-bdb6-41cd-81aa-e30116d1782c"
@@ -52,46 +52,46 @@
       "IOS:1.2:en-US:APP_IPHONE_61": {
         "screenshots": [
           {
-            "fileName": "1.2-iphone-writing-opaque.png",
-            "fileSize": 486164,
-            "id": "18a1eab1-36a4-4925-9201-52a871137f82",
-            "renditionChecksum": "e871de392a86ccaa710661faa6d80cff",
-            "sourceFileChecksum": "ac4f37b9857543b70926232fb69ac667"
+            "fileName": "01-writing.png",
+            "fileSize": 756439,
+            "id": "75c484aa-0316-4479-8a95-fb3bf144fdcb",
+            "renditionChecksum": "f8b90b9a6f415be0ded8b413c80ffe60",
+            "sourceFileChecksum": "0a73aaef4accf14e3926a64e8bfad592"
           },
           {
-            "fileName": "1.2-iphone-planning-opaque.png",
-            "fileSize": 505409,
-            "id": "e88d171a-5e08-461e-82db-abd39574628b",
-            "renditionChecksum": "06b97fa17d73c4de654a327222791942",
-            "sourceFileChecksum": "4cb9d222efcf2cef2e0f38a4c06dcf63"
+            "fileName": "02-planning.png",
+            "fileSize": 825281,
+            "id": "c4669563-d7f6-4638-8ec7-26bcf6fd0902",
+            "renditionChecksum": "33cc65217ecb3e09144c0bc9bcfdcf16",
+            "sourceFileChecksum": "ba88a5c23b68fadb706e2f2751b5432f"
           },
           {
-            "fileName": "1.2-iphone-outputs-opaque.png",
-            "fileSize": 1153644,
-            "id": "4959ed36-a937-4820-bddb-edcf38ea9371",
-            "renditionChecksum": "e0d8218dcc1d45fec92e3528f156eb63",
-            "sourceFileChecksum": "fba93d48948b1c749a4d373408a58b93"
+            "fileName": "03-outputs.png",
+            "fileSize": 944277,
+            "id": "8aff825f-a63d-42ea-8ef2-5f490b7738c1",
+            "renditionChecksum": "32318f034d40e105c113f254c98f9ad0",
+            "sourceFileChecksum": "e512f4cc2c541d15fa11ba8d8033b63c"
           },
           {
-            "fileName": "1.2-iphone-library-opaque.png",
-            "fileSize": 1387157,
-            "id": "2ed8b565-01b3-4ea3-a2a0-d5a7fd89ac9b",
-            "renditionChecksum": "90d1244f5be0fc380323360a0449b25c",
-            "sourceFileChecksum": "f4a095080bfa1e9dbd57600a40f50c28"
+            "fileName": "04-library.png",
+            "fileSize": 1037461,
+            "id": "7066b608-9c2c-4dce-8064-a6b14e666d46",
+            "renditionChecksum": "f9f3bcb6f1fe173b3414e64b3285e974",
+            "sourceFileChecksum": "8b9ac0ff84abe7e55e622e2a76b97de5"
           },
           {
-            "fileName": "1.2-iphone-study-opaque.png",
-            "fileSize": 155115,
-            "id": "4eb0d675-3bfa-42c7-998d-b1a6d7dd968f",
-            "renditionChecksum": "d21b01a08314c65bcbd713ec48e691a0",
-            "sourceFileChecksum": "d23a046b0e213c238862267f079e6905"
+            "fileName": "05-study.png",
+            "fileSize": 564982,
+            "id": "a4bc088a-c574-4071-9c33-283c5d7f4198",
+            "renditionChecksum": "417e842af7e4656546fcdd9bbe699639",
+            "sourceFileChecksum": "ff07c54995ab80f482ff4ddd77c958b5"
           },
           {
-            "fileName": "1.2-iphone-privacy-opaque.png",
-            "fileSize": 1111905,
-            "id": "dd3319ea-4f48-4bf6-a910-61cb52a51099",
-            "renditionChecksum": "f7f7fbe7c3cfb9856c16cf6b6f6b2c01",
-            "sourceFileChecksum": "b7ff5702016639d6505c3df56dbe8051"
+            "fileName": "06-privacy.png",
+            "fileSize": 928520,
+            "id": "049b7d53-ad50-4c79-aefd-5e5b93eab56c",
+            "renditionChecksum": "62419b862437b752d288d88c79e0e3af",
+            "sourceFileChecksum": "84a2f3cdf5b66f963b3e01f790729661"
           }
         ],
         "setID": "63e1412c-6cd0-4e19-bfdd-0029747c5910"
@@ -105,53 +105,53 @@
       "IOS:1.2:en-US:APP_IPHONE_DUO": {
         "screenshots": [
           {
-            "fileName": "1.2-duo-writing-opaque.png",
-            "fileSize": 334818,
-            "id": "23637bd5-c954-4330-951d-74035fa51c86",
-            "renditionChecksum": "fa452e7dfe8b8bc3e6f86fb9ac86288c",
-            "sourceFileChecksum": "555644d776924f0d0c10da92ef981fe0"
+            "fileName": "01-writing-outer.png",
+            "fileSize": 419033,
+            "id": "034a35d3-e557-4d52-bd01-eda7abaa3171",
+            "renditionChecksum": "7616bd9690a58772932ab54bb28ba9cb",
+            "sourceFileChecksum": "86de9e1a39682d8b56c6b14889058031"
           },
           {
-            "fileName": "1.2-duo-writing-inner-opaque.png",
-            "fileSize": 345569,
-            "id": "7388f6eb-29a5-4d63-9310-908e1697d39c",
-            "renditionChecksum": "cf20620cbc68c5542f213dd977f7ef14",
-            "sourceFileChecksum": "d14fe13482881a10c45c85a6b31524e0"
+            "fileName": "02-writing-inner.png",
+            "fileSize": 651850,
+            "id": "53682c32-7d30-42b9-ac7c-a8f52843ae02",
+            "renditionChecksum": "a26f1db0a9e29f7bc971d5f966d9e17b",
+            "sourceFileChecksum": "060efb896f9119de9265ab504057c120"
           },
           {
-            "fileName": "1.2-duo-planning-opaque.png",
-            "fileSize": 340953,
-            "id": "47e7bc4d-3bfb-4f0a-81d7-193497c408c2",
-            "renditionChecksum": "b3c9027b92178da8ee5118f8b1b4aee7",
-            "sourceFileChecksum": "a3a60fb4478493d7cd0681292c9ef06d"
+            "fileName": "03-planning.png",
+            "fileSize": 423499,
+            "id": "f9e3c111-dd20-4e4a-801c-6c9858c2c88d",
+            "renditionChecksum": "c61ebeb20e371cf1955112c696433b89",
+            "sourceFileChecksum": "1d6abe1f878dfcf518b49bd2ed216a14"
           },
           {
-            "fileName": "1.2-duo-outputs-opaque.png",
-            "fileSize": 1326149,
-            "id": "7b5043a7-002f-4395-baba-a4691b699913",
-            "renditionChecksum": "3bf5474c412564e90127e88e5dbef063",
-            "sourceFileChecksum": "eef1146f2ea6bacc8356031112408c25"
+            "fileName": "04-outputs.png",
+            "fileSize": 685721,
+            "id": "bd66f0db-1fea-4912-afd1-1805a7d975c3",
+            "renditionChecksum": "479667d31e6e31a171e0db937561f6f4",
+            "sourceFileChecksum": "fc10a12218af7bc51fd9182fae4634d1"
           },
           {
-            "fileName": "1.2-duo-library-opaque.png",
-            "fileSize": 1503565,
-            "id": "fe42ffb9-4354-4574-bf78-b04ca6d688a8",
-            "renditionChecksum": "ecfe54dd0b52325d3a58f0a472a8972d",
-            "sourceFileChecksum": "7a33a2895be105e3ff7c4eaf4652090d"
+            "fileName": "05-library.png",
+            "fileSize": 575366,
+            "id": "8f5eca80-de0b-4d57-84a8-0bd771a4efe5",
+            "renditionChecksum": "a666d8e4c294e2007db4326678ad1f07",
+            "sourceFileChecksum": "720d2169b408a189b4841c96b33cd0ef"
           },
           {
-            "fileName": "1.2-duo-study-opaque.png",
-            "fileSize": 205098,
-            "id": "499f35e2-9cf4-4a06-a77b-2983ba812d9d",
-            "renditionChecksum": "e830a13505de361b90d1129a8d725e0d",
-            "sourceFileChecksum": "6179beea8284beb3ed1593dcd48e2c21"
+            "fileName": "06-study.png",
+            "fileSize": 388733,
+            "id": "afc28e10-2c39-4645-9173-033abb4d051c",
+            "renditionChecksum": "10574a29cf3a08df3daebe646104a7ef",
+            "sourceFileChecksum": "072441c773a7101b2ec71013bf5de9fe"
           },
           {
-            "fileName": "1.2-duo-privacy-opaque.png",
-            "fileSize": 1280486,
-            "id": "47d08989-cb3a-4b74-8355-b750310f643b",
-            "renditionChecksum": "d9f02607ce1e7edace192998c219da31",
-            "sourceFileChecksum": "7c30b785462eb1f9a8fc708299b63e8a"
+            "fileName": "07-privacy.png",
+            "fileSize": 544309,
+            "id": "45157b9e-ef29-44f4-9939-ac0e3b332f18",
+            "renditionChecksum": "1e9b95ac55eb9c600f656f9014f025b3",
+            "sourceFileChecksum": "56faf832573f4cc82b604d0b8173cfd0"
           }
         ],
         "setID": "2425b8d9-9093-4e57-970c-416a8a07cd6d"
@@ -703,39 +703,39 @@
       "MAC_OS:1.2:en-US:APP_DESKTOP": {
         "screenshots": [
           {
-            "fileName": "1.2-mac-writing.png",
-            "fileSize": 228452,
-            "id": "2440b250-c8a9-4355-aefd-9b1eda778dcd",
-            "renditionChecksum": "9a439bb31cf535aa686a868ad57ea313",
-            "sourceFileChecksum": "3e91f2296be2d28e871524283e69164a"
+            "fileName": "01-writing.png",
+            "fileSize": 419372,
+            "id": "bd05e487-09eb-4867-a2d4-e2ae94fef0c0",
+            "renditionChecksum": "53abbd22e06d08e19910bc770f4eb2e8",
+            "sourceFileChecksum": "d3fea4553f08a1b7d57ce71880100d51"
           },
           {
-            "fileName": "1.2-mac-planning.png",
-            "fileSize": 228385,
-            "id": "81f6bd8f-49cb-436a-a752-3cc187aef049",
-            "renditionChecksum": "cb24930204c4588274fccdb08632ad47",
-            "sourceFileChecksum": "42ddf75f1ac7422b294648d9fa4f6e92"
+            "fileName": "02-planning.png",
+            "fileSize": 426136,
+            "id": "8b45e59c-2da9-4c23-8b7c-41569f35fc72",
+            "renditionChecksum": "da23b8e6eae8543c1589ca83e6549872",
+            "sourceFileChecksum": "25774ed61bfe94f3b656a3bf19d0bc55"
           },
           {
-            "fileName": "1.2-mac-outputs.png",
-            "fileSize": 2271189,
-            "id": "aa354d1b-f2bc-46fe-9446-4653e8a3628b",
-            "renditionChecksum": "ad44402f31969adbec0c78eaddcef2de",
-            "sourceFileChecksum": "be963316960aa9bfdec421a4772b8629"
+            "fileName": "03-outputs.png",
+            "fileSize": 1382640,
+            "id": "ca5ea414-fc55-4bea-a6b6-531856a18cfd",
+            "renditionChecksum": "e445ad0e88f18b7f80a257ece6abbd05",
+            "sourceFileChecksum": "1ccf288f79a8a71e6f1314e912f3b237"
           },
           {
-            "fileName": "1.2-mac-library.png",
-            "fileSize": 2221879,
-            "id": "a349ff6e-db5e-4c82-92fd-9141d67f73d0",
-            "renditionChecksum": "6e1353408717d13c4820278f899698ba",
-            "sourceFileChecksum": "8e530e6806f75147bf8feaf413eed63b"
+            "fileName": "04-library.png",
+            "fileSize": 1357763,
+            "id": "54c0beef-381f-4231-a7f5-aff2366b5d8d",
+            "renditionChecksum": "ccced968f57aaef746e84e977c7a1ab8",
+            "sourceFileChecksum": "3d04b9bedd66c84164bbb72fbffacdd2"
           },
           {
-            "fileName": "1.2-mac-study.png",
-            "fileSize": 136498,
-            "id": "0c33ddd0-17ef-4846-ad10-27ee528830ea",
-            "renditionChecksum": "1ab7ae0cbd73cd3782816c233f057030",
-            "sourceFileChecksum": "7678650d1e9c8c826a2c9034efbb834a"
+            "fileName": "05-study.png",
+            "fileSize": 340188,
+            "id": "4c538efe-c99e-4c86-ad9c-4ed1e9d5a43b",
+            "renditionChecksum": "11256941dabed99373fbd67e6d95ffeb",
+            "sourceFileChecksum": "fa1ff1e27e6be1320ed4a4b18d7c19c5"
           }
         ],
         "setID": "801cd431-5403-41c0-bce3-820505fa427c"
@@ -2900,34 +2900,34 @@
       "fields": {
         "screenshots": [
           {
-            "file": "1.2-ipad-writing-opaque.png",
-            "fileSize": 307830,
-            "sourceFileChecksum": "2f58ba6f002b8badc0e10cade34b8b34"
+            "file": "01-writing.png",
+            "fileSize": 421634,
+            "sourceFileChecksum": "423a37c83a25258a233e0c7a726e8c95"
           },
           {
-            "file": "1.2-ipad-planning-opaque.png",
-            "fileSize": 317729,
-            "sourceFileChecksum": "3e0708288511b24c168efe6dd36e09e1"
+            "file": "02-planning.png",
+            "fileSize": 433071,
+            "sourceFileChecksum": "a0cdbe279e0070a118cd004bf683ea69"
           },
           {
-            "file": "1.2-ipad-outputs-opaque.png",
-            "fileSize": 1876834,
-            "sourceFileChecksum": "6579006e728b2b39f3833922f6dcc198"
+            "file": "03-outputs.png",
+            "fileSize": 1082223,
+            "sourceFileChecksum": "e43d5f728ca299fdd1f6ba0b9c82801f"
           },
           {
-            "file": "1.2-ipad-library-opaque.png",
-            "fileSize": 2919108,
-            "sourceFileChecksum": "c573c315ac690abfb4cb35464189f434"
+            "file": "04-library.png",
+            "fileSize": 1477974,
+            "sourceFileChecksum": "16330952aedc4ef4ad510f1e28e58444"
           },
           {
-            "file": "1.2-ipad-study-opaque.png",
-            "fileSize": 162571,
-            "sourceFileChecksum": "156781be6d2a494ece39a63d877a4751"
+            "file": "05-study.png",
+            "fileSize": 351883,
+            "sourceFileChecksum": "06010915037267a671462ab83681f5af"
           },
           {
-            "file": "1.2-ipad-privacy-opaque.png",
-            "fileSize": 977102,
-            "sourceFileChecksum": "fac0c63f90996895da27f8e6f313c9fe"
+            "file": "06-privacy.png",
+            "fileSize": 666043,
+            "sourceFileChecksum": "580c03f30abdc83cca98f6bfcaa44ab4"
           }
         ]
       },
@@ -2938,34 +2938,34 @@
       "fields": {
         "screenshots": [
           {
-            "file": "1.2-iphone-writing-opaque.png",
-            "fileSize": 486164,
-            "sourceFileChecksum": "ac4f37b9857543b70926232fb69ac667"
+            "file": "01-writing.png",
+            "fileSize": 756439,
+            "sourceFileChecksum": "0a73aaef4accf14e3926a64e8bfad592"
           },
           {
-            "file": "1.2-iphone-planning-opaque.png",
-            "fileSize": 505409,
-            "sourceFileChecksum": "4cb9d222efcf2cef2e0f38a4c06dcf63"
+            "file": "02-planning.png",
+            "fileSize": 825281,
+            "sourceFileChecksum": "ba88a5c23b68fadb706e2f2751b5432f"
           },
           {
-            "file": "1.2-iphone-outputs-opaque.png",
-            "fileSize": 1153644,
-            "sourceFileChecksum": "fba93d48948b1c749a4d373408a58b93"
+            "file": "03-outputs.png",
+            "fileSize": 944277,
+            "sourceFileChecksum": "e512f4cc2c541d15fa11ba8d8033b63c"
           },
           {
-            "file": "1.2-iphone-library-opaque.png",
-            "fileSize": 1387157,
-            "sourceFileChecksum": "f4a095080bfa1e9dbd57600a40f50c28"
+            "file": "04-library.png",
+            "fileSize": 1037461,
+            "sourceFileChecksum": "8b9ac0ff84abe7e55e622e2a76b97de5"
           },
           {
-            "file": "1.2-iphone-study-opaque.png",
-            "fileSize": 155115,
-            "sourceFileChecksum": "d23a046b0e213c238862267f079e6905"
+            "file": "05-study.png",
+            "fileSize": 564982,
+            "sourceFileChecksum": "ff07c54995ab80f482ff4ddd77c958b5"
           },
           {
-            "file": "1.2-iphone-privacy-opaque.png",
-            "fileSize": 1111905,
-            "sourceFileChecksum": "b7ff5702016639d6505c3df56dbe8051"
+            "file": "06-privacy.png",
+            "fileSize": 928520,
+            "sourceFileChecksum": "84a2f3cdf5b66f963b3e01f790729661"
           }
         ]
       },
@@ -2976,39 +2976,39 @@
       "fields": {
         "screenshots": [
           {
-            "file": "1.2-duo-writing-opaque.png",
-            "fileSize": 334818,
-            "sourceFileChecksum": "555644d776924f0d0c10da92ef981fe0"
+            "file": "01-writing-outer.png",
+            "fileSize": 419033,
+            "sourceFileChecksum": "86de9e1a39682d8b56c6b14889058031"
           },
           {
-            "file": "1.2-duo-writing-inner-opaque.png",
-            "fileSize": 345569,
-            "sourceFileChecksum": "d14fe13482881a10c45c85a6b31524e0"
+            "file": "02-writing-inner.png",
+            "fileSize": 651850,
+            "sourceFileChecksum": "060efb896f9119de9265ab504057c120"
           },
           {
-            "file": "1.2-duo-planning-opaque.png",
-            "fileSize": 340953,
-            "sourceFileChecksum": "a3a60fb4478493d7cd0681292c9ef06d"
+            "file": "03-planning.png",
+            "fileSize": 423499,
+            "sourceFileChecksum": "1d6abe1f878dfcf518b49bd2ed216a14"
           },
           {
-            "file": "1.2-duo-outputs-opaque.png",
-            "fileSize": 1326149,
-            "sourceFileChecksum": "eef1146f2ea6bacc8356031112408c25"
+            "file": "04-outputs.png",
+            "fileSize": 685721,
+            "sourceFileChecksum": "fc10a12218af7bc51fd9182fae4634d1"
           },
           {
-            "file": "1.2-duo-library-opaque.png",
-            "fileSize": 1503565,
-            "sourceFileChecksum": "7a33a2895be105e3ff7c4eaf4652090d"
+            "file": "05-library.png",
+            "fileSize": 575366,
+            "sourceFileChecksum": "720d2169b408a189b4841c96b33cd0ef"
           },
           {
-            "file": "1.2-duo-study-opaque.png",
-            "fileSize": 205098,
-            "sourceFileChecksum": "6179beea8284beb3ed1593dcd48e2c21"
+            "file": "06-study.png",
+            "fileSize": 388733,
+            "sourceFileChecksum": "072441c773a7101b2ec71013bf5de9fe"
           },
           {
-            "file": "1.2-duo-privacy-opaque.png",
-            "fileSize": 1280486,
-            "sourceFileChecksum": "7c30b785462eb1f9a8fc708299b63e8a"
+            "file": "07-privacy.png",
+            "fileSize": 544309,
+            "sourceFileChecksum": "56faf832573f4cc82b604d0b8173cfd0"
           }
         ]
       },
@@ -3443,29 +3443,29 @@
       "fields": {
         "screenshots": [
           {
-            "file": "1.2-mac-writing.png",
-            "fileSize": 228452,
-            "sourceFileChecksum": "3e91f2296be2d28e871524283e69164a"
+            "file": "01-writing.png",
+            "fileSize": 419372,
+            "sourceFileChecksum": "d3fea4553f08a1b7d57ce71880100d51"
           },
           {
-            "file": "1.2-mac-planning.png",
-            "fileSize": 228385,
-            "sourceFileChecksum": "42ddf75f1ac7422b294648d9fa4f6e92"
+            "file": "02-planning.png",
+            "fileSize": 426136,
+            "sourceFileChecksum": "25774ed61bfe94f3b656a3bf19d0bc55"
           },
           {
-            "file": "1.2-mac-outputs.png",
-            "fileSize": 2271189,
-            "sourceFileChecksum": "be963316960aa9bfdec421a4772b8629"
+            "file": "03-outputs.png",
+            "fileSize": 1382640,
+            "sourceFileChecksum": "1ccf288f79a8a71e6f1314e912f3b237"
           },
           {
-            "file": "1.2-mac-library.png",
-            "fileSize": 2221879,
-            "sourceFileChecksum": "8e530e6806f75147bf8feaf413eed63b"
+            "file": "04-library.png",
+            "fileSize": 1357763,
+            "sourceFileChecksum": "3d04b9bedd66c84164bbb72fbffacdd2"
           },
           {
-            "file": "1.2-mac-study.png",
-            "fileSize": 136498,
-            "sourceFileChecksum": "7678650d1e9c8c826a2c9034efbb834a"
+            "file": "05-study.png",
+            "fileSize": 340188,
+            "sourceFileChecksum": "fa1ff1e27e6be1320ed4a4b18d7c19c5"
           }
         ]
       },

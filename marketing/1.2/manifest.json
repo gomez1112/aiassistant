@@ -14,1079 +14,1551 @@
       "name": "Writing with Ari",
       "url": "https://apps.apple.com/us/app/ai-assistant-ai-chat/id6759457807?ppid=8dbf8612-edb1-4cef-9a1a-bce8ca5090dc",
       "versionID": "4750177b-e13d-41ab-9ecb-71557fd3f9e7",
-      "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35"
+      "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
+      "promotionalText": "Find the words you meant. Draft emails, shape rough ideas, and keep your best writing ready to reuse with Ari."
     },
     {
       "id": "f72eeae5-630c-4f68-a1d5-6cf2a12bc492",
       "name": "Study with Ari",
       "url": "https://apps.apple.com/us/app/ai-assistant-ai-chat/id6759457807?ppid=f72eeae5-630c-4f68-a1d5-6cf2a12bc492",
       "versionID": "2bfc1c85-485c-4040-85f5-361c3250aafa",
-      "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804"
+      "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
+      "promotionalText": "Make learning stick. Bring your notes, revisit the essentials, and practice with flashcards you can flip and keep."
     },
     {
       "id": "36b44e77-6371-4443-96e0-309ca34f727d",
       "name": "Plan with Ari",
       "url": "https://apps.apple.com/us/app/ai-assistant-ai-chat/id6759457807?ppid=36b44e77-6371-4443-96e0-309ca34f727d",
       "versionID": "7244ea46-13ea-4129-9bf7-6550cb624a11",
-      "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e"
+      "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
+      "promotionalText": "Less scattered, more sorted. Turn a busy week into a clear plan, keep useful checklists, and take the next step with Ari."
     }
   ],
+  "submittedForReview": false,
+  "campaign": "A little help. A lot more possible.",
+  "status": "verified-drafts",
   "assets": [
     {
-      "id": "7d400019-2e52-840f-802b-6bcc396d9366",
       "key": "default-header",
       "type": "appAssetLibraryImages",
-      "file": "creative/default-header.png",
-      "state": "PREPARE_FOR_SUBMISSION",
+      "file": "redesign/creative/default-header.png",
       "category": "CREATIVE_ASSETS",
-      "sha256": "0e7ac443dac06d439e1e090f099830f1fc9b594c703f14c4cb2e821dafe21c90",
-      "bytes": 476101,
       "width": 3840,
       "height": 1646,
-      "opaque": true
+      "opaque": true,
+      "sha256": "d8018ecd60ddd85f8491c546b0e4925b75105f7415e7bfdbdd819e7f28746fc8",
+      "bytes": 995732,
+      "id": "ff400019-2e52-840f-802c-935a4fa88b5f",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "a5800019-2e52-840f-801b-5a719586f9df",
       "key": "iphone-writing",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/iphone/01-writing.png",
+      "file": "redesign/screenshots/iphone/01-writing.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "b4e12c4e69f2a64dd9ae6895c4b90ce13e18075bf7e82082908ad1776b2d99d3",
-      "bytes": 486164,
       "width": 1206,
       "height": 2622,
-      "opaque": true
+      "opaque": true,
+      "sha256": "1e41598784f431a3d9942219dca87e09d24272f16a6e3762f96998eea41962b1",
+      "bytes": 756439,
+      "id": "13c00019-2e52-840f-8039-18b161d40527",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "40000019-2e52-840f-8029-0ecb32eca218",
       "key": "iphone-planning",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/iphone/02-planning.png",
+      "file": "redesign/screenshots/iphone/02-planning.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "9277fdf4bb5947ba306bfa8ad3649854b5e94a18f6d45b27e7a55edad09e22ad",
-      "bytes": 505409,
       "width": 1206,
       "height": 2622,
-      "opaque": true
+      "opaque": true,
+      "sha256": "0b67b0b0043ef4b4b917869fb41705ae7cd658de269422a4eda9e4dfa9042cb5",
+      "bytes": 825281,
+      "id": "58000019-2e52-840f-8012-84d5c9f2d444",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "5f800019-2e52-840f-802c-72604da55feb",
       "key": "iphone-outputs",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/iphone/03-outputs.png",
+      "file": "redesign/screenshots/iphone/03-outputs.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "fb26e087aca958498ad18bf66369bf4a5b64b1beb8f636162c1817dba9560fa5",
-      "bytes": 1153644,
       "width": 1206,
       "height": 2622,
-      "opaque": true
+      "opaque": true,
+      "sha256": "9cf81467b47feaa27f1f779499d63b2d9fdebe0dee974c3ab8a5dfe3beac27cf",
+      "bytes": 944277,
+      "id": "e4800019-2e52-840f-803b-810d05cdeaf5",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "83c00019-2e52-840f-8022-5eda672031f5",
       "key": "iphone-library",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/iphone/04-library.png",
+      "file": "redesign/screenshots/iphone/04-library.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "3f71445b8225c24ed429ab240c5b76fafeb7e83e7562dd1772b9db1fa822b372",
-      "bytes": 1387157,
       "width": 1206,
       "height": 2622,
-      "opaque": true
+      "opaque": true,
+      "sha256": "d59457021f92233c365d1f0e31cdc30dc7d6a7b1dfcb001bdd60167a7df60495",
+      "bytes": 1037461,
+      "id": "f7800019-2e52-840f-803f-3d02ac912a30",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "94800019-2e52-840f-8006-5b573da92edf",
       "key": "iphone-study",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/iphone/05-study.png",
+      "file": "redesign/screenshots/iphone/05-study.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "8afbbc84b611806fcf6b08f46ae6cb78bfba28ad5cf07b391173b23d78c0f4bb",
-      "bytes": 155115,
       "width": 1206,
       "height": 2622,
-      "opaque": true
+      "opaque": true,
+      "sha256": "dfdfba333c668bb3bfc011b2e348f0c2e9e696dbd7d256ca38a200e4ae643915",
+      "bytes": 564982,
+      "id": "cec00019-2e52-840f-800e-376c3e400daf",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "35800019-2e52-840f-803e-c408e6c81b5f",
       "key": "iphone-privacy",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/iphone/06-privacy.png",
+      "file": "redesign/screenshots/iphone/06-privacy.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "1dbb4526ca5bae3172f1786ee03e26336ffa6094d04b57310e3c077e018a131f",
-      "bytes": 1111905,
       "width": 1206,
       "height": 2622,
-      "opaque": true
+      "opaque": true,
+      "sha256": "7107997a435bba438a0a4048a779f8bec0028fd7934e1d41ae8db109a3d1ca5f",
+      "bytes": 928520,
+      "id": "63c00019-2e52-840f-8023-30f96b8210ca",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "34c00019-2e52-840f-8008-de85a9b90651",
       "key": "ipad-writing",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/ipad/01-writing.png",
+      "file": "redesign/screenshots/ipad/01-writing.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "28f82ba76bb2a81148b351b68aa33632d38b0329dfb3bd86fe42f0c9e550ec38",
-      "bytes": 307830,
       "width": 2064,
       "height": 2752,
-      "opaque": true
+      "opaque": true,
+      "sha256": "f0d68affa853c12122036c6285b617e2b61cd598d6e6be05781d4a35a8610bf7",
+      "bytes": 421634,
+      "id": "db000019-2e52-840f-802e-edb8f13ae990",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "17400019-2e52-840f-8039-da3d6c8ab8c7",
       "key": "ipad-planning",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/ipad/02-planning.png",
+      "file": "redesign/screenshots/ipad/02-planning.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "16d19a6f8d4e2435de78c5fbd796e52007db7a0dc86929eed6619a2514a93090",
-      "bytes": 317729,
       "width": 2064,
       "height": 2752,
-      "opaque": true
+      "opaque": true,
+      "sha256": "0671ee8c9a939b1631987c8811b26e2d37b24bbc32825d569a8952781672ff9c",
+      "bytes": 433071,
+      "id": "4dc00019-2e52-840f-8037-8fa74413d402",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "3ec00019-2e52-840f-8037-689e4a98e3eb",
       "key": "ipad-outputs",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/ipad/03-outputs.png",
+      "file": "redesign/screenshots/ipad/03-outputs.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "0aaa936a1d1a1d7c5f1e8185c1e7bf0e6ad8997eb4e6fe84210f3b96afcaaecb",
-      "bytes": 1876834,
       "width": 2064,
       "height": 2752,
-      "opaque": true
+      "opaque": true,
+      "sha256": "6385095d0826f5c7c87719f2acec5b753af52f5efe2c8dabb9f6361aa029f782",
+      "bytes": 1082223,
+      "id": "0e800019-2e52-840f-8023-131734d30fbe",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "26400019-2e52-840f-8015-415c8fe02862",
       "key": "ipad-library",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/ipad/04-library.png",
+      "file": "redesign/screenshots/ipad/04-library.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "181da72664d723804459dd5966161bffa2a5b0e8d2a20f5bcecb3775267e2191",
-      "bytes": 2919108,
       "width": 2064,
       "height": 2752,
-      "opaque": true
+      "opaque": true,
+      "sha256": "22ce34023022d6cbf6dcb33ec5e9b8d75692aa7ad142071a0aac470e1be1a073",
+      "bytes": 1477974,
+      "id": "72400019-2e52-840f-8015-1fc7f24e07a2",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "8a400019-2e52-840f-8020-a0dfbe3f53aa",
       "key": "ipad-study",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/ipad/05-study.png",
+      "file": "redesign/screenshots/ipad/05-study.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "e6e929512f00259214a71ea1dc92255cff8c08ef750fdd92be082b753f9a61aa",
-      "bytes": 162571,
       "width": 2064,
       "height": 2752,
-      "opaque": true
+      "opaque": true,
+      "sha256": "b5125c1fb6f79a7f5bb84302f2d1753604fe60131ee61ba7c015bd2cb8a6bdf6",
+      "bytes": 351883,
+      "id": "d8000019-2e52-840f-802d-a1aa4d1498f1",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "a5800019-2e52-840f-801a-b633a5288c91",
       "key": "ipad-privacy",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/ipad/06-privacy.png",
+      "file": "redesign/screenshots/ipad/06-privacy.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "665299ac6e9d6293da7a69475de723b91db5cc372e2590d91ca4dc51cec4e967",
-      "bytes": 977102,
       "width": 2064,
       "height": 2752,
-      "opaque": true
+      "opaque": true,
+      "sha256": "359db12013b1aa5ba881d6bbd88e55f68fe6e907e93e54ed49b5e28488d6f0f5",
+      "bytes": 666043,
+      "id": "b6000019-2e52-840f-8031-237a9befbe7b",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "f1400019-2e52-840f-803d-3a28e7bcd4dc",
       "key": "duo-writing",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/duo/01-writing-outer.png",
+      "file": "redesign/screenshots/duo/01-writing-outer.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "656da39ac973c44391f64e4269d6eabbefdc1443ca88256996676aefd2a8f791",
-      "bytes": 334818,
       "width": 1398,
       "height": 2034,
-      "opaque": true
+      "opaque": true,
+      "sha256": "fd9c8d84cca981102c80314cfba46e76834c050582a6ae454265a5bc6862f4d2",
+      "bytes": 419033,
+      "id": "fec00019-2e52-840f-8013-5fff68b9f705",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "5a800019-2e52-840f-800c-950c0251b309",
       "key": "duo-planning",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/duo/03-planning.png",
+      "file": "redesign/screenshots/duo/03-planning.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "22806b3116d52f716e94acfe5e20e9583908a405a4b2c459a8014892a6c26a43",
-      "bytes": 340953,
       "width": 1398,
       "height": 2034,
-      "opaque": true
+      "opaque": true,
+      "sha256": "81b39e900b987e8eb6fb7d50b7bbcddccda98db2f63218533319c3d1744a787c",
+      "bytes": 423499,
+      "id": "1b400019-2e52-840f-803e-67bd88835b61",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "2f000019-2e52-840f-8026-27a2e9f4acba",
       "key": "duo-outputs",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/duo/04-outputs.png",
+      "file": "redesign/screenshots/duo/04-outputs.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "6bfc2d9a6e509e96eeebfef02674fbadc1dabcbf56036a81df63e391d49074b5",
-      "bytes": 1326149,
       "width": 1398,
       "height": 2034,
-      "opaque": true
+      "opaque": true,
+      "sha256": "47e2581da5adf08c92024cdf6214d9927185bf97b98b37a24ec44fbfc3c896a3",
+      "bytes": 685721,
+      "id": "79800019-2e52-840f-803a-f32697fac847",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "47800019-2e52-840f-8038-db6547b2ebee",
       "key": "duo-library",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/duo/05-library.png",
+      "file": "redesign/screenshots/duo/05-library.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "e0817752157211296ae875e793b0a6d9ca6c608128c8059a542c298f22e016f9",
-      "bytes": 1503565,
       "width": 1398,
       "height": 2034,
-      "opaque": true
+      "opaque": true,
+      "sha256": "6f2dd40f6d5bb912cd33fd0ff4025f484a28e3097e0f991e873cf88730812a66",
+      "bytes": 575366,
+      "id": "fc000019-2e52-840f-8007-727e5a5670e8",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "71800019-2e52-840f-8014-621b24624edd",
       "key": "duo-study",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/duo/06-study.png",
+      "file": "redesign/screenshots/duo/06-study.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "68e4fa5ec995458f2f5291a8d74aaae13113ff67ca98b5813aca0659299027f9",
-      "bytes": 205098,
       "width": 1398,
       "height": 2034,
-      "opaque": true
+      "opaque": true,
+      "sha256": "cd23468727b973f7783bf13ba08fe9715c4fb3086583d0596dfe127e12c0d5cf",
+      "bytes": 388733,
+      "id": "38800019-2e52-840f-8003-d0d84e8fc1ba",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "6e000019-2e52-840f-800d-3dd9ff646675",
       "key": "duo-privacy",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/duo/07-privacy.png",
+      "file": "redesign/screenshots/duo/07-privacy.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "aca18676aca0b4b6cfbd212d26ab93c2a534b918da8d274ef363d5e2084ac661",
-      "bytes": 1280486,
       "width": 1398,
       "height": 2034,
-      "opaque": true
+      "opaque": true,
+      "sha256": "ab754bd84bc4ff24792f39b6855bc25c5bbda1972c9e21bb2b76edbe8858d6c4",
+      "bytes": 544309,
+      "id": "d8400019-2e52-840f-802c-8694740a27b0",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "04400019-2e52-840f-801c-fac6843895c3",
       "key": "duo-writing-inner",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/duo/02-writing-inner.png",
+      "file": "redesign/screenshots/duo/02-writing-inner.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "58a1d3a220e1c6319ac359e2b1a562e1837bdacc6824de1cd541bf941e2d608e",
-      "bytes": 345569,
       "width": 2853,
       "height": 2007,
-      "opaque": true
+      "opaque": true,
+      "sha256": "2bbc3f4f688fa745cc44746a8ee895df258f592d65b89e16df92d01a73deeff4",
+      "bytes": 651850,
+      "id": "6dc00019-2e52-840f-8021-a45ca81b55c5",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "a7400019-2e52-840f-801c-4121e709dfa0",
       "key": "default-search",
       "type": "appAssetLibraryImages",
-      "file": "creative/default-search.png",
+      "file": "redesign/creative/default-search.png",
       "category": "CREATIVE_ASSETS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "0ebaa3424d9e6bc5cb6db6a9e268507fb234574147cf247b4b8e40925613cb05",
-      "bytes": 223363,
       "width": 1920,
       "height": 1280,
-      "opaque": true
+      "opaque": true,
+      "sha256": "a65c5bca9198b5d281daa5a603ed377b6ee6987a0be9462421ed17af79073da7",
+      "bytes": 575056,
+      "id": "dbc00019-2e52-840f-8033-3497539734c1",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "6ac00019-2e52-840f-802c-793ed9400847",
       "key": "writing-header",
       "type": "appAssetLibraryImages",
-      "file": "creative/writing-header.png",
+      "file": "redesign/creative/writing-header.png",
       "category": "CREATIVE_ASSETS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "f953aa54cda96b34443380d742bafc5780f23235d2564bc4d34424d7ddfdb5b9",
-      "bytes": 477765,
       "width": 3840,
       "height": 1646,
-      "opaque": true
+      "opaque": true,
+      "sha256": "3672d62d4dbdb93ac67b822c87b5c0bed86e7d05d565795016e1f401cb119d4c",
+      "bytes": 1461941,
+      "id": "f4400019-2e52-840f-800c-d1ff3eddbbd7",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "c4000019-2e52-840f-8029-2b020fbb8298",
       "key": "writing-search",
       "type": "appAssetLibraryImages",
-      "file": "creative/writing-search.png",
+      "file": "redesign/creative/writing-search.png",
       "category": "CREATIVE_ASSETS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "6fbfce8c2c10ac264d53ab71075f2096b9fff6fb841cd38113dfc9ffdc1316ef",
-      "bytes": 230927,
       "width": 1920,
       "height": 1280,
-      "opaque": true
+      "opaque": true,
+      "sha256": "468f0a07a79d9508026e05e2f507ed962be71af27aac5f16d0498d04d6050f52",
+      "bytes": 583469,
+      "id": "f2800019-2e52-840f-8038-22aea2b815c7",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "50c00019-2e52-840f-8012-f2f09aa1ed4f",
       "key": "study-header",
       "type": "appAssetLibraryImages",
-      "file": "creative/study-header.png",
+      "file": "redesign/creative/study-header.png",
       "category": "CREATIVE_ASSETS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "6b08dd4d2e0a127fbfda26966e4d0f9768a1b8cd255a9327c5e7b696d923e06d",
-      "bytes": 249695,
       "width": 3840,
       "height": 1646,
-      "opaque": true
+      "opaque": true,
+      "sha256": "41af49e4d83f7d85b6618d9467bf92e245a7cc82d9fee7f79fe840c40884daf7",
+      "bytes": 747317,
+      "id": "8f400019-2e52-840f-801c-dd59905d7330",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "9cc00019-2e52-840f-802b-181f8abcbc98",
       "key": "study-search",
       "type": "appAssetLibraryImages",
-      "file": "creative/study-search.png",
+      "file": "redesign/creative/study-search.png",
       "category": "CREATIVE_ASSETS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "a3979488453e2546bef186287fb795c78f99d8fd03a69978feff7144902f9e6b",
-      "bytes": 157812,
       "width": 1920,
       "height": 1280,
-      "opaque": true
+      "opaque": true,
+      "sha256": "d09fa86ed979e34fd0a822aafcb7196f8f0c5d824e814b6528085d58e3a9641b",
+      "bytes": 422607,
+      "id": "e9000019-2e52-840f-8038-ff0446f6195e",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "5a000019-2e52-840f-803a-83e81a563794",
       "key": "planning-header",
       "type": "appAssetLibraryImages",
-      "file": "creative/planning-header.png",
+      "file": "redesign/creative/planning-header.png",
       "category": "CREATIVE_ASSETS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "63b5cd511c07aed3872c42198c412dbe1c00bf42b9635184a539accdb10dc8a6",
-      "bytes": 495665,
       "width": 3840,
       "height": 1646,
-      "opaque": true
+      "opaque": true,
+      "sha256": "6bd0bb8b6425f30e322b973ba121c90d5e7f2f48d4044cedefe8e5f254a7e852",
+      "bytes": 1071231,
+      "id": "12000019-2e52-840f-802d-ae41a547c26a",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "9e800019-2e52-840f-802a-3dd4f31cdb7a",
       "key": "planning-search",
       "type": "appAssetLibraryImages",
-      "file": "creative/planning-search.png",
+      "file": "redesign/creative/planning-search.png",
       "category": "CREATIVE_ASSETS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "f4b6e404858c2464efa351b40ec1a4160f380b4d815bdd4534973aff051f56bb",
-      "bytes": 234424,
       "width": 1920,
       "height": 1280,
-      "opaque": true
+      "opaque": true,
+      "sha256": "f9aeb54ebaa67ded6be8a80b25935f9d16918bd7344e5875a191f569455df7e1",
+      "bytes": 593087,
+      "id": "31000019-2e52-840f-802b-24ac1029eaeb",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "eec00019-2e52-840f-811a-6ebaf64b35bc",
       "key": "iphone-preview",
       "type": "appAssetLibraryVideos",
-      "file": "previews/iphone-preview.mp4",
+      "file": "redesign/previews/iphone-default-preview.mp4",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "3079bafb42c2bf36bf0f7038a165348f7af183fe8cb2aaa5b106c3b377b5f7d3",
-      "bytes": 4945178,
       "width": 886,
       "height": 1920,
       "durationSeconds": 25,
       "framesPerSecond": 30,
-      "stereoAudio": true
+      "stereoAudio": true,
+      "sha256": "612ec44db336d09a7175a7e2799009b69dd38c83327e0f3284d763d7aefc5628",
+      "bytes": 4548775,
+      "duration": 20,
+      "id": "84c00019-2e52-840f-813e-3b100c5e1249",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "77000019-2e52-840f-812b-beca8a43b596",
       "key": "ipad-preview",
       "type": "appAssetLibraryVideos",
-      "file": "previews/ipad-preview.mp4",
+      "file": "redesign/previews/ipad-default-preview.mp4",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "eb9d803de1de4927d4a19bf6135868fbd008ec4051681826e9d2e569ea4791f0",
-      "bytes": 3189731,
       "width": 1200,
       "height": 1600,
       "durationSeconds": 25,
       "framesPerSecond": 30,
-      "stereoAudio": true
+      "stereoAudio": true,
+      "sha256": "9b7f546bcdf97fdbf4eaf6c9f2457a863b114ddecc0dd97bb5607f11e4c402ca",
+      "bytes": 3310845,
+      "duration": 20,
+      "id": "42400019-2e52-840f-8137-63cc754af93b",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "d3c00019-2e52-840f-8119-5734662a6a57",
       "key": "duo-preview",
       "type": "appAssetLibraryVideos",
-      "file": "previews/duo-preview.mp4",
+      "file": "redesign/previews/duo-default-preview.mp4",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "8b7ef39d241127051c61b19b11f9a7712498d27a706682ca2d9b8c564d815203",
-      "bytes": 3645549,
       "width": 886,
       "height": 1920,
       "durationSeconds": 25,
       "framesPerSecond": 30,
-      "stereoAudio": true
+      "stereoAudio": true,
+      "sha256": "552b888b1b4948864bf81ed0ea17ec7e74d535961d094782ce3955c80375b2fd",
+      "bytes": 4026320,
+      "duration": 20,
+      "id": "dcc00019-2e52-840f-812c-876decef1fe9",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "1c800019-2e52-840f-8036-fd1cbc15a58c",
       "key": "mac-writing",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/mac/01-writing.png",
+      "file": "redesign/screenshots/mac/01-writing.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "c17031c56415cd461b48523605d04de524694b3b51198a8399d93984fb260a31",
-      "bytes": 228452,
       "width": 2880,
       "height": 1800,
-      "opaque": true
+      "opaque": true,
+      "sha256": "6f98e08098ec05163124d8039d1e61222c7eeb752b0086a836dfa4354fd1aefd",
+      "bytes": 419372,
+      "id": "b9400019-2e52-840f-8013-95a20530b2ee",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "01400019-2e52-840f-802d-06675d87b057",
       "key": "mac-planning",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/mac/02-planning.png",
+      "file": "redesign/screenshots/mac/02-planning.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "48cd226ca278482f77c0ecac85f033f08eeb4027b6dca7c55a7fbf7f499e3e48",
-      "bytes": 228385,
       "width": 2880,
       "height": 1800,
-      "opaque": true
+      "opaque": true,
+      "sha256": "5b6f7f1c54fb76f8b51c49ae7845ac0ca50a9423a78ae45097f8a145e56c8f9b",
+      "bytes": 426136,
+      "id": "db800019-2e52-840f-802b-49d34441e1fe",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "7fc00019-2e52-840f-800e-e6b3590ee523",
       "key": "mac-outputs",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/mac/03-outputs.png",
+      "file": "redesign/screenshots/mac/03-outputs.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "20226395a5819f0d0d6a92bf10aad525c58ae11c16c3c1c15149f1921ebab2e0",
-      "bytes": 2271189,
       "width": 2880,
       "height": 1800,
-      "opaque": true
+      "opaque": true,
+      "sha256": "e22c0e2f9522e4579aff31bc62ffa1743997fe745f75f247901fbde09673ea26",
+      "bytes": 1382640,
+      "id": "b5400019-2e52-840f-802e-bd865b9ec919",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "be000019-2e52-840f-8018-60da71562dea",
       "key": "mac-library",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/mac/04-library.png",
+      "file": "redesign/screenshots/mac/04-library.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "f22ce310f1d211f8dc58674a5ebd9f292e39a7d7ca5e469c331515294ed43279",
-      "bytes": 2221879,
       "width": 2880,
       "height": 1800,
-      "opaque": true
+      "opaque": true,
+      "sha256": "ce372d4509a3695e3a4ded4cb85f797b6d13de34d3e3c44911744bf04c35a308",
+      "bytes": 1357763,
+      "id": "adc00019-2e52-840f-8003-fc9db5044103",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "e9400019-2e52-840f-802e-086e347d4cfb",
       "key": "mac-study",
       "type": "appAssetLibraryImages",
-      "file": "screenshots/mac/05-study.png",
+      "file": "redesign/screenshots/mac/05-study.png",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "2ffe607a7283d114f9c6a32609e9986c5c5b42b6613d38378302829d6552b1f4",
-      "bytes": 136498,
       "width": 2880,
       "height": 1800,
-      "opaque": true
+      "opaque": true,
+      "sha256": "f22b525be58831c5a8dc55d91581b324032b174bcc812711a1946b3ce50f3f22",
+      "bytes": 340188,
+      "id": "b2c00019-2e52-840f-8037-09f841f3fd50",
+      "state": "PREPARE_FOR_SUBMISSION"
     },
     {
-      "id": "27000019-2e52-840f-811e-7b72a9c168ba",
       "key": "mac-preview",
       "type": "appAssetLibraryVideos",
-      "file": "previews/mac-preview.mp4",
+      "file": "redesign/previews/mac-default-preview.mp4",
       "category": "APP_SCREENSHOTS_AND_PREVIEWS",
-      "state": "PREPARE_FOR_SUBMISSION",
-      "sha256": "6fa6614832496045180aaf7cdcc0ff6982f43a6762167a0f67a406e67609d049",
-      "bytes": 871487,
       "width": 1920,
       "height": 1080,
       "durationSeconds": 20,
       "framesPerSecond": 30,
-      "stereoAudio": true
+      "stereoAudio": true,
+      "sha256": "5b22ff09b02b05e2fed2a7f8b4d6717e809b911c8fe1e519c2fc760550b09726",
+      "bytes": 2170913,
+      "duration": 20,
+      "id": "0d800019-2e52-840f-8111-cfeb7b2c77e8",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "iphone-writing-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/iphone-writing-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 886,
+      "height": 1920,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "72070de55350e567ed9109c63937cf7ec7ff33cbc913c9b41d860c0c03e3b610",
+      "bytes": 4085807,
+      "id": "fb800019-2e52-840f-8103-5c3267ef6192",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "iphone-study-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/iphone-study-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 886,
+      "height": 1920,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "3ba8a6dc6de57f8ec72304797ecebef12a8d0cd4767383fbc318abde62baa428",
+      "bytes": 3781283,
+      "id": "39400019-2e52-840f-8136-fa9cd47f3979",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "iphone-planning-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/iphone-planning-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 886,
+      "height": 1920,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "d41cbcbe4ca751c4c51a1b87ed729cf5846caf6a1065c5520e80062e1f85bc5e",
+      "bytes": 4135649,
+      "id": "47c00019-2e52-840f-8101-d262bc591f88",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "duo-writing-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/duo-writing-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 886,
+      "height": 1920,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "3db40bf577dc1494bb3548554834a013d618eebec5269e24007415cf8a80ceac",
+      "bytes": 3566848,
+      "id": "f1000019-2e52-840f-813f-54da334f1550",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "duo-study-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/duo-study-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 886,
+      "height": 1920,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "6dedbb682df02c7349692eea8e3b828c4f49f4a9ef6445fd1bac7b563e95c439",
+      "bytes": 3352976,
+      "id": "17800019-2e52-840f-8112-b24afdf24e52",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "duo-planning-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/duo-planning-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 886,
+      "height": 1920,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "6df7c856d01389e52152349dbfc24d1dac154ef9bd907bdc2ada6a6ccc2729eb",
+      "bytes": 3684494,
+      "id": "1c800019-2e52-840f-8135-48ec7065e16c",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "ipad-writing-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/ipad-writing-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 1200,
+      "height": 1600,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "c5f25c5966cb6219bfbd2a062a6b94cc1e36fe512527575b01d1575dd028e5b5",
+      "bytes": 3053535,
+      "id": "25800019-2e52-840f-8106-0cb4037e1d7b",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "ipad-study-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/ipad-study-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 1200,
+      "height": 1600,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "16a5def8f5b120700486963315cfb8d512a6885fb3cb49922e6c90ab9b5eb28e",
+      "bytes": 2937368,
+      "id": "50800019-2e52-840f-8118-1ed2d5cfb645",
+      "state": "PREPARE_FOR_SUBMISSION"
+    },
+    {
+      "key": "ipad-planning-preview",
+      "type": "appAssetLibraryVideos",
+      "file": "redesign/previews/ipad-planning-preview.mp4",
+      "category": "APP_SCREENSHOTS_AND_PREVIEWS",
+      "width": 1200,
+      "height": 1600,
+      "durationSeconds": 25,
+      "framesPerSecond": 30,
+      "stereoAudio": true,
+      "duration": 15,
+      "sha256": "9721631ffc54985d6cb7f55c572e2ce7ab6a1a80cb418d890f581678404a6562",
+      "bytes": 3101075,
+      "id": "e8c00019-2e52-840f-813c-28b03582765d",
+      "state": "PREPARE_FOR_SUBMISSION"
     }
   ],
   "placements": [
     {
-      "id": "6c000019-2e52-840f-8f24-78258a3915dc",
       "key": "iphone-writing",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "ebc00019-2e52-840f-8f17-e1126e6265d6"
     },
     {
-      "id": "e5800019-2e52-840f-8f34-59bf4a299e84",
       "key": "duo-writing",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "54c00019-2e52-840f-8f20-32b1bbb5c00c"
     },
     {
-      "id": "5b400019-2e52-840f-8f04-2a94cff15a70",
       "key": "duo-writing-inner",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "10000019-2e52-840f-8f15-1206929c4fc4"
     },
     {
-      "id": "fb800019-2e52-840f-8f13-e31b145f7fcf",
       "key": "default-search",
       "group": "DEFAULT_PROFILE",
       "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "83000019-2e52-840f-8f15-490e352844f0"
     },
     {
-      "id": "eb400019-2e52-840f-8f1b-5a38ea2268e4",
       "key": "iphone-planning",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "8f000019-2e52-840f-8f3f-262b1817ea9c"
     },
     {
-      "id": "54c00019-2e52-840f-8f24-47cabefda21f",
       "key": "iphone-outputs",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "d5400019-2e52-840f-8f0a-b70829be40ec"
     },
     {
-      "id": "ad800019-2e52-840f-8f29-8ee52b128fd5",
       "key": "iphone-library",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "11c00019-2e52-840f-8f1f-2791d965a781"
     },
     {
-      "id": "4dc00019-2e52-840f-8f27-e134e09cd45b",
       "key": "iphone-study",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "26c00019-2e52-840f-8f1d-996b3f17b658"
     },
     {
-      "id": "43400019-2e52-840f-8f24-c81b02335ee4",
       "key": "iphone-privacy",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "ccc00019-2e52-840f-8f13-adc92beeb2ee"
     },
     {
-      "id": "86400019-2e52-840f-8f11-199cb5f03b80",
       "key": "duo-planning",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "56400019-2e52-840f-8f12-729571d52057"
     },
     {
-      "id": "38800019-2e52-840f-8f01-ad9ba90220be",
       "key": "duo-outputs",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "efc00019-2e52-840f-8f34-ef78b0778367"
     },
     {
-      "id": "f2c00019-2e52-840f-8f05-f91e47a993ec",
       "key": "duo-library",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "77800019-2e52-840f-8f19-a0788bcf11ca"
     },
     {
-      "id": "dd000019-2e52-840f-8f38-e6fd9ae0d716",
       "key": "duo-study",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "ae400019-2e52-840f-8f32-3b84220f1cc7"
     },
     {
-      "id": "a0c00019-2e52-840f-8f11-37aaa275b26e",
       "key": "duo-privacy",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "25000019-2e52-840f-8f3a-569fceca6f7d"
     },
     {
-      "id": "b1c00019-2e52-840f-8f06-257b0eb9c077",
       "key": "iphone-preview",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "22800019-2e52-840f-8f03-7ee4a09ac55b"
     },
     {
-      "id": "8f000019-2e52-840f-8f3f-152de8673d9e",
       "key": "duo-preview",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "04000019-2e52-840f-8f00-acb6061d1896"
     },
     {
-      "id": "40800019-2e52-840f-8f3f-d068ec92c1d7",
       "key": "ipad-preview",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "d6c00019-2e52-840f-8f1d-7c8842e9a77a"
     },
     {
-      "id": "5f800019-2e52-840f-8f06-67e008e5ba95",
       "key": "iphone-writing",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "b0800019-2e52-840f-8f3c-4b166e25b214"
     },
     {
-      "id": "40c00019-2e52-840f-8f22-8aa8616a7848",
       "key": "iphone-outputs",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "04c00019-2e52-840f-8f23-c1f0f6971a04"
     },
     {
-      "id": "89000019-2e52-840f-8f23-46ffa40ba0ec",
       "key": "iphone-library",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "2f000019-2e52-840f-8f04-c0e400eedb4b"
     },
     {
-      "id": "ef400019-2e52-840f-8f06-fb48cd1b1021",
-      "key": "iphone-preview",
+      "key": "iphone-writing-preview",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "28000019-2e52-840f-8f14-1f66cba0ff5a"
     },
     {
-      "id": "e4000019-2e52-840f-8f2b-805cf95cd66e",
       "key": "duo-writing",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "3bc00019-2e52-840f-8f38-7331e90c0bf8"
     },
     {
-      "id": "33000019-2e52-840f-8f3e-c4c68b12a4a7",
       "key": "duo-outputs",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "8b000019-2e52-840f-8f3a-8237558bdcd7"
     },
     {
-      "id": "5f800019-2e52-840f-8f09-379e565f4f57",
       "key": "duo-library",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "c0800019-2e52-840f-8f08-9696984b84cf"
     },
     {
-      "id": "93800019-2e52-840f-8f17-1bc9c620e46b",
-      "key": "duo-preview",
+      "key": "duo-writing-preview",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "e7000019-2e52-840f-8f38-52587b334378"
     },
     {
-      "id": "73000019-2e52-840f-8f02-778c5ef72d43",
       "key": "ipad-writing",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "ffc00019-2e52-840f-8f0e-df82567ca659"
     },
     {
-      "id": "80c00019-2e52-840f-8f19-427cc592938c",
       "key": "ipad-outputs",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "b7400019-2e52-840f-8f07-8a3156b78555"
     },
     {
-      "id": "b6800019-2e52-840f-8f11-2088b9c99990",
       "key": "ipad-library",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "36c00019-2e52-840f-8f27-7adf07e477ad"
     },
     {
-      "id": "d2800019-2e52-840f-8f3c-2061d96beb67",
-      "key": "ipad-preview",
+      "key": "ipad-writing-preview",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "7e400019-2e52-840f-8f2c-32e4510cdc8c"
     },
     {
-      "id": "e9400019-2e52-840f-8f03-0e7391b81079",
       "key": "writing-header",
       "group": "DEFAULT_PROFILE",
       "placementType": "PRODUCT_PAGE_HEADER_ASSET",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "32800019-2e52-840f-8f29-df95715d0d39"
     },
     {
-      "id": "8b800019-2e52-840f-8f13-50e42a9d2ab4",
       "key": "writing-search",
       "group": "DEFAULT_PROFILE",
       "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
       "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "c7800019-2e52-840f-8f36-473f79d037c8"
     },
     {
-      "id": "4d000019-2e52-840f-8f2d-94687c58f55a",
       "key": "iphone-study",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "7b800019-2e52-840f-8f1b-db15a78070e2"
     },
     {
-      "id": "82800019-2e52-840f-8f3a-d49e8c510a5d",
       "key": "iphone-outputs",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "d0800019-2e52-840f-8f0d-18331d89dade"
     },
     {
-      "id": "6f800019-2e52-840f-8f3e-ffdb98f68333",
       "key": "iphone-library",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "97000019-2e52-840f-8f0c-60d2922023eb"
     },
     {
-      "id": "86400019-2e52-840f-8f0b-f82af3d19028",
-      "key": "iphone-preview",
+      "key": "iphone-study-preview",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "fbc00019-2e52-840f-8f28-84edf3466990"
     },
     {
-      "id": "0b400019-2e52-840f-8f03-46ce3dbffde3",
       "key": "duo-study",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "e1400019-2e52-840f-8f09-0f2ca98c1f6b"
     },
     {
-      "id": "1d400019-2e52-840f-8f34-87ae3a76eca1",
       "key": "duo-outputs",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "ec000019-2e52-840f-8f17-08d4d49b52ab"
     },
     {
-      "id": "fa400019-2e52-840f-8f0a-27f9e87f92ec",
       "key": "duo-library",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "66000019-2e52-840f-8f28-ac37e40151b3"
     },
     {
-      "id": "4c800019-2e52-840f-8f23-7782074a114f",
-      "key": "duo-preview",
+      "key": "duo-study-preview",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "64000019-2e52-840f-8f1f-7ac21e185aae"
     },
     {
-      "id": "59800019-2e52-840f-8f02-1b996b86b70a",
       "key": "ipad-study",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "d7000019-2e52-840f-8f28-526ba3632d72"
     },
     {
-      "id": "f3400019-2e52-840f-8f35-009478550935",
       "key": "ipad-outputs",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "40c00019-2e52-840f-8f20-caf9b09d41e2"
     },
     {
-      "id": "60800019-2e52-840f-8f22-4a7dba9e8c62",
       "key": "ipad-library",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "56c00019-2e52-840f-8f35-a1c5c3624bec"
     },
     {
-      "id": "5f800019-2e52-840f-8f25-0ea6875bebc8",
-      "key": "ipad-preview",
+      "key": "ipad-study-preview",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "e4000019-2e52-840f-8f0d-9736334f73ea"
     },
     {
-      "id": "72400019-2e52-840f-8f01-f35edea3b45d",
       "key": "study-header",
       "group": "DEFAULT_PROFILE",
       "placementType": "PRODUCT_PAGE_HEADER_ASSET",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "1e000019-2e52-840f-8f18-24ce2e477b61"
     },
     {
-      "id": "c7800019-2e52-840f-8f05-f1c2e8f898a3",
       "key": "study-search",
       "group": "DEFAULT_PROFILE",
       "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
       "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "23800019-2e52-840f-8f30-3edfdb2efd20"
     },
     {
-      "id": "2ec00019-2e52-840f-8f0b-d0d38b5689b0",
       "key": "iphone-planning",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "ef000019-2e52-840f-8f37-f86bbf6fee83"
     },
     {
-      "id": "c0c00019-2e52-840f-8f19-1f800050c8e4",
       "key": "iphone-outputs",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "07800019-2e52-840f-8f08-d7c0993749ec"
     },
     {
-      "id": "f9000019-2e52-840f-8f30-fa0f6cc9b155",
       "key": "iphone-library",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "52400019-2e52-840f-8f23-9e4821a178eb"
     },
     {
-      "id": "83800019-2e52-840f-8f18-78b23f6c9693",
-      "key": "iphone-preview",
+      "key": "iphone-planning-preview",
       "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "e6800019-2e52-840f-8f05-366e0fba0d11"
     },
     {
-      "id": "64c00019-2e52-840f-8f31-977ee25013b0",
       "key": "duo-planning",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "dbc00019-2e52-840f-8f39-e9d97d5cab2b"
     },
     {
-      "id": "0b400019-2e52-840f-8f1e-0862a3e9b619",
       "key": "duo-outputs",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "17800019-2e52-840f-8f1b-eb69f291fb54"
     },
     {
-      "id": "5b400019-2e52-840f-8f0b-7f67e159dac9",
       "key": "duo-library",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "35800019-2e52-840f-8f34-20b17d094fa3"
     },
     {
-      "id": "27c00019-2e52-840f-8f1d-342755bd653f",
-      "key": "duo-preview",
+      "key": "duo-planning-preview",
       "group": "IPHONE_DUO_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "34800019-2e52-840f-8f21-deb3a7d2f706"
     },
     {
-      "id": "75800019-2e52-840f-8f27-6deda16ede26",
       "key": "ipad-planning",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "c1c00019-2e52-840f-8f2e-6a7d2961ff8b"
     },
     {
-      "id": "5ac00019-2e52-840f-8f3d-3f1b0fe61002",
       "key": "ipad-outputs",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "07000019-2e52-840f-8f37-ad9356000db5"
     },
     {
-      "id": "4c400019-2e52-840f-8f1a-60b1c0cbf06c",
       "key": "ipad-library",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "30800019-2e52-840f-8f1f-aa4ce446abf1"
     },
     {
-      "id": "c9000019-2e52-840f-8f23-7edb3b353810",
-      "key": "ipad-preview",
+      "key": "ipad-planning-preview",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "d6800019-2e52-840f-8f19-7a24abb37004"
     },
     {
-      "id": "0f800019-2e52-840f-8f15-7a41e7c13ef0",
       "key": "planning-header",
       "group": "DEFAULT_PROFILE",
       "placementType": "PRODUCT_PAGE_HEADER_ASSET",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "5e800019-2e52-840f-8f38-1dce7d5e2f3e"
     },
     {
-      "id": "5a400019-2e52-840f-8f16-63ab2de28472",
       "key": "planning-search",
       "group": "DEFAULT_PROFILE",
       "placementType": "APP_STORE_SEARCH_RESULTS_ASSET",
       "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
-      "localizationType": "appCustomProductPageLocalizations"
+      "localizationType": "appCustomProductPageLocalizations",
+      "id": "47400019-2e52-840f-8f28-2b540a77c461"
     },
     {
-      "id": "00800019-2e52-840f-8f13-d1c4504ad6af",
       "key": "ipad-writing",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "23000019-2e52-840f-8f22-c5757cb8eff7"
     },
     {
-      "id": "35000019-2e52-840f-8f3a-41f41cdbb262",
       "key": "ipad-planning",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "16c00019-2e52-840f-8f0a-5007498c74b3"
     },
     {
-      "id": "64800019-2e52-840f-8f1b-c78b77746cfd",
       "key": "ipad-outputs",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "12400019-2e52-840f-8f11-8a00f2491525"
     },
     {
-      "id": "c2000019-2e52-840f-8f3c-0a99a0983b05",
       "key": "ipad-library",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "b3c00019-2e52-840f-8f0c-e376e4a9bfb4"
     },
     {
-      "id": "03400019-2e52-840f-8f12-7174d9882770",
       "key": "ipad-study",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "f6800019-2e52-840f-8f1b-0d0752c333f6"
     },
     {
-      "id": "69400019-2e52-840f-8f25-cfc60a71af82",
       "key": "ipad-privacy",
       "group": "IPAD_13_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "8a000019-2e52-840f-8f1e-929627d99bc9"
     },
     {
-      "id": "5b400019-2e52-840f-8f00-79c8126f39a1",
       "key": "mac-writing",
       "group": "MAC_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "a18aebe2-3a18-4976-8dce-cfd498b75716",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "83800019-2e52-840f-8f07-e555e693fab3"
     },
     {
-      "id": "85800019-2e52-840f-8f2b-65296eaf2975",
       "key": "mac-planning",
       "group": "MAC_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "a18aebe2-3a18-4976-8dce-cfd498b75716",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "bf800019-2e52-840f-8f3a-e6dd26af5e3b"
     },
     {
-      "id": "54c00019-2e52-840f-8f39-5463f1e335d7",
       "key": "mac-outputs",
       "group": "MAC_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "a18aebe2-3a18-4976-8dce-cfd498b75716",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "bcc00019-2e52-840f-8f0a-0dc62e5ab66c"
     },
     {
-      "id": "87000019-2e52-840f-8f00-8761a1a531af",
       "key": "mac-library",
       "group": "MAC_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "a18aebe2-3a18-4976-8dce-cfd498b75716",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "d8400019-2e52-840f-8f0f-ad11b66bce61"
     },
     {
-      "id": "44800019-2e52-840f-8f0a-3357773c6e97",
       "key": "mac-study",
       "group": "MAC_PROFILE",
       "placementType": "APP_SCREENSHOT",
       "localizationID": "a18aebe2-3a18-4976-8dce-cfd498b75716",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "b6000019-2e52-840f-8f26-231fb708e142"
     },
     {
-      "id": "48800019-2e52-840f-8f01-b150de01ac66",
       "key": "mac-preview",
       "group": "MAC_PROFILE",
       "placementType": "APP_PREVIEW",
       "localizationID": "a18aebe2-3a18-4976-8dce-cfd498b75716",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "13400019-2e52-840f-8f12-171370a0032e"
     },
     {
-      "id": "4f400019-2e52-840f-8f15-4f46de7f7739",
       "key": "default-header",
       "group": "DEFAULT_PROFILE",
       "placementType": "PRODUCT_PAGE_HEADER_ASSET",
       "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
-      "localizationType": "appStoreVersionLocalizations"
+      "localizationType": "appStoreVersionLocalizations",
+      "id": "7a800019-2e52-840f-8f3a-46f91392f2fc"
     }
   ],
-  "orderedScreenshotGroups": 13,
-  "submittedForReview": false
+  "replacesPlacementIDs": [
+    "6c000019-2e52-840f-8f24-78258a3915dc",
+    "e5800019-2e52-840f-8f34-59bf4a299e84",
+    "5b400019-2e52-840f-8f04-2a94cff15a70",
+    "fb800019-2e52-840f-8f13-e31b145f7fcf",
+    "eb400019-2e52-840f-8f1b-5a38ea2268e4",
+    "54c00019-2e52-840f-8f24-47cabefda21f",
+    "ad800019-2e52-840f-8f29-8ee52b128fd5",
+    "4dc00019-2e52-840f-8f27-e134e09cd45b",
+    "43400019-2e52-840f-8f24-c81b02335ee4",
+    "86400019-2e52-840f-8f11-199cb5f03b80",
+    "38800019-2e52-840f-8f01-ad9ba90220be",
+    "f2c00019-2e52-840f-8f05-f91e47a993ec",
+    "dd000019-2e52-840f-8f38-e6fd9ae0d716",
+    "a0c00019-2e52-840f-8f11-37aaa275b26e",
+    "b1c00019-2e52-840f-8f06-257b0eb9c077",
+    "8f000019-2e52-840f-8f3f-152de8673d9e",
+    "40800019-2e52-840f-8f3f-d068ec92c1d7",
+    "5f800019-2e52-840f-8f06-67e008e5ba95",
+    "40c00019-2e52-840f-8f22-8aa8616a7848",
+    "89000019-2e52-840f-8f23-46ffa40ba0ec",
+    "ef400019-2e52-840f-8f06-fb48cd1b1021",
+    "e4000019-2e52-840f-8f2b-805cf95cd66e",
+    "33000019-2e52-840f-8f3e-c4c68b12a4a7",
+    "5f800019-2e52-840f-8f09-379e565f4f57",
+    "93800019-2e52-840f-8f17-1bc9c620e46b",
+    "73000019-2e52-840f-8f02-778c5ef72d43",
+    "80c00019-2e52-840f-8f19-427cc592938c",
+    "b6800019-2e52-840f-8f11-2088b9c99990",
+    "d2800019-2e52-840f-8f3c-2061d96beb67",
+    "e9400019-2e52-840f-8f03-0e7391b81079",
+    "8b800019-2e52-840f-8f13-50e42a9d2ab4",
+    "4d000019-2e52-840f-8f2d-94687c58f55a",
+    "82800019-2e52-840f-8f3a-d49e8c510a5d",
+    "6f800019-2e52-840f-8f3e-ffdb98f68333",
+    "86400019-2e52-840f-8f0b-f82af3d19028",
+    "0b400019-2e52-840f-8f03-46ce3dbffde3",
+    "1d400019-2e52-840f-8f34-87ae3a76eca1",
+    "fa400019-2e52-840f-8f0a-27f9e87f92ec",
+    "4c800019-2e52-840f-8f23-7782074a114f",
+    "59800019-2e52-840f-8f02-1b996b86b70a",
+    "f3400019-2e52-840f-8f35-009478550935",
+    "60800019-2e52-840f-8f22-4a7dba9e8c62",
+    "5f800019-2e52-840f-8f25-0ea6875bebc8",
+    "72400019-2e52-840f-8f01-f35edea3b45d",
+    "c7800019-2e52-840f-8f05-f1c2e8f898a3",
+    "2ec00019-2e52-840f-8f0b-d0d38b5689b0",
+    "c0c00019-2e52-840f-8f19-1f800050c8e4",
+    "f9000019-2e52-840f-8f30-fa0f6cc9b155",
+    "83800019-2e52-840f-8f18-78b23f6c9693",
+    "64c00019-2e52-840f-8f31-977ee25013b0",
+    "0b400019-2e52-840f-8f1e-0862a3e9b619",
+    "5b400019-2e52-840f-8f0b-7f67e159dac9",
+    "27c00019-2e52-840f-8f1d-342755bd653f",
+    "75800019-2e52-840f-8f27-6deda16ede26",
+    "5ac00019-2e52-840f-8f3d-3f1b0fe61002",
+    "4c400019-2e52-840f-8f1a-60b1c0cbf06c",
+    "c9000019-2e52-840f-8f23-7edb3b353810",
+    "0f800019-2e52-840f-8f15-7a41e7c13ef0",
+    "5a400019-2e52-840f-8f16-63ab2de28472",
+    "00800019-2e52-840f-8f13-d1c4504ad6af",
+    "35000019-2e52-840f-8f3a-41f41cdbb262",
+    "64800019-2e52-840f-8f1b-c78b77746cfd",
+    "c2000019-2e52-840f-8f3c-0a99a0983b05",
+    "03400019-2e52-840f-8f12-7174d9882770",
+    "69400019-2e52-840f-8f25-cfc60a71af82",
+    "5b400019-2e52-840f-8f00-79c8126f39a1",
+    "85800019-2e52-840f-8f2b-65296eaf2975",
+    "54c00019-2e52-840f-8f39-5463f1e335d7",
+    "87000019-2e52-840f-8f00-8761a1a531af",
+    "44800019-2e52-840f-8f0a-3357773c6e97",
+    "48800019-2e52-840f-8f01-b150de01ac66",
+    "4f400019-2e52-840f-8f15-4f46de7f7739"
+  ],
+  "orderedScreenshotGroups": [
+    {
+      "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
+      "localizationType": "appStoreVersionLocalizations",
+      "keys": [
+        "iphone-writing",
+        "iphone-planning",
+        "iphone-outputs",
+        "iphone-library",
+        "iphone-study",
+        "iphone-privacy"
+      ],
+      "placementIDs": [
+        "ebc00019-2e52-840f-8f17-e1126e6265d6",
+        "8f000019-2e52-840f-8f3f-262b1817ea9c",
+        "d5400019-2e52-840f-8f0a-b70829be40ec",
+        "11c00019-2e52-840f-8f1f-2791d965a781",
+        "26c00019-2e52-840f-8f1d-996b3f17b658",
+        "ccc00019-2e52-840f-8f13-adc92beeb2ee"
+      ],
+      "requestID": "da5762fd-e7ca-4682-8a71-c8806746767f"
+    },
+    {
+      "group": "IPHONE_DUO_PROFILE",
+      "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
+      "localizationType": "appStoreVersionLocalizations",
+      "keys": [
+        "duo-writing",
+        "duo-writing-inner",
+        "duo-planning",
+        "duo-outputs",
+        "duo-library",
+        "duo-study",
+        "duo-privacy"
+      ],
+      "placementIDs": [
+        "54c00019-2e52-840f-8f20-32b1bbb5c00c",
+        "10000019-2e52-840f-8f15-1206929c4fc4",
+        "56400019-2e52-840f-8f12-729571d52057",
+        "efc00019-2e52-840f-8f34-ef78b0778367",
+        "77800019-2e52-840f-8f19-a0788bcf11ca",
+        "ae400019-2e52-840f-8f32-3b84220f1cc7",
+        "25000019-2e52-840f-8f3a-569fceca6f7d"
+      ],
+      "requestID": "5d02411c-5e00-4bb6-b499-27276c22ba4b"
+    },
+    {
+      "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "iphone-writing",
+        "iphone-outputs",
+        "iphone-library"
+      ],
+      "placementIDs": [
+        "b0800019-2e52-840f-8f3c-4b166e25b214",
+        "04c00019-2e52-840f-8f23-c1f0f6971a04",
+        "2f000019-2e52-840f-8f04-c0e400eedb4b"
+      ],
+      "requestID": "471506a4-b47f-4af8-a45b-c37abb1ced7e"
+    },
+    {
+      "group": "IPHONE_DUO_PROFILE",
+      "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "duo-writing",
+        "duo-outputs",
+        "duo-library"
+      ],
+      "placementIDs": [
+        "3bc00019-2e52-840f-8f38-7331e90c0bf8",
+        "8b000019-2e52-840f-8f3a-8237558bdcd7",
+        "c0800019-2e52-840f-8f08-9696984b84cf"
+      ],
+      "requestID": "8ef70c8b-c437-4079-b561-63606e187502"
+    },
+    {
+      "group": "IPAD_13_PROFILE",
+      "localizationID": "8e22d976-6c7a-4b2a-901f-08a96d467e35",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "ipad-writing",
+        "ipad-outputs",
+        "ipad-library"
+      ],
+      "placementIDs": [
+        "ffc00019-2e52-840f-8f0e-df82567ca659",
+        "b7400019-2e52-840f-8f07-8a3156b78555",
+        "36c00019-2e52-840f-8f27-7adf07e477ad"
+      ],
+      "requestID": "1c079495-9826-41c2-8249-3f8e71f2e8d7"
+    },
+    {
+      "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "iphone-study",
+        "iphone-outputs",
+        "iphone-library"
+      ],
+      "placementIDs": [
+        "7b800019-2e52-840f-8f1b-db15a78070e2",
+        "d0800019-2e52-840f-8f0d-18331d89dade",
+        "97000019-2e52-840f-8f0c-60d2922023eb"
+      ],
+      "requestID": "391e4650-33ed-4fbb-9c29-b2643b3b847c"
+    },
+    {
+      "group": "IPHONE_DUO_PROFILE",
+      "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "duo-study",
+        "duo-outputs",
+        "duo-library"
+      ],
+      "placementIDs": [
+        "e1400019-2e52-840f-8f09-0f2ca98c1f6b",
+        "ec000019-2e52-840f-8f17-08d4d49b52ab",
+        "66000019-2e52-840f-8f28-ac37e40151b3"
+      ],
+      "requestID": "b7ebdff6-c65c-44fc-a0cd-4c945a940700"
+    },
+    {
+      "group": "IPAD_13_PROFILE",
+      "localizationID": "030bb21f-b153-41e5-bfd5-1203bd3f4804",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "ipad-study",
+        "ipad-outputs",
+        "ipad-library"
+      ],
+      "placementIDs": [
+        "d7000019-2e52-840f-8f28-526ba3632d72",
+        "40c00019-2e52-840f-8f20-caf9b09d41e2",
+        "56c00019-2e52-840f-8f35-a1c5c3624bec"
+      ],
+      "requestID": "8fc4d87c-a51e-4806-9ae8-531489d1941a"
+    },
+    {
+      "group": "IPHONE_DYNAMIC_ISLAND_MEDIUM_PROFILE",
+      "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "iphone-planning",
+        "iphone-outputs",
+        "iphone-library"
+      ],
+      "placementIDs": [
+        "ef000019-2e52-840f-8f37-f86bbf6fee83",
+        "07800019-2e52-840f-8f08-d7c0993749ec",
+        "52400019-2e52-840f-8f23-9e4821a178eb"
+      ],
+      "requestID": "2e361065-0b01-4103-baa7-94f03438ea50"
+    },
+    {
+      "group": "IPHONE_DUO_PROFILE",
+      "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "duo-planning",
+        "duo-outputs",
+        "duo-library"
+      ],
+      "placementIDs": [
+        "dbc00019-2e52-840f-8f39-e9d97d5cab2b",
+        "17800019-2e52-840f-8f1b-eb69f291fb54",
+        "35800019-2e52-840f-8f34-20b17d094fa3"
+      ],
+      "requestID": "91a1a0ca-a95c-4cd0-ad68-b085f4b11141"
+    },
+    {
+      "group": "IPAD_13_PROFILE",
+      "localizationID": "8a9889d1-3155-4f2d-9a45-1a4197f4cb8e",
+      "localizationType": "appCustomProductPageLocalizations",
+      "keys": [
+        "ipad-planning",
+        "ipad-outputs",
+        "ipad-library"
+      ],
+      "placementIDs": [
+        "c1c00019-2e52-840f-8f2e-6a7d2961ff8b",
+        "07000019-2e52-840f-8f37-ad9356000db5",
+        "30800019-2e52-840f-8f1f-aa4ce446abf1"
+      ],
+      "requestID": "9e2b1728-3738-4437-90d1-cdb46ef8072f"
+    },
+    {
+      "group": "IPAD_13_PROFILE",
+      "localizationID": "af6a2f7b-41e8-4d39-be35-d41be201c0bc",
+      "localizationType": "appStoreVersionLocalizations",
+      "keys": [
+        "ipad-writing",
+        "ipad-planning",
+        "ipad-outputs",
+        "ipad-library",
+        "ipad-study",
+        "ipad-privacy"
+      ],
+      "placementIDs": [
+        "23000019-2e52-840f-8f22-c5757cb8eff7",
+        "16c00019-2e52-840f-8f0a-5007498c74b3",
+        "12400019-2e52-840f-8f11-8a00f2491525",
+        "b3c00019-2e52-840f-8f0c-e376e4a9bfb4",
+        "f6800019-2e52-840f-8f1b-0d0752c333f6",
+        "8a000019-2e52-840f-8f1e-929627d99bc9"
+      ],
+      "requestID": "87ad6d38-beeb-4371-8354-65e287682e73"
+    },
+    {
+      "group": "MAC_PROFILE",
+      "localizationID": "a18aebe2-3a18-4976-8dce-cfd498b75716",
+      "localizationType": "appStoreVersionLocalizations",
+      "keys": [
+        "mac-writing",
+        "mac-planning",
+        "mac-outputs",
+        "mac-library",
+        "mac-study"
+      ],
+      "placementIDs": [
+        "83800019-2e52-840f-8f07-e555e693fab3",
+        "bf800019-2e52-840f-8f3a-e6dd26af5e3b",
+        "bcc00019-2e52-840f-8f0a-0dc62e5ab66c",
+        "d8400019-2e52-840f-8f0f-ad11b66bce61",
+        "b6000019-2e52-840f-8f26-231fb708e142"
+      ],
+      "requestID": "f80898d4-e0d9-4767-839f-9e8a4407e834"
+    }
+  ],
+  "remoteVerification": {
+    "assets": 45,
+    "placements": 72,
+    "allAssetsReady": true,
+    "placementStates": [
+      "ACTIVE"
+    ],
+    "errors": [],
+    "orderedScreenshotGroups": 13
+  },
+  "localListingRefreshStatus": "refreshed",
+  "replacementApprovedAt": "2026-10-12"
 }

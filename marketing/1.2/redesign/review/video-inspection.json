@@ -1,0 +1,145 @@
+[
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 20,
+    "file" : "duo-default-preview.mp4",
+    "fps" : 30.000001907348633,
+    "height" : 1920,
+    "videoCodec" : "avc1",
+    "width" : 886
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "duo-planning-preview.mp4",
+    "fps" : 30,
+    "height" : 1920,
+    "videoCodec" : "avc1",
+    "width" : 886
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "duo-study-preview.mp4",
+    "fps" : 30,
+    "height" : 1920,
+    "videoCodec" : "avc1",
+    "width" : 886
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "duo-writing-preview.mp4",
+    "fps" : 30,
+    "height" : 1920,
+    "videoCodec" : "avc1",
+    "width" : 886
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 20,
+    "file" : "ipad-default-preview.mp4",
+    "fps" : 30.000001907348633,
+    "height" : 1600,
+    "videoCodec" : "avc1",
+    "width" : 1200
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "ipad-planning-preview.mp4",
+    "fps" : 30,
+    "height" : 1600,
+    "videoCodec" : "avc1",
+    "width" : 1200
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "ipad-study-preview.mp4",
+    "fps" : 30,
+    "height" : 1600,
+    "videoCodec" : "avc1",
+    "width" : 1200
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "ipad-writing-preview.mp4",
+    "fps" : 30,
+    "height" : 1600,
+    "videoCodec" : "avc1",
+    "width" : 1200
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 20,
+    "file" : "iphone-default-preview.mp4",
+    "fps" : 30.000001907348633,
+    "height" : 1920,
+    "videoCodec" : "avc1",
+    "width" : 886
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "iphone-planning-preview.mp4",
+    "fps" : 30,
+    "height" : 1920,
+    "videoCodec" : "avc1",
+    "width" : 886
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "iphone-study-preview.mp4",
+    "fps" : 30,
+    "height" : 1920,
+    "videoCodec" : "avc1",
+    "width" : 886
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 15,
+    "file" : "iphone-writing-preview.mp4",
+    "fps" : 30,
+    "height" : 1920,
+    "videoCodec" : "avc1",
+    "width" : 886
+  },
+  {
+    "audioChannels" : 2,
+    "audioCodec" : "aac ",
+    "audioSampleRate" : 48000,
+    "duration" : 20,
+    "file" : "mac-default-preview.mp4",
+    "fps" : 30.000001907348633,
+    "height" : 1080,
+    "videoCodec" : "avc1",
+    "width" : 1920
+  }
+]

@@ -1,11 +1,11 @@
 {
   "screenshots": [
-    "1.2-duo-writing-opaque.png",
-    "1.2-duo-writing-inner-opaque.png",
-    "1.2-duo-planning-opaque.png",
-    "1.2-duo-outputs-opaque.png",
-    "1.2-duo-library-opaque.png",
-    "1.2-duo-study-opaque.png",
-    "1.2-duo-privacy-opaque.png"
+    "01-writing-outer.png",
+    "02-writing-inner.png",
+    "03-planning.png",
+    "04-outputs.png",
+    "05-library.png",
+    "06-study.png",
+    "07-privacy.png"
   ]
 }

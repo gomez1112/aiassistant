@@ -1,10 +1,10 @@
 {
   "screenshots": [
-    "1.2-ipad-writing-opaque.png",
-    "1.2-ipad-planning-opaque.png",
-    "1.2-ipad-outputs-opaque.png",
-    "1.2-ipad-library-opaque.png",
-    "1.2-ipad-study-opaque.png",
-    "1.2-ipad-privacy-opaque.png"
+    "01-writing.png",
+    "02-planning.png",
+    "03-outputs.png",
+    "04-library.png",
+    "05-study.png",
+    "06-privacy.png"
   ]
 }
