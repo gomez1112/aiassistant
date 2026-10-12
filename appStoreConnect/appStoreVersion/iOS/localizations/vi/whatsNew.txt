@@ -1,8 +1,3 @@
-- Giao diện trò chuyện gọn gàng hơn: thanh tiêu đề đơn giản và ô soạn tin nhắn dạng ChatGPT nổi.
-- Yêu cầu AI bị lỗi hoặc hủy không còn tính vào giới hạn tin nhắn miễn phí hằng ngày.
-- Kết quả và Thư viện giờ cập nhật theo thời gian thực khi nội dung thay đổi.
-- Điều hướng tới Kết quả đã lưu và mục trong Thư viện đáng tin cậy hơn.
-- Xử lý tốt hơn khi AI trên thiết bị không khả dụng.
-- Cải thiện việc hủy cho các tác vụ chuyển đổi AI và tóm tắt.
-- Kết quả câu đố giờ kiểm tra khóa đáp án an toàn hơn trước khi hiển thị giao diện câu đố tương tác.
-- Sửa lỗi ổn định chung cho luồng trò chuyện, kết quả đã lưu và thư viện.
+Chọn AI trên thiết bị hoặc Private Cloud Compute của Apple cho trò chuyện, chuyển đổi và tóm tắt.
+Không gian làm việc thích ứng với iPhone, iPhone Duo, iPad và Mac.
+Cải thiện độ tin cậy, hủy tác vụ, nhập tệp và khả năng truy cập với chữ lớn.

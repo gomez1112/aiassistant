@@ -25,11 +25,7 @@ Checked October 12, 2026. The app supports iOS/iPadOS/macOS 27.0 and newer, incl
 
 Container: `iCloud.com.transfinite.aiassistant` (team `88QL9VPLMY`). The production schema was exported successfully and contains all five model record types: `CD_Thread`, `CD_Message`, `CD_Artifact`, `CD_LibraryItem`, and `CD_UserPreferences`.
 
-The existing app uses `Message.statusRaw`, but the exported production and development schemas were both missing `CD_Message.CD_statusRaw`. The additive STRING field is now versioned in `CloudKitSchema.ckdb`, validated, and imported successfully into development. No production records or existing fields were changed.
-
-**Required before distribution:** Open [CloudKit Console](https://icloud.developer.apple.com/dashboard/database/teams/88QL9VPLMY/containers/iCloud.com.transfinite.aiassistant/environments/DEVELOPMENT/types), review the added message-status field, and choose **Deploy Schema Changes**. Re-export production afterward to verify that the field is present. Development-signed builds use development; TestFlight/App Store builds use production. Changing APNs or CloudKit environment strings in the source does not deploy a schema.
-
-The [Bitrig CloudKit skill](/Applications/Bitrig.app/Contents/Resources/BitrigAI_BitrigAI.bundle/Contents/Resources/bitrig-cloudkit-plugin/skills/cloudkit/SKILL.md) states: “the Console is the only way to deploy; cktool’s schema commands operate on development.” This is a tool limitation, not a request for extra approval of the completed development-schema fix.
+The current production export confirms `CD_Message.CD_statusRaw` is deployed as a STRING field. It matches the additive message-status field versioned in `CloudKitSchema.ckdb`. The previously identified production schema gap is resolved; all five app model types are present. This was verified again after the version 1.2 distribution signing check, without changing production records or the project's schema file.
 
 Actual two-device CloudKit sync and production record writes remain unverified. An exported schema and in-memory tests do not prove sync.
 
@@ -66,4 +62,4 @@ Bitrig/Xcode sometimes reports an App Intents metadata-extraction warning becaus
 - Capture testing found SwiftUI's navigation comparison-type crash when opening an output under the Mac sidebar. The output stack now uses NavigationPath. The complete five-scene Mac flow ran successfully afterward.
 - 22 unit tests and 2 UI regressions passed on iPhone 18 Pro / iOS 27.0. The new UI regression switches tabs, opens saved study cards, flips a card, and advances the deck. The second preserves an unsent draft across tab switching and rotation.
 - [Marketing assets and upload report](marketing/1.2/README.md) records all 36 accepted media assets, 72 placements, and 3 draft custom pages. No binary was uploaded and no review submission or release was performed.
-- Production was re-exported after the distribution signing check: all five model types exist, and `CD_Message.CD_statusRaw` is still absent. Production deployment of this field and two-device CloudKit sync remain outstanding, as described above. Production entitlements do not deploy the CloudKit schema.
+- Production was re-exported after the distribution signing check: all five model types exist, and `CD_Message.CD_statusRaw` is present. Actual two-device sync and production record writes remain unverified. Production entitlements alone do not prove sync.

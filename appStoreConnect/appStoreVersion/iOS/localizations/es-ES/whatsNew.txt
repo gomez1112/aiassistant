@@ -1,8 +1,3 @@
-- Interfaz de chat más limpia, con un encabezado superior más sencillo y un compositor flotante tipo ChatGPT.
-- Las respuestas de IA fallidas o canceladas ya no cuentan para el límite gratuito diario de mensajes.
-- Salidas y Biblioteca ahora se actualizan en tiempo real cuando cambia el contenido.
-- La navegación a elementos guardados de Salidas y Biblioteca es más fiable.
-- Mejor manejo cuando la IA en el dispositivo no está disponible.
-- Mejor control de la cancelación para transformaciones y resúmenes de IA.
-- Las salidas del quiz validan las claves de respuesta de forma más segura antes de mostrar la interfaz interactiva del quiz.
-- Correcciones generales de estabilidad en chats, salidas guardadas y flujos de biblioteca.
+Elige la IA en el dispositivo o Private Cloud Compute de Apple para chats, transformaciones y resúmenes.
+Un espacio de trabajo adaptable a iPhone, iPhone Duo, iPad y Mac.
+Mejoras de fiabilidad, cancelación, importación de archivos y accesibilidad con texto grande.
